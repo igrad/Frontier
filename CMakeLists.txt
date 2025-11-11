@@ -13,6 +13,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+include_directories(src/Shared)
+
 add_subdirectory(src)
 set(PROJECT_SOURCES
     src/main.cpp
@@ -21,16 +23,17 @@ set(PROJECT_SOURCES
 qt_add_executable(Frontier
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
-    src/CoreUI/CMakeLists.txt
 )
 
 target_link_libraries(Frontier
 PRIVATE
     CoreUI
+    Shared
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::Widgets
 )
+
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

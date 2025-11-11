@@ -1,13 +1,43 @@
 #include <mainwindow.h>
+#include <Logging/Logger.h>
+#include <Log.h>
 
 #include <QApplication>
 
-#include <iostream>
+namespace
+{
+   Logger* LOGGER = nullptr;
+}
+
+// Only components on the heap should be set up here.
+// Making sure a matching delete or deleteLater is in tear down.
+void SetUpComponents(QApplication* app)
+{
+}
+
+void TearDownComponents()
+{
+   // Last
+   LOGGER->deleteLater();
+   LOGGER = nullptr;
+}
 
 int main(int argc, char *argv[])
 {
-   QApplication a(argc, argv);
+   // LOGGER is a special case since we need logging before launching the app
+   LOGGER = new Logger(nullptr);
+   LogInfo("Launching Frontier");
+
+   QApplication app(argc, argv);
+
+   SetUpComponents(&app);
+
    MainWindow w;
    w.show();
-   return a.exec();
+
+   const int rVal = app.exec();
+
+   TearDownComponents();
+
+   return rVal;
 }
