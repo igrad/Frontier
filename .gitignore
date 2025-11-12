@@ -6,3 +6,4 @@ out
 .vs
 .vscode
 .qt*
+CMakeLists.txt.user
