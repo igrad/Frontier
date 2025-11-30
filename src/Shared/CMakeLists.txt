@@ -1,4 +1,6 @@
 set(SharedSources
+   ArgParser.cpp
+   ArgParser.h
    Log.h
    Logging/Log.cpp
    Logging/Logger.cpp

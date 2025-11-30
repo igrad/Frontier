@@ -1,6 +1,7 @@
-#include <ShellWindow.h>
+#include "ArgParser.h"
 #include <Logging/Logger.h>
 #include <Log.h>
+#include <ShellWindow.h>
 
 #include <QApplication>
 
@@ -29,6 +30,8 @@ int main(int argc, char *argv[])
    LogInfo("Launching Frontier");
 
    QApplication app(argc, argv);
+   ArgParser argParser;
+   argParser.ParseArgs(app);
 
    SetUpComponents(&app);
 
