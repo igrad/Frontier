@@ -2,6 +2,7 @@
 
 #include "../Log.h"
 
+#include <QDir>
 #include <cassert>
 #include <iostream>
 
@@ -27,6 +28,8 @@ Logger::Logger(QObject* parent)
    assert(0 < locations.count());
    QString appDataDir =
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+   appDataDir.append(QDir::separator());
+   appDataDir.append("Frontier");
 
    assert(!appDataDir.trimmed().isEmpty() &&
           "Could not find AppLocalDataLocation to write to!");
@@ -42,6 +45,7 @@ Logger::Logger(QObject* parent)
              << std::endl;
    if(!QDir(appDataDir).exists())
    {
+      std::cout << "Creating dir" << std::endl;
       QDir().mkdir(appDataDir);
    }
 
@@ -106,10 +110,11 @@ void Logger::HandleWriteLog(const QString& priority,
                             const QString& scope,
                             const QString& string)
 {
-   LogStr(GetTimeString(),
+   const std::string str = LogStr(GetTimeString(),
           priority.toStdString().c_str(),
           scope.toStdString().c_str(),
           string.toStdString().c_str());
+   WriteToLogFile(str);
 }
 
 void Logger::WriteToHistoryFile(const QString& log)
@@ -161,10 +166,15 @@ void Logger::WriteToLogFile(const char* level, const char* scope,
    }
 #endif
 
+   WriteToLogFile(LogStr(GetTimeString(), level, scope, log));
+}
+
+void Logger::WriteToLogFile(const std::string& str)
+{
    LogFile.open(QIODevice::Append);
    if(LogFile.isOpen())
    {
-      LogFile.write(LogStr(GetTimeString(), level, scope, log).c_str());
+      LogFile.write(str.c_str());
       LogFile.close();
    }
    else

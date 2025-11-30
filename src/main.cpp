@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
    LogInfo("Launching Frontier");
 
    QApplication app(argc, argv);
+
+   LogInfo("Building argparser");
    ArgParser argParser;
    argParser.ParseArgs(app);
 

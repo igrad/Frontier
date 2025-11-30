@@ -32,6 +32,7 @@ private:
    void WriteToLogFile(const std::string& level, const std::string& scope,
       const std::string& log);
    void WriteToLogFile(const char* level, const char* scope, const char* log);
+   void WriteToLogFile(const std::string& str);
 
    std::string GetTimeString() const;
 

@@ -1,6 +1,8 @@
 #include "ShellWindow.h"
 #include <ArgParser.h>
 
+#include <Log.h>
+
 namespace
 {
    constexpr int DEV_WINDOW_WIDTH = 1920;
@@ -15,6 +17,8 @@ ShellWindow::ShellWindow(QWidget *parent)
       typedef ArgParser::Arg Arg;
       if(ArgParser::GetArgAsBool(Arg::Dev, false))
       {
+         LogInfo("Launching in dev mode");
+
          window.setWindowTitle("Frontier - Dev Mode");
          const int devWindowWidth = ArgParser::GetArgAsInt(Arg::DevWindowWidth,
                                                            DEV_WINDOW_WIDTH);
@@ -27,6 +31,7 @@ ShellWindow::ShellWindow(QWidget *parent)
       else
       {
          window.setWindowTitle("Frontier");
+         window.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
          window.showFullScreen();
       }
    }

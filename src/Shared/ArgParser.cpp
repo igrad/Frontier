@@ -1,5 +1,7 @@
 #include "ArgParser.h"
 
+#include "Log.h"
+
 #include <QVariant>
 
 typedef ArgParser::Arg Arg;
@@ -81,5 +83,6 @@ void ArgParser::ArgDevWindowHeight()
 
 void ArgParser::ParseArgs(const QCoreApplication& app)
 {
+   LogInfo("Parsing args");
    process(app);
 }
