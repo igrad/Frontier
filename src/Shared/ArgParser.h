@@ -29,6 +29,7 @@ public:
 
 private:
    void SetUpArgs();
+   void HandleArgParsing(const Arg arg, const bool expectsValue = false);
 
    static QMap<Arg, QVariant> ParsedArgs;
 

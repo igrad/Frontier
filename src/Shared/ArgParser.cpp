@@ -28,11 +28,11 @@ QString ArgParser::ArgNameAsString(const Arg arg)
 {
    static const QMap<Arg, QString> ARG_STRING_MAP =
    {
-      { Arg::None, "None" },
-      { Arg::Debug, "Debug" },
-      { Arg::Dev, "Dev" },
-      { Arg::DevWindowWidth, "DevWindowWidth" },
-      { Arg::DevWindowHeight, "DevWindowHeight" },
+      { Arg::None, "none" },
+      { Arg::Debug, "debug" },
+      { Arg::Dev, "dev" },
+      { Arg::DevWindowWidth, "dev-window-width" },
+      { Arg::DevWindowHeight, "dev-window-height" },
       // { Arg::, "" },
    };
 
@@ -78,7 +78,8 @@ void ArgParser::ArgDevWindowWidth()
 {
    addOption({
       { "dw", "dev-window-width" },
-      QCoreApplication::translate("ArgParser", "Dev window width")
+      QCoreApplication::translate("ArgParser", "Dev window width"),
+      "dev-window-width"
    });
 }
 
@@ -86,12 +87,31 @@ void ArgParser::ArgDevWindowHeight()
 {
    addOption({
       { "dh", "dev-window-height" },
-      QCoreApplication::translate("ArgParser", "Dev window height")
+      QCoreApplication::translate("ArgParser", "Dev window height"),
+      "dev-window-height"
    });
+}
+
+void ArgParser::HandleArgParsing(const Arg arg, const bool expectsValue)
+{
+   const QString str = ArgNameAsString(arg);
+   if(isSet(str))
+   {
+      LogInfo("Handling arg " + ArgNameAsString(arg));
+      QVariant val = expectsValue ? value(str) : QVariant(true);
+      ArgParser::ParsedArgs[arg] = val;
+   }
 }
 
 void ArgParser::ParseArgs(const QCoreApplication& app)
 {
    LogInfo("Parsing args");
    process(app);
+
+   // This could definitely be done in a smarter, more programmatic way
+   // TODO: Improve this crap
+   HandleArgParsing(Arg::Debug);
+   HandleArgParsing(Arg::Dev);
+   HandleArgParsing(Arg::DevWindowWidth);
+   HandleArgParsing(Arg::DevWindowHeight);
 }
