@@ -1,4 +1,4 @@
-#include <mainwindow.h>
+#include <ShellWindow.h>
 #include <Logging/Logger.h>
 #include <Log.h>
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
    SetUpComponents(&app);
 
-   MainWindow w;
+   ShellWindow w;
    w.show();
 
    const int rVal = app.exec();

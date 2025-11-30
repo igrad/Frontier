@@ -1,6 +1,6 @@
 set(CoreUISources
-    mainwindow.cpp
-    mainwindow.h
+   ShellWindow.cpp
+   ShellWindow.h
 )
 
 add_library(CoreUI ${CoreUISources})
