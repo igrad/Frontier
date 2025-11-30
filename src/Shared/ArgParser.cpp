@@ -18,6 +18,7 @@ ArgParser::ArgParser()
 
 void ArgParser::SetUpArgs()
 {
+   ArgDebug();
    ArgDev();
    ArgDevWindowWidth();
    ArgDevWindowHeight();
@@ -28,6 +29,7 @@ QString ArgParser::ArgNameAsString(const Arg arg)
    static const QMap<Arg, QString> ARG_STRING_MAP =
    {
       { Arg::None, "None" },
+      { Arg::Debug, "Debug" },
       { Arg::Dev, "Dev" },
       { Arg::DevWindowWidth, "DevWindowWidth" },
       { Arg::DevWindowHeight, "DevWindowHeight" },
@@ -57,6 +59,13 @@ QString ArgParser::GetArgAsString(const Arg arg, const QString defaultValue)
    return ParsedArgs.value(arg, defaultValue).toString();
 }
 
+void ArgParser::ArgDebug()
+{
+   addOption({
+      { "D", "debug" },
+      QCoreApplication::translate("ArgParser", "Launch Frontier in debug mode")
+   });
+}
 void ArgParser::ArgDev()
 {
    addOption({

@@ -10,6 +10,7 @@ public:
    enum class Arg: int
    {
       None = 0,
+      Debug,
       Dev,
       DevWindowWidth,
       DevWindowHeight
@@ -31,6 +32,7 @@ private:
 
    static QMap<Arg, QVariant> ParsedArgs;
 
+   void ArgDebug();
    void ArgDev();
    void ArgDevWindowWidth();
    void ArgDevWindowHeight();

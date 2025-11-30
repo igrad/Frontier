@@ -28,12 +28,20 @@ int main(int argc, char *argv[])
    // LOGGER is a special case since we need logging before launching the app
    LOGGER = new Logger(nullptr);
    LogInfo("Launching Frontier");
+   LogInfo(QString("Launching with argc: %1 and argv %2").arg(argc).arg(*argv));
 
    QApplication app(argc, argv);
 
    LogInfo("Building argparser");
    ArgParser argParser;
    argParser.ParseArgs(app);
+
+   if(ArgParser::GetArgAsBool(ArgParser::Arg::Debug, false))
+   {
+      #ifndef QT_DEBUG
+      #define QT_DEBUG
+      #endif
+   }
 
    SetUpComponents(&app);
 

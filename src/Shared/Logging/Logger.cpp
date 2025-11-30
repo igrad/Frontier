@@ -160,11 +160,6 @@ void Logger::WriteToLogFile(const char* level, const char* scope,
    const char* log)
 {
 // Write to log file and to std::out if we're in debugging mode
-#ifdef QT_DEBUG
-   {
-      std::cout << LogStr(GetTimeString(), level, scope, log) << std::endl;
-   }
-#endif
 
    WriteToLogFile(LogStr(GetTimeString(), level, scope, log));
 }
@@ -176,6 +171,9 @@ void Logger::WriteToLogFile(const std::string& str)
    {
       LogFile.write(str.c_str());
       LogFile.close();
+      #ifdef QT_DEBUG
+      std::cout << str.c_str() << std::flush;
+      #endif
    }
    else
    {
