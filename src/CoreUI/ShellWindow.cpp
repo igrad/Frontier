@@ -25,14 +25,14 @@ ShellWindow::ShellWindow(QWidget *parent)
          const int devWindowHeight = ArgParser::GetArgAsInt(Arg::DevWindowHeight,
                                                             DEV_WINDOW_HEIGHT);
 
-         window.resize(devWindowWidth, devWindowHeight);
+         resize(devWindowWidth, devWindowHeight);
          window.show();
       }
       else
       {
          window.setWindowTitle("Frontier");
          window.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
-         window.showFullScreen();
+         showFullScreen();
       }
    }
 
