@@ -5,6 +5,7 @@
 typedef ArgParser::Arg Arg;
 
 QMap<Arg, QVariant> ArgParser::ParsedArgs;
+bool ArgParser::CleanMode = false;
 
 ArgParser::ArgParser()
    : QCommandLineParser()
@@ -42,6 +43,11 @@ QString ArgParser::ArgNameAsString(const Arg arg)
 bool ArgParser::HasArg(const Arg arg)
 {
    return ParsedArgs.contains(arg);
+}
+
+bool ArgParser::RunningInCleanMode()
+{
+   return CleanMode;
 }
 
 int ArgParser::GetArgAsInt(const Arg arg, const int defaultValue)
@@ -122,4 +128,10 @@ void ArgParser::ParseArgs(const QCoreApplication& app)
    HandleArgParsing(Arg::Dev);
    HandleArgParsing(Arg::DevWindowWidth);
    HandleArgParsing(Arg::DevWindowHeight);
+
+   if(ArgParser::GetArgAsBool(Arg::Dev, false) ||
+       ArgParser::GetArgAsBool(Arg::TestMode, false))
+   {
+      ArgParser::CleanMode = true;
+   }
 }

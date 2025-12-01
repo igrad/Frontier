@@ -52,6 +52,7 @@ Logger::Logger(QObject* parent)
 
    // When launching in debug, dev, or test modes, delete the logs so we have
    // fresh logs and don't have to worry about the old stuff.
+   // This should stay separate from CleanMode
    if(ArgParser::GetArgAsBool(ArgParser::Arg::TestMode, false) ||
       ArgParser::GetArgAsBool(ArgParser::Arg::Debug, false) ||
       ArgParser::GetArgAsBool(ArgParser::Arg::Dev, false))
