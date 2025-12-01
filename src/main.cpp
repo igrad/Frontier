@@ -1,7 +1,8 @@
 #include "ArgParser.h"
+
 #include <Logging/Logger.h>
 #include <Log.h>
-#include "Backend/SettingsService/SettingsService.h"
+#include <SettingsService.h>
 #include <ShellWindow.h>
 
 #include <QApplication>
@@ -60,6 +61,9 @@ int main(int argc, char *argv[])
    SetUpComponents(&app);
 
    ShellWindow w;
+
+   SETTINGS_SERVICE->FetchAllSettings();
+
    w.show();
 
    const int rVal = app.exec();

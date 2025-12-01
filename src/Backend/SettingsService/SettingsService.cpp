@@ -34,6 +34,25 @@ namespace
    constexpr const char* QUERY_BUILD_SYSTEM_SETTINGS_TABLE =
       "CREATE TABLE system_settings(setting STRING PRIMARY KEY, "
       "value STRING)";
+
+   const std::string ToSettingString(const QVariant& val)
+   {
+      QString str("\"::" + val.toString() + "::\"");
+      return str.toStdString();
+   };
+
+   const QVariant FromSettingString(const QString& val)
+   {
+      QStringList tokens = val.split("::");
+      if(tokens.size() != 3)
+      {
+         LogError(QString("Failed to properly tokenize setting string: \"%1\"")
+                     .arg(val));
+         return "";
+      }
+
+      return tokens[1];
+   }
 }
 
 SettingsService::SettingsService()
@@ -146,9 +165,59 @@ bool SettingsService::RunQuery(QSqlQuery& query)
 
 void SettingsService::FetchAllSettings()
 {
+   // TODO: This could probably be optimized
+   QMap<Setting, QVariant> fetchedValues;
+
+   if(OpenDb())
+   {
+      QSqlQuery query;
+      query.prepare(QUERY_READ_ALL_SYSTEM_SETTINGS);
+      query.setForwardOnly(true);
+
+      if(RunQuery(query))
+      {
+         while(query.next())
+         {
+            const QString settingStr = query.value(0).toString();
+            const Setting setting = FromString(settingStr);
+
+            if(Setting::None != setting)
+            {
+               const QVariant val = FromSettingString(query.value(1).toString());
+               fetchedValues[setting] = val;
+            }
+         }
+      }
+
+      CloseDb();
+   }
+
+   // Run the emits after the database is closed since these are more likely to cause any issues
+   LogInfo(QString("Fetched %1 settings from system_settings").arg(fetchedValues.count()))
+   for(const QPair<Setting, QVariant>& pair : fetchedValues.asKeyValueRange())
+   {
+      emit SettingUpdated(pair.first, pair.second);
+   }
 }
 
 void SettingsService::HandleWriteSettingValue(const Setting setting, const QVariant val)
 {
    // QSqlQuery query;
+   if(OpenDb())
+   {
+      QSqlQuery query;
+      query.prepare(QUERY_WRITE_SYSTEM_SETTING);
+      query.bindValue(":setting", ToString(setting));
+      query.bindValue(":value", ToSettingString(val).c_str());
+
+      if(RunQuery(query) && (query.numRowsAffected() != 1))
+      {
+         LogWarn(QString("Settings update should have only affected 1 row, "
+                         "but it affected %1 rows").arg(query.numRowsAffected()))
+      }
+
+      CloseDb();
+   }
+
+   emit SettingUpdated(setting, val);
 }
