@@ -19,16 +19,15 @@ namespace
 
    constexpr const char* QUERY_WRITE_SYSTEM_SETTING =
       "INSERT INTO system_settings (setting, value) "
-      "VALUES (:setting, :value)";
+      "VALUES (:setting, :value);";
    constexpr const char* QUERY_READ_SYSTEM_SETTING =
       "SELECT value FROM system_settings "
       "WHERE setting = :setting "
-      "LIMIT 1";
+      "LIMIT 1;";
    constexpr const char* QUERY_READ_ALL_SYSTEM_SETTINGS =
-      "SELECT * FROM system_settings";
+      "SELECT * FROM system_settings;";
    constexpr const char* QUERY_CHECK_IF_SYSTEM_SETTINGS_EXISTS =
-      "SELECT CASE WHEN OBJECT_ID('system_settings', 'U') IS NOT NULL "
-      "THEN 1 ELSE 0 END AS SytemSettingsExists;";
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='system_settings';";
 
    // TODO: This is fine for now, but eventually we need to migrate to using
    // versioned python files for db inits/migrations
@@ -42,12 +41,11 @@ SettingsService::SettingsService()
 {
    SetUpSettingsDatabase();
    // TODO: Set a database version number, and implement migration logic
-   // TODO: Per the docs, do not keep the QSqlDatabase object as a member
 }
 
 SettingsService::~SettingsService()
 {
-   SettingsClient::SettingsService = nullptr;
+   SettingsDb.close();
 }
 
 void SettingsService::SetPointerInClientClass()
@@ -101,16 +99,13 @@ void SettingsService::ValidateSystemSettingsTableExists()
       LogInfo(QUERY_CHECK_IF_SYSTEM_SETTINGS_EXISTS)
       query.prepare(QString(QUERY_CHECK_IF_SYSTEM_SETTINGS_EXISTS));
       query.setForwardOnly(true);
-      if(RunQuery(query))
+      if(RunQuery(query) && !query.next())
       {
-         if(0 == query.value(0))
-         {
-            // Table doesn't exist
-            query.clear();
-            query.prepare(QUERY_BUILD_SYSTEM_SETTINGS_TABLE);
-            query.setForwardOnly(false);
-            RunQuery(query);
-         }
+         // Table doesn't exist
+         query.clear();
+         query.prepare(QUERY_BUILD_SYSTEM_SETTINGS_TABLE);
+         query.setForwardOnly(false);
+         RunQuery(query);
       }
 
       CloseDb();
