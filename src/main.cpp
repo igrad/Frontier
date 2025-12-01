@@ -25,18 +25,8 @@ void TearDownComponents()
 
 int main(int argc, char *argv[])
 {
-   // LOGGER is a special case since we need logging before launching the app
-   LOGGER = new Logger(nullptr);
-   LogInfo("Launching Frontier");
-   LogInfo(QString("Launching with argc: %1 and args").arg(argc));
-   for(int iter = 1; iter < argc; ++iter)
-   {
-      LogInfo(QString("arg %1: %2").arg(iter).arg(argv[iter]));
-   }
-
    QApplication app(argc, argv);
 
-   LogInfo("Building argparser");
    ArgParser argParser;
    argParser.ParseArgs(app);
 
@@ -45,6 +35,15 @@ int main(int argc, char *argv[])
       #ifndef QT_DEBUG
       #define QT_DEBUG
       #endif
+   }
+
+   // LOGGER is a special case since we need logging before launching the app
+   LOGGER = new Logger(nullptr);
+   LogInfo("Launching Frontier");
+   LogInfo(QString("Launching with argc: %1 and args").arg(argc));
+   for(int iter = 1; iter < argc; ++iter)
+   {
+      LogInfo(QString("arg %1: %2").arg(iter).arg(argv[iter]));
    }
 
    SetUpComponents(&app);

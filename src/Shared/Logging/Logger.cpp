@@ -2,6 +2,8 @@
 
 #include "../Log.h"
 
+#include <ArgParser.h>
+
 #include <QDir>
 #include <cassert>
 #include <iostream>
@@ -12,6 +14,7 @@ namespace
    constexpr const char* HISTORY_FILE_NAME = "history_log.txt";
 }
 
+// TODO: Log rotation strategy
 Logger::Logger(QObject* parent)
 {
    setParent(parent);
@@ -28,8 +31,6 @@ Logger::Logger(QObject* parent)
    assert(0 < locations.count());
    QString appDataDir =
       QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-   appDataDir.append(QDir::separator());
-   appDataDir.append("Frontier");
 
    assert(!appDataDir.trimmed().isEmpty() &&
           "Could not find AppLocalDataLocation to write to!");
@@ -47,6 +48,16 @@ Logger::Logger(QObject* parent)
    {
       std::cout << "Creating dir" << std::endl;
       QDir().mkdir(appDataDir);
+   }
+
+   // When launching in debug, dev, or test modes, delete the logs so we have
+   // fresh logs and don't have to worry about the old stuff.
+   if(ArgParser::GetArgAsBool(ArgParser::Arg::TestMode, false) ||
+      ArgParser::GetArgAsBool(ArgParser::Arg::Debug, false) ||
+      ArgParser::GetArgAsBool(ArgParser::Arg::Dev, false))
+   {
+      LogFile.remove();
+      HistoryFile.remove();
    }
 
    // Open files. Create them if they don't exist.

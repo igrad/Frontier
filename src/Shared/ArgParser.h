@@ -11,6 +11,7 @@ public:
    {
       None = 0,
       Debug,
+      TestMode,
       Dev,
       DevWindowWidth,
       DevWindowHeight
@@ -34,6 +35,7 @@ private:
    static QMap<Arg, QVariant> ParsedArgs;
 
    void ArgDebug();
+   void ArgTestMode();
    void ArgDev();
    void ArgDevWindowWidth();
    void ArgDevWindowHeight();

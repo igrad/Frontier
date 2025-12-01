@@ -1,7 +1,5 @@
 #include "ArgParser.h"
 
-#include "Log.h"
-
 #include <QVariant>
 
 typedef ArgParser::Arg Arg;
@@ -20,6 +18,7 @@ void ArgParser::SetUpArgs()
 {
    ArgDebug();
    ArgDev();
+   ArgTestMode();
    ArgDevWindowWidth();
    ArgDevWindowHeight();
 }
@@ -30,6 +29,7 @@ QString ArgParser::ArgNameAsString(const Arg arg)
    {
       { Arg::None, "none" },
       { Arg::Debug, "debug" },
+      { Arg::TestMode, "test-mode" },
       { Arg::Dev, "dev" },
       { Arg::DevWindowWidth, "dev-window-width" },
       { Arg::DevWindowHeight, "dev-window-height" },
@@ -66,6 +66,15 @@ void ArgParser::ArgDebug()
       QCoreApplication::translate("ArgParser", "Launch Frontier in debug mode")
    });
 }
+
+void ArgParser::ArgTestMode()
+{
+   addOption({
+      "test-mode",
+      QCoreApplication::translate("ArgParser", "Launch Frontier in test mode")
+   });
+}
+
 void ArgParser::ArgDev()
 {
    addOption({
@@ -97,7 +106,6 @@ void ArgParser::HandleArgParsing(const Arg arg, const bool expectsValue)
    const QString str = ArgNameAsString(arg);
    if(isSet(str))
    {
-      LogInfo("Handling arg " + ArgNameAsString(arg));
       QVariant val = expectsValue ? value(str) : QVariant(true);
       ArgParser::ParsedArgs[arg] = val;
    }
@@ -105,12 +113,12 @@ void ArgParser::HandleArgParsing(const Arg arg, const bool expectsValue)
 
 void ArgParser::ParseArgs(const QCoreApplication& app)
 {
-   LogInfo("Parsing args");
    process(app);
 
    // This could definitely be done in a smarter, more programmatic way
    // TODO: Improve this crap
    HandleArgParsing(Arg::Debug);
+   HandleArgParsing(Arg::TestMode);
    HandleArgParsing(Arg::Dev);
    HandleArgParsing(Arg::DevWindowWidth);
    HandleArgParsing(Arg::DevWindowHeight);
