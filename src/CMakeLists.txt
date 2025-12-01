@@ -1,2 +1,2 @@
-add_subdirectory(CoreUI)
+add_subdirectory(UI)
 add_subdirectory(Shared)
