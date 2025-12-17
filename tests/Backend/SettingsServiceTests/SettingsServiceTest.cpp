@@ -117,6 +117,10 @@ TEST(SettingsServiceTest, FetchAllSettings2)
    db.SetupSchema();
 
    QSignalSpy spy(&service, &SettingsService::SettingUpdated);
+
+   service.FetchAllSettings();
+
+   EXPECT_EQ(0, spy.count());
 }
 
 TEST(SettingsServiceTest, FetchAllSettings3)
@@ -128,8 +132,14 @@ TEST(SettingsServiceTest, FetchAllSettings3)
    SettingsService service;
 
    db.SetupSchema();
+   db.InsertSystemSetting(Setting::WallpaperSchedule, 1);
 
    QSignalSpy spy(&service, &SettingsService::SettingUpdated);
 
-   EXPECT_TRUE(false);
+   service.FetchAllSettings();
+
+   ASSERT_EQ(1, spy.count());
+   ASSERT_EQ(2, spy.at(0));
+   EXPECT_EQ(Setting::WallpaperSchedule, spy.at(0).at(0).value<Setting>());
+   EXPECT_EQ(1, spy.at(0).at(1).toInt());
 }
