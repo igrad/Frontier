@@ -87,7 +87,11 @@ void SettingsService::SetUpSettingsDatabase()
 
    assert(!appDataDir.trimmed().isEmpty() &&
           "Could not find AppLocalDataLocation to write to!");
+#ifdef UNIT_TESTING
+   SettingsDbPath = ":memory:";
+#else
    SettingsDbPath = appDataDir.toStdString() + "\\" + SETTINGS_DB_NAME;
+#endif
 
    if(ArgParser::RunningInCleanMode())
    {
