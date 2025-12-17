@@ -3,7 +3,7 @@
 #include "SettingsClientInterface.h"
 
 #include <QObject>
-#include <QMap>
+#include <QMultiHash>
 
 namespace Settings
 {
@@ -17,7 +17,7 @@ namespace Settings
       explicit SettingsClient(const QString& owner);
       ~SettingsClient();
 
-      void SubscribeToSetting(const Setting& setting, SettingUpdateSlot) override;
+      void SubscribeToSetting(const Setting& setting, QObject* subscriber) override;
 
    signals:
       void WriteSettingValue(const Setting& setting, const QVariant& value);
@@ -32,6 +32,6 @@ namespace Settings
       void ConnectToService();
 
       QString Owner;
-      QMap<Setting, QList<SettingUpdateSlot>> Subscriptions;
+      QMultiHash<Setting, QObject*> Subscriptions;
    };
 }

@@ -14,6 +14,6 @@ target_include_directories(SettingsService PUBLIC
 
 target_link_libraries(SettingsService PRIVATE
    Shared
-   Qt${QT_VERSION_MAJOR}::Core
-   Qt${QT_VERSION_MAJOR}::Sql
+   Qt6::Core
+   Qt6::Sql
 )

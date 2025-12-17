@@ -13,5 +13,5 @@ target_include_directories(Shared PUBLIC
 )
 
 target_link_libraries(Shared PRIVATE
-   Qt${QT_VERSION_MAJOR}::Core
+   Qt6::Core
 )

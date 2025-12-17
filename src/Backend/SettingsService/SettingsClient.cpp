@@ -38,29 +38,28 @@ void SettingsClient::ConnectToService()
    }
 }
 
-void SettingsClient::SubscribeToSetting(const Setting& setting,
-    void(*slot)(const Setting& setting, const QVariant& value))
+void SettingsClient::SubscribeToSetting(const Setting& setting, QObject* subscriber)
 {
-   if(!Subscriptions.contains(setting))
-   {
-      Subscriptions[setting] = QList<SettingUpdateSlot>{slot};
-   }
-   else
-   {
-      Subscriptions[setting].append(slot);
-   }
+   Subscriptions.insert(setting, subscriber);
 }
 
 void SettingsClient::HandleSettingUpdated(const Setting& setting, const QVariant& value)
 {
-   auto iter = Subscriptions.find(setting);
+   QList<QObject*> subscribers = Subscriptions.values();
 
-   if(Subscriptions.end() != iter)
+   const std::string methodQStr = QString("HandleSetting%1Changed")
+                                     .arg(Settings::ToString(setting))
+                                     .toStdString();
+   const char* methodStr = methodQStr.c_str();
+
+   for(QObject* sub : std::as_const(subscribers))
    {
-      QList<SettingUpdateSlot> subscriptionSlots = iter.value();
-      for(auto subscriptionSlot : subscriptionSlots)
+      if(nullptr != sub)
       {
-         subscriptionSlot(setting, value);
+         QMetaObject::invokeMethod(sub,
+                                   methodStr,
+                                   Q_ARG(QVariant, value),
+                                   Qt::QueuedConnection);
       }
    }
 }

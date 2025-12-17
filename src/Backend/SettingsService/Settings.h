@@ -6,7 +6,8 @@ namespace Settings
 {
    enum class Setting: int
    {
-      None = 0
+      None = 0,
+      WallpaperSchedule
    };
 }
 
@@ -15,7 +16,8 @@ namespace
    using namespace Settings;
    // NOLINTNEXTLINE
    const QMap<Setting, QString> STRING_MAP = {
-      { Setting::None, "None" }
+      { Setting::None, "None" },
+      { Setting::WallpaperSchedule, "WallpaperSchedule" }
    };
 
    QMap<QString, Setting> BuildReverseMap()

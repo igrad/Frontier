@@ -10,8 +10,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Sql Widgets)
+find_package(QT NAMES Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Sql Widgets)
 
 include_directories(src/Shared)
 
@@ -23,6 +23,7 @@ set(PROJECT_SOURCES
 qt_add_executable(Frontier
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
+    src/Backend/WallpaperService/CMakeLists.txt
 )
 
 target_link_libraries(Frontier
@@ -30,9 +31,10 @@ PRIVATE
     CoreUI
     Shared
     SettingsService
-    Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt6::Core
+    Qt6::Gui
+    # Qt6::Sql
+    Qt6::Widgets
 )
 
 

@@ -1,1 +1,2 @@
 add_subdirectory(SettingsService)
+add_subdirectory(WallpaperService)

@@ -1,6 +1,11 @@
 set(CoreUISources
    ShellWindow.cpp
    ShellWindow.h
+
+   Widgets/AppWindow.cpp
+   Widgets/AppWindow.h
+   Widgets/Overlay.cpp
+   Widgets/Overlay.h
 )
 
 add_library(CoreUI ${CoreUISources})
@@ -9,8 +14,8 @@ target_include_directories(CoreUI PUBLIC
 )
 
 target_link_libraries(CoreUI PRIVATE
-   Qt${QT_VERSION_MAJOR}::Core
-   Qt${QT_VERSION_MAJOR}::Gui
-   Qt${QT_VERSION_MAJOR}::Widgets
+   Qt6::Core
+   Qt6::Gui
+   Qt6::Widgets
    Shared
 )
