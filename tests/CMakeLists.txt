@@ -21,6 +21,12 @@ target_link_libraries(FrontierUnitTests PRIVATE
 
 target_compile_definitions(FrontierUnitTests PRIVATE UNIT_TESTING)
 
+target_include_directories(FrontierUnitTests PRIVATE
+   ${CMAKE_SOURCE_DIR}/src
+   ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_CURRENT_SOURCE_DIR}/support
+)
+
 # mocks, fakes, etc
 add_subdirectory(support)
 
