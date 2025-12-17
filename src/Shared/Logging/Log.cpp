@@ -4,7 +4,7 @@ Log* Log::TheLogger = nullptr;
 
 Log* Log::GetTheLogger()
 {
-   if(TheLogger == nullptr)
+   if(nullptr == TheLogger)
    {
       TheLogger = new Log();
    }
@@ -14,22 +14,53 @@ Log* Log::GetTheLogger()
 
 void Log::Debug(const QString& scope, const QString& string)
 {
-   emit TheLogger->WriteDebug(scope, string);
+   if(nullptr != TheLogger)
+   {
+      QMetaObject::invokeMethod(TheLogger,
+                                "WriteDebug",
+                                Q_ARG(QString, scope),
+                                Q_ARG(QString, string));
+      // emit TheLogger->WriteDebug(scope, string);
+   }
 }
 
 void Log::Info(const QString& scope, const QString& string)
 {
-   emit TheLogger->WriteLog("INF", scope, string);
+   if(nullptr != TheLogger)
+   {
+      QMetaObject::invokeMethod(TheLogger,
+                                "WriteLog",
+                                Q_ARG(QString, "INF"),
+                                Q_ARG(QString, scope),
+                                Q_ARG(QString, string));
+      // emit TheLogger->WriteLog("INF", scope, string);
+   }
 }
 
 void Log::Warn(const QString& scope, const QString& string)
 {
-   emit TheLogger->WriteLog("WRN", scope, string);
+   if(nullptr != TheLogger)
+   {
+      QMetaObject::invokeMethod(TheLogger,
+                                "WriteLog",
+                                Q_ARG(QString, "WRN"),
+                                Q_ARG(QString, scope),
+                                Q_ARG(QString, string));
+      // emit TheLogger->WriteLog("WRN", scope, string);
+   }
 }
 
 void Log::Error(const QString& scope, const QString& string)
 {
-   emit TheLogger->WriteLog("ERR", scope, string);
+   if(nullptr != TheLogger)
+   {
+      QMetaObject::invokeMethod(TheLogger,
+                                "WriteLog",
+                                Q_ARG(QString, "ERR"),
+                                Q_ARG(QString, scope),
+                                Q_ARG(QString, string));
+      // emit TheLogger->WriteLog("ERR", scope, string);
+   }
 }
 
 void Log::Destroy()

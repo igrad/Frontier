@@ -7,16 +7,19 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(FrontierUnitTests "")
+add_executable(FrontierUnitTests
+   main.cpp
+)
 
 target_link_libraries(FrontierUnitTests PRIVATE
    CoreUI
    Shared
    SettingsService
-   gtest_main
+   gtest
    gmock_main
    Qt6::Core
    Qt6::Sql
+   Qt6::Test
 )
 
 target_compile_definitions(FrontierUnitTests PRIVATE UNIT_TESTING)

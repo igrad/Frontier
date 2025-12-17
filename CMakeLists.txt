@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find Packages
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Sql Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Sql Test Widgets)
 
 # Global Includes (So tests and app can find Shared headers)
 include_directories(src/Shared)

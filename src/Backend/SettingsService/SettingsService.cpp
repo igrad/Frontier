@@ -1,5 +1,6 @@
 #include "SettingsService.h"
 #include "SettingsClient.h"
+#include "SettingsDbHelpers.h"
 
 #include <ArgParser.h>
 #include <Log.h>
@@ -8,13 +9,13 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
 #include <QStandardPaths>
-#include <QVariant>
 #include <cassert>
 
 using namespace Settings;
 
 namespace
 {
+   constexpr const char* CONNECTION_NAME = "SettingsService";
    constexpr const char* SETTINGS_DB_NAME = "FrontierSettings.db";
 
    constexpr const char* QUERY_WRITE_SYSTEM_SETTING =
@@ -34,29 +35,9 @@ namespace
    constexpr const char* QUERY_BUILD_SYSTEM_SETTINGS_TABLE =
       "CREATE TABLE system_settings(setting STRING PRIMARY KEY, "
       "value STRING)";
-
-   const std::string ToSettingString(const QVariant& val)
-   {
-      QString str("\"::" + val.toString() + "::\"");
-      return str.toStdString();
-   };
-
-   const QVariant FromSettingString(const QString& val)
-   {
-      QStringList tokens = val.split("::");
-      if(tokens.size() != 3)
-      {
-         LogError(QString("Failed to properly tokenize setting string: \"%1\"")
-                     .arg(val));
-         return "";
-      }
-
-      return tokens[1];
-   }
 }
 
 SettingsService::SettingsService()
-   : SettingsDb(QSqlDatabase::addDatabase("QSQLITE"))
 {
    SetUpSettingsDatabase();
    // TODO: Set a database version number, and implement migration logic
@@ -64,7 +45,7 @@ SettingsService::SettingsService()
 
 SettingsService::~SettingsService()
 {
-   SettingsDb.close();
+   QSqlDatabase::removeDatabase(CONNECTION_NAME);
 }
 
 void SettingsService::SetPointerInClientClass()
@@ -87,34 +68,40 @@ void SettingsService::SetUpSettingsDatabase()
 
    assert(!appDataDir.trimmed().isEmpty() &&
           "Could not find AppLocalDataLocation to write to!");
-#ifdef UNIT_TESTING
-   SettingsDbPath = ":memory:";
-#else
-   SettingsDbPath = appDataDir.toStdString() + "\\" + SETTINGS_DB_NAME;
-#endif
-
-   if(ArgParser::RunningInCleanMode())
+   if(ArgParser::RunningUnitTests())
    {
-      QFile SettingsDbFile(SettingsDbPath);
-      if(SettingsDbFile.exists())
+      SettingsDbPath = ":memory:";
+   }
+   else
+   {
+      SettingsDbPath = appDataDir.toStdString() + "\\" + SETTINGS_DB_NAME;
+      if(ArgParser::RunningInCleanMode())
       {
-         LogInfo("Deleting SettingsDb file");
-         SettingsDbFile.remove();
+         QFile settingsDbFile(SettingsDbPath);
+         if(settingsDbFile.exists())
+         {
+            LogInfo("Deleting SettingsDb file");
+            settingsDbFile.remove();
+         }
       }
    }
 
-   LogInfo("SettingsDb at " + QString::fromStdString(SettingsDbPath.generic_string()));
-   SettingsDb.setDatabaseName(
-      QString::fromStdString(SettingsDbPath.generic_string()));
+   const std::string pathStr = SettingsDbPath.generic_string();
+   LogInfo("SettingsDb at " + QString::fromStdString(pathStr));
+   QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", CONNECTION_NAME);
 
-   SettingsDb.open();
+   db.setDatabaseName(QString::fromStdString(SettingsDbPath.generic_string()));
 
-   ValidateSystemSettingsTableExists();
+   if(OpenDb(db))
+   {
+      ValidateSystemSettingsTableExists();
+   }
 }
 
 void SettingsService::ValidateSystemSettingsTableExists()
 {
-   if(OpenDb())
+   QSqlDatabase db = GetDb();
+   if(OpenDb(db))
    {
       // Insert any tables necessary after building
       // Only need to do this until python build files are up and running
@@ -130,28 +117,25 @@ void SettingsService::ValidateSystemSettingsTableExists()
          query.setForwardOnly(false);
          RunQuery(query);
       }
-
-      CloseDb();
    }
 }
 
-bool SettingsService::OpenDb()
+QSqlDatabase SettingsService::GetDb()
 {
-   const bool opened = SettingsDb.open();
+   return QSqlDatabase::database("SettingsService");
+}
 
-   if(!opened)
+bool SettingsService::OpenDb(QSqlDatabase& db)
+{
+   const bool open = db.isOpen();
+   if(!open)
    {
       LogWarn("Failed to open settings database at \"" +
               QString::fromStdString(SettingsDbPath.generic_string()) +
-              "\" because of error: " + SettingsDb.lastError().text());
+              "\" because of error: " + db.lastError().text());
    }
 
-   return opened;
-}
-
-void SettingsService::CloseDb()
-{
-   SettingsDb.close();
+   return open;
 }
 
 bool SettingsService::RunQuery(QSqlQuery& query)
@@ -172,7 +156,8 @@ void SettingsService::FetchAllSettings()
    // TODO: This could probably be optimized
    QMap<Setting, QVariant> fetchedValues;
 
-   if(OpenDb())
+   QSqlDatabase db = GetDb();
+   if(OpenDb(db))
    {
       QSqlQuery query;
       query.prepare(QUERY_READ_ALL_SYSTEM_SETTINGS);
@@ -192,8 +177,6 @@ void SettingsService::FetchAllSettings()
             }
          }
       }
-
-      CloseDb();
    }
 
    // Run the emits after the database is closed since these are more likely to cause any issues
@@ -206,8 +189,8 @@ void SettingsService::FetchAllSettings()
 
 void SettingsService::HandleWriteSettingValue(const Setting setting, const QVariant val)
 {
-   // QSqlQuery query;
-   if(OpenDb())
+   QSqlDatabase db = GetDb();
+   if(OpenDb(db))
    {
       QSqlQuery query;
       query.prepare(QUERY_WRITE_SYSTEM_SETTING);
@@ -219,8 +202,6 @@ void SettingsService::HandleWriteSettingValue(const Setting setting, const QVari
          LogWarn(QString("Settings update should have only affected 1 row, "
                          "but it affected %1 rows").arg(query.numRowsAffected()))
       }
-
-      CloseDb();
    }
 
    emit SettingUpdated(setting, val);

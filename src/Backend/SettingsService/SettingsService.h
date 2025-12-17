@@ -30,12 +30,11 @@ namespace Settings
       void SetUpSettingsDatabase();
       void ValidateSystemSettingsTableExists();
 
-      bool OpenDb();
-      void CloseDb();
+      QSqlDatabase GetDb();
+      bool OpenDb(QSqlDatabase& db);
       bool RunQuery(QSqlQuery& query);
       void WriteSettingToDatabase(const Setting setting, const QVariant val);
 
-      QSqlDatabase SettingsDb;
       std::filesystem::path SettingsDbPath;
    };
 }

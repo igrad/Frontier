@@ -25,6 +25,7 @@ public:
    static QString ArgNameAsString(const Arg arg);
    static bool HasArg(const Arg arg);
    static bool RunningInCleanMode();
+   static bool RunningUnitTests();
    static int GetArgAsInt(const Arg arg, const int defaultValue = 0);
    static bool GetArgAsBool(const Arg arg, const bool defaultValue = false);
    static QString GetArgAsString(const Arg arg, const QString defaultValue = "");

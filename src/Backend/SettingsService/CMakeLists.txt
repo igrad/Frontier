@@ -3,6 +3,7 @@ set(SettingsServiceSources
    SettingsClient.cpp
    SettingsClient.h
    SettingsClientInterface.h
+   SettingsDbHelpers.h
    SettingsService.cpp
    SettingsService.h
 )

@@ -2,6 +2,11 @@
 
 #include <QVariant>
 
+namespace
+{
+   const char* UNIT_TEST_EXECUTABLE_NAME = "FrontierUnitTests";
+}
+
 typedef ArgParser::Arg Arg;
 
 QMap<Arg, QVariant> ArgParser::ParsedArgs;
@@ -48,6 +53,11 @@ bool ArgParser::HasArg(const Arg arg)
 bool ArgParser::RunningInCleanMode()
 {
    return CleanMode;
+}
+
+bool ArgParser::RunningUnitTests()
+{
+   return QCoreApplication::applicationName() == UNIT_TEST_EXECUTABLE_NAME;
 }
 
 int ArgParser::GetArgAsInt(const Arg arg, const int defaultValue)
