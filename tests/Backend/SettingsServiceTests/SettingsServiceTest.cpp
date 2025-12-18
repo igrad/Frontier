@@ -1,5 +1,6 @@
-#include <SettingsService.h>
+#include <SettingsClient.h>
 #include <SettingsDbHelpers.h>
+#include <SettingsService.h>
 
 #include <SettingsService/SettingsClientMock.h>
 #include <_Utilities/TestMacros.h>
@@ -144,4 +145,17 @@ TEST(SettingsServiceTest, FetchAllSettings3)
    ASSERT_EQ(2, spy.at(0).count());
    EXPECT_EQ(Setting::WallpaperSchedule, spy.at(0).at(0).value<Setting>());
    EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
+}
+
+TEST(SettingsServiceTest, SetPointerInClientClass1)
+{
+   GWT("The SettingsService has been created",
+       "The SettingsService is destroyed",
+       "The SettingsClient::SettingsService pointer becomes null");
+   {
+      SettingsService svc;
+      EXPECT_NE(nullptr, SettingsClient::GetSettingsServicePtr());
+   }
+
+   EXPECT_EQ(nullptr, SettingsClient::GetSettingsServicePtr());
 }

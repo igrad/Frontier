@@ -41,12 +41,14 @@ SettingsService::SettingsService()
    , DatabaseName("")
 {
    SetUpSettingsDatabase();
+   SetPointerInClientClass();
    // TODO: Set a database version number, and implement migration logic
 }
 
 SettingsService::~SettingsService()
 {
    QSqlDatabase::removeDatabase(CONNECTION_NAME);
+   SettingsClient::SettingsService = nullptr;
 }
 
 void SettingsService::SetPointerInClientClass()

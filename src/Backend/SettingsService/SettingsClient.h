@@ -17,6 +17,8 @@ namespace Settings
       explicit SettingsClient(const QString& owner);
       ~SettingsClient();
 
+      static const SettingsService* GetSettingsServicePtr();
+
       void SubscribeToSetting(const Setting& setting, QObject* subscriber) override;
 
    signals:

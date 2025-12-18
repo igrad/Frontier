@@ -18,6 +18,12 @@ SettingsClient::~SettingsClient()
 
 }
 
+// NOTE: For testing purposes only.
+const SettingsService* SettingsClient::GetSettingsServicePtr()
+{
+   return SettingsClient::SettingsService;
+}
+
 void SettingsClient::ConnectToService()
 {
    if(nullptr != SettingsClient::SettingsService)
