@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <QCoreApplication>
+#include <QtSql/QSqlQuery>
 
 int main(int argc, char *argv[])
 {

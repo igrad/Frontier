@@ -30,19 +30,19 @@ namespace
 
 class FakeDbHelper {
 public:
-   FakeDbHelper(const QString& connectionName = "TestHelperConnection")
-      : ConnectionName(connectionName)
+   FakeDbHelper()
    {
+      QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE",
+                                                  Settings::CONNECTION_NAME);
+      db.setDatabaseName(":memory:");
+      db.open();
    }
 
-   ~FakeDbHelper()
-   {
-      QSqlDatabase::removeDatabase(ConnectionName);
-   }
+   ~FakeDbHelper() = default;
 
    bool SetupSchema()
    {
-      QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", ConnectionName);
+      QSqlDatabase db = QSqlDatabase::database(Settings::CONNECTION_NAME);
       db.setDatabaseName(":memory:");
       if(!db.open())
       {
@@ -56,21 +56,25 @@ public:
    bool InsertSystemSetting(Setting key, const QVariant& value)
    {
       const QString keyStr = Settings::ToString(key);
-      QSqlDatabase db = QSqlDatabase::database(ConnectionName);
+      QSqlDatabase db = QSqlDatabase::database(Settings::CONNECTION_NAME);
+      db.setDatabaseName(":memory:");
       QSqlQuery query(db);
       query.prepare("INSERT INTO system_settings (setting, value) VALUES (:setting, :value)");
       query.bindValue(":setting", keyStr);
-      query.bindValue(":value", value);
+      query.bindValue(":value", Settings::ToSettingString(value).c_str());
+      assert(db.isOpen() && "Db isn't open");
       return query.exec();
    }
 
    bool ReadSystemSetting(Setting key, const QVariant& value)
    {
       const QString keyStr = Settings::ToString(key);
-      QSqlDatabase db = QSqlDatabase::database(ConnectionName);
+      QSqlDatabase db = QSqlDatabase::database(Settings::CONNECTION_NAME);
+      db.setDatabaseName(":memory:");
       QSqlQuery query(db);
       query.prepare("SELECT value FROM system_settings WHERE setting = :setting LIMIT 1");
       query.bindValue(":setting", keyStr);
+      assert(db.isOpen() && "Db isn't open");
       return query.exec();
    }
 
@@ -81,9 +85,6 @@ public:
          InsertSystemSetting(it.key(), it.value());
       }
    }
-
-private:
-   QString ConnectionName;
 };
 
 TEST(SettingsServiceTest, FetchAllSettings1)
@@ -132,14 +133,15 @@ TEST(SettingsServiceTest, FetchAllSettings3)
    SettingsService service;
 
    db.SetupSchema();
-   db.InsertSystemSetting(Setting::WallpaperSchedule, 1);
+   const QVariant value("SomeValue");
+   db.InsertSystemSetting(Setting::WallpaperSchedule, value);
 
    QSignalSpy spy(&service, &SettingsService::SettingUpdated);
 
    service.FetchAllSettings();
 
    ASSERT_EQ(1, spy.count());
-   ASSERT_EQ(2, spy.at(0));
+   ASSERT_EQ(2, spy.at(0).count());
    EXPECT_EQ(Setting::WallpaperSchedule, spy.at(0).at(0).value<Setting>());
-   EXPECT_EQ(1, spy.at(0).at(1).toInt());
+   EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
 }

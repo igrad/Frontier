@@ -8,6 +8,8 @@
 
 namespace Settings
 {
+   constexpr const char* CONNECTION_NAME = "SettingsService";
+
    inline const std::string ToSettingString(const QVariant& val)
    {
       QString str("\"::" + val.toString() + "::\"");
