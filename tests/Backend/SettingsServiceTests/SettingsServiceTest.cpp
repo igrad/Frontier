@@ -159,3 +159,23 @@ TEST(SettingsServiceTest, SetPointerInClientClass1)
 
    EXPECT_EQ(nullptr, SettingsClient::GetSettingsServicePtr());
 }
+
+TEST(SettingsServiceTest, HandleWriteSettingValueTest1)
+{
+   GWT("The program is already running",
+       "One component writes a new settings value to disk",
+       "Other subscribers to that setting are notified");
+
+   SettingsService service;
+
+   QSignalSpy spy(&service, &SettingsService::SettingUpdated);
+
+   const QVariant value("SomeValue");
+   service.HandleWriteSettingValue(Setting::WallpaperSchedule,
+                                   value);
+
+   ASSERT_EQ(1, spy.count());
+   ASSERT_EQ(2, spy.at(0).count());
+   EXPECT_EQ(Setting::WallpaperSchedule, spy.at(0).at(0).value<Setting>());
+   EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
+}
