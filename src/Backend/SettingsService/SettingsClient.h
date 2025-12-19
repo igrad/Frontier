@@ -5,9 +5,11 @@
 #include <QObject>
 #include <QMultiHash>
 
+class ServicePointerHelper;
+
 namespace Settings
 {
-   class SettingsService;
+   class SettingsServiceInterface;
 
    class SettingsClient: public SettingsClientInterface
    {
@@ -17,7 +19,7 @@ namespace Settings
       explicit SettingsClient(const QString& owner);
       ~SettingsClient();
 
-      static const SettingsService* GetSettingsServicePtr();
+      static const SettingsServiceInterface* GetSettingsServicePtr();
 
       void SubscribeToSetting(const Setting& setting, QObject* subscriber) override;
 
@@ -29,7 +31,8 @@ namespace Settings
 
    private:
       friend class SettingsService;
-      static SettingsService* SettingsService;
+      friend class ::ServicePointerHelper;
+      static SettingsServiceInterface* Service;
 
       void ConnectToService();
 

@@ -1,15 +1,14 @@
 #pragma once
 
-#include "Settings.h"
+#include "SettingsServiceInterface.h"
 
-#include <QObject>
 #include <QtSql/QSqlDatabase>
 
 #include <filesystem>
 
 namespace Settings
 {
-   class SettingsService: public QObject
+   class SettingsService: public SettingsServiceInterface
    {
       Q_OBJECT
 
@@ -17,13 +16,11 @@ namespace Settings
       SettingsService();
       ~SettingsService();
 
-      void FetchAllSettings();
+      void FetchAllSettings() override;
 
    public slots:
-      void HandleWriteSettingValue(const Setting setting, const QVariant val);
-
-   signals:
-      void SettingUpdated(const Setting setting, const QVariant val);
+      void HandleWriteSettingValue(const Setting setting,
+                                   const QVariant val) override;
 
    private:
       void SetPointerInClientClass();

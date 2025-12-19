@@ -6,6 +6,7 @@ set(SettingsServiceSources
    SettingsDbHelpers.h
    SettingsService.cpp
    SettingsService.h
+   SettingsServiceInterface.h
 )
 
 add_library(SettingsService ${SettingsServiceSources})

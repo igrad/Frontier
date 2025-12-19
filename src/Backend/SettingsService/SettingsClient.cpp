@@ -1,11 +1,11 @@
 #include "SettingsClient.h"
-#include "SettingsService.h"
+#include "SettingsServiceInterface.h"
 
 #include <Log.h>
 
 using namespace Settings;
 
-SettingsService* SettingsClient::SettingsService = nullptr;
+SettingsServiceInterface* SettingsClient::Service = nullptr;
 
 SettingsClient::SettingsClient(const QString& owner)
    : Owner(owner)
@@ -19,23 +19,23 @@ SettingsClient::~SettingsClient()
 }
 
 // NOTE: For testing purposes only.
-const SettingsService* SettingsClient::GetSettingsServicePtr()
+const SettingsServiceInterface* SettingsClient::GetSettingsServicePtr()
 {
-   return SettingsClient::SettingsService;
+   return SettingsClient::Service;
 }
 
 void SettingsClient::ConnectToService()
 {
-   if(nullptr != SettingsClient::SettingsService)
+   if(nullptr != SettingsClient::Service)
    {
       // Prevents a clang warning about bitwise OR (|) op on these connection types
       // NOLINTNEXTLINE
       auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection | Qt::QueuedConnection);
-      connect(SettingsClient::SettingsService, &SettingsService::SettingUpdated,
+      connect(SettingsClient::Service, &SettingsServiceInterface::SettingUpdated,
               this, &SettingsClient::HandleSettingUpdated,
               conn);
       connect(this, &SettingsClient::WriteSettingValue,
-              SettingsClient::SettingsService, &SettingsService::HandleWriteSettingValue,
+              SettingsClient::Service, &SettingsServiceInterface::HandleWriteSettingValue,
               conn);
    }
    else
