@@ -74,3 +74,20 @@ TEST_F(SettingsClientTest, SubscribeToSetting3)
    ASSERT_EQ(1, spy.at(0).count());
    EXPECT_EQ(value, spy.at(0).at(0).value<QVariant>());
 }
+
+TEST_F(SettingsClientTest, WriteSettingValue1)
+{
+   GWT("Service and client are created AND setting is not None",
+       "WriteSettingValue is called",
+       "Emit CacheSettingValue signal");
+   QSignalSpy spy(&Client, &SettingsClientInterface::CacheSettingValue);
+
+   const Setting setting = Setting::TestSetting;
+   const QVariant value = "SomeValue";
+   Client.WriteSettingValue(setting, value);
+
+   ASSERT_EQ(1, spy.count());
+   ASSERT_EQ(2, spy.at(0).count());
+   EXPECT_EQ(setting, spy.at(0).at(0).value<Setting>());
+   EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
+}
