@@ -1,13 +1,15 @@
 #pragma once
 
 #include <QMap>
+#include <climits>
 
 namespace Settings
 {
    enum class Setting: int
    {
       None = 0,
-      WallpaperSchedule
+      WallpaperSchedule,
+      TestSetting = INT_MAX
    };
 }
 
@@ -17,7 +19,8 @@ namespace
    // NOLINTNEXTLINE
    const QMap<Setting, QString> STRING_MAP = {
       { Setting::None, "None" },
-      { Setting::WallpaperSchedule, "WallpaperSchedule" }
+      { Setting::WallpaperSchedule, "WallpaperSchedule" },
+      { Setting::TestSetting, "TestSetting" }
    };
 
    QMap<QString, Setting> BuildReverseMap()

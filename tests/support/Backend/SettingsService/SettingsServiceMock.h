@@ -8,7 +8,10 @@ class SettingsServiceMock: public SettingsServiceInterface
 {
 public:
    void EmitSettingUpdated(const Setting setting,
-                           const QVariant val);
+                           const QVariant val)
+   {
+      emit SettingUpdated(setting, val);
+   }
 
    MOCK_METHOD(void, FetchAllSettings, (), (override));
 

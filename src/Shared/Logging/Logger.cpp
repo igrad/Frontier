@@ -171,26 +171,28 @@ void Logger::WriteToLogFile(const std::string& level, const std::string& scope,
 void Logger::WriteToLogFile(const char* level, const char* scope,
    const char* log)
 {
-// Write to log file and to std::out if we're in debugging mode
-
    WriteToLogFile(LogStr(GetTimeString(), level, scope, log));
 }
 
 void Logger::WriteToLogFile(const std::string& str)
 {
-   LogFile.open(QIODevice::Append);
-   if(LogFile.isOpen())
+   if(ArgParser::RunningUnitTests())
    {
-      LogFile.write(str.c_str());
-      LogFile.close();
-      #ifdef QT_DEBUG
       std::cout << str.c_str() << std::flush;
-      #endif
    }
    else
    {
-      std::cout << "Failed to open log file. Error code: "
-                << LogFile.errorString().toStdString() << std::endl;
+      LogFile.open(QIODevice::Append);
+      if(LogFile.isOpen())
+      {
+         LogFile.write(str.c_str());
+         LogFile.close();
+      }
+      else
+      {
+         std::cout << "Failed to open log file. Error code: "
+                   << LogFile.errorString().toStdString() << std::endl;
+      }
    }
 }
 

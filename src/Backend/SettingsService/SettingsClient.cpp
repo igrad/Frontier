@@ -15,13 +15,33 @@ SettingsClient::SettingsClient(const QString& owner)
 
 SettingsClient::~SettingsClient()
 {
-
 }
 
 // NOTE: For testing purposes only.
 const SettingsServiceInterface* SettingsClient::GetSettingsServicePtr()
 {
    return SettingsClient::Service;
+}
+
+const std::string SettingsClient::GetSettingHandlerMethodStr(Setting setting, bool normalized) const
+{
+   // This weirdness is just so that we can validate the handler function exists before we make the
+   // connection. That way we don't have to validate at the time of setting value change.
+   std::string str;
+   if(normalized)
+   {
+      const QString rawStr = QString("HandleSetting%1Changed(const QVariant&)")
+                                .arg(Settings::ToString(setting));
+      str = QMetaObject::normalizedSignature(rawStr.toStdString().c_str()).toStdString();
+   }
+   else
+   {
+      const QString rawStr = QString("HandleSetting%1Changed")
+                                .arg(Settings::ToString(setting));
+      str = rawStr.toStdString();
+   }
+
+   return str;
 }
 
 void SettingsClient::ConnectToService()
@@ -46,26 +66,37 @@ void SettingsClient::ConnectToService()
 
 void SettingsClient::SubscribeToSetting(const Setting& setting, QObject* subscriber)
 {
-   Subscriptions.insert(setting, subscriber);
+   const std::string methodStr = GetSettingHandlerMethodStr(setting, true);
+   if(nullptr != subscriber)
+   {
+      if((0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str())))
+      {
+         Subscriptions.insert(setting, subscriber);
+      }
+      else
+      {
+         LogError(QString("Could not find method %1 to handle setting %2 in object %3")
+                     .arg(methodStr.c_str(),
+                          ToString(setting),
+                          subscriber->metaObject()->className()));
+      }
+   }
+   else
+   {
+      LogError("A nullptr cannot subscribe to a setting!");
+   }
 }
 
 void SettingsClient::HandleSettingUpdated(const Setting& setting, const QVariant& value)
 {
    QList<QObject*> subscribers = Subscriptions.values();
 
-   const std::string methodQStr = QString("HandleSetting%1Changed")
-                                     .arg(Settings::ToString(setting))
-                                     .toStdString();
-   const char* methodStr = methodQStr.c_str();
+   const std::string methodStr = GetSettingHandlerMethodStr(setting);
 
    for(QObject* sub : std::as_const(subscribers))
    {
-      if(nullptr != sub)
-      {
-         QMetaObject::invokeMethod(sub,
-                                   methodStr,
-                                   Q_ARG(QVariant, value),
-                                   Qt::QueuedConnection);
-      }
+      QMetaObject::invokeMethod(sub,
+                                methodStr.c_str(),
+                                value);
    }
 }

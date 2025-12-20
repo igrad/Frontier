@@ -48,12 +48,12 @@ SettingsService::SettingsService()
 SettingsService::~SettingsService()
 {
    QSqlDatabase::removeDatabase(CONNECTION_NAME);
-   SettingsClient::SettingsService = nullptr;
+   SettingsClient::Service = nullptr;
 }
 
 void SettingsService::SetPointerInClientClass()
 {
-   SettingsClient::SettingsService = this;
+   SettingsClient::Service = this;
 }
 
 void SettingsService::SetUpSettingsDatabase()

@@ -135,7 +135,7 @@ TEST(SettingsServiceTest, FetchAllSettings3)
 
    db.SetupSchema();
    const QVariant value("SomeValue");
-   db.InsertSystemSetting(Setting::WallpaperSchedule, value);
+   db.InsertSystemSetting(Setting::TestSetting, value);
 
    QSignalSpy spy(&service, &SettingsService::SettingUpdated);
 
@@ -143,7 +143,7 @@ TEST(SettingsServiceTest, FetchAllSettings3)
 
    ASSERT_EQ(1, spy.count());
    ASSERT_EQ(2, spy.at(0).count());
-   EXPECT_EQ(Setting::WallpaperSchedule, spy.at(0).at(0).value<Setting>());
+   EXPECT_EQ(Setting::TestSetting, spy.at(0).at(0).value<Setting>());
    EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
 }
 
@@ -171,11 +171,11 @@ TEST(SettingsServiceTest, HandleWriteSettingValueTest1)
    QSignalSpy spy(&service, &SettingsService::SettingUpdated);
 
    const QVariant value("SomeValue");
-   service.HandleWriteSettingValue(Setting::WallpaperSchedule,
+   service.HandleWriteSettingValue(Setting::TestSetting,
                                    value);
 
    ASSERT_EQ(1, spy.count());
    ASSERT_EQ(2, spy.at(0).count());
-   EXPECT_EQ(Setting::WallpaperSchedule, spy.at(0).at(0).value<Setting>());
+   EXPECT_EQ(Setting::TestSetting, spy.at(0).at(0).value<Setting>());
    EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
 }

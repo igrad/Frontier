@@ -34,6 +34,7 @@ namespace Settings
       friend class ::ServicePointerHelper;
       static SettingsServiceInterface* Service;
 
+      const std::string GetSettingHandlerMethodStr(Setting setting, bool normalized = false) const;
       void ConnectToService();
 
       QString Owner;
