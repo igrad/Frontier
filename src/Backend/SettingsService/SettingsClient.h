@@ -21,7 +21,7 @@ namespace Settings
 
       static const SettingsServiceInterface* GetSettingsServicePtr();
 
-      void SubscribeToSetting(const Setting& setting, QObject* subscriber) override;
+      bool SubscribeToSetting(const Setting& setting, QObject* subscriber) override;
 
    signals:
       void WriteSettingValue(const Setting& setting, const QVariant& value);

@@ -35,6 +35,26 @@ public:
 
 TEST_F(SettingsClientTest, SubscribeToSetting1)
 {
+   GWT("Service and client are created",
+       "Trying to subscribe to a setting without an appropriate handler slot",
+       "Subscription fails");
+
+   FakeSettingSubscriber sub;
+
+   EXPECT_FALSE(Client.SubscribeToSetting(Setting::WallpaperSchedule, &sub));
+}
+
+TEST_F(SettingsClientTest, SubscribeToSetting2)
+{
+   GWT("Service and client are created",
+       "Trying to subscribe to a nullptr",
+       "Subscription fails");
+
+   EXPECT_FALSE(Client.SubscribeToSetting(Setting::TestSetting, nullptr));
+}
+
+TEST_F(SettingsClientTest, SubscribeToSetting3)
+{
    GWT("Service and client are created AND subscribed to setting",
        "Setting is updated by service",
        "Client receives signal and invokes sub slot");

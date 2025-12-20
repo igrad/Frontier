@@ -64,14 +64,16 @@ void SettingsClient::ConnectToService()
    }
 }
 
-void SettingsClient::SubscribeToSetting(const Setting& setting, QObject* subscriber)
+bool SettingsClient::SubscribeToSetting(const Setting& setting, QObject* subscriber)
 {
+   bool retVal = false;
    const std::string methodStr = GetSettingHandlerMethodStr(setting, true);
    if(nullptr != subscriber)
    {
       if((0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str())))
       {
          Subscriptions.insert(setting, subscriber);
+         retVal = true;
       }
       else
       {
@@ -85,6 +87,8 @@ void SettingsClient::SubscribeToSetting(const Setting& setting, QObject* subscri
    {
       LogError("A nullptr cannot subscribe to a setting!");
    }
+
+   return retVal;
 }
 
 void SettingsClient::HandleSettingUpdated(const Setting& setting, const QVariant& value)
