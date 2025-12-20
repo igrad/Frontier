@@ -17,7 +17,7 @@ public:
 
    // Slots
    MOCK_METHOD(void,
-               HandleWriteSettingValue,
+               HandleCacheSettingValue,
                (const Setting setting, const QVariant value),
                (override));
 };

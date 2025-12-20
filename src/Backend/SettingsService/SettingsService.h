@@ -19,7 +19,7 @@ namespace Settings
       void FetchAllSettings() override;
 
    public slots:
-      void HandleWriteSettingValue(const Setting setting,
+      void HandleCacheSettingValue(const Setting setting,
                                    const QVariant val) override;
 
    private:

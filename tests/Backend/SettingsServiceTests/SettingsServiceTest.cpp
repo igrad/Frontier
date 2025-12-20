@@ -171,7 +171,7 @@ TEST(SettingsServiceTest, HandleWriteSettingValueTest1)
    QSignalSpy spy(&service, &SettingsService::SettingUpdated);
 
    const QVariant value("SomeValue");
-   service.HandleWriteSettingValue(Setting::TestSetting,
+   service.HandleCacheSettingValue(Setting::TestSetting,
                                    value);
 
    ASSERT_EQ(1, spy.count());

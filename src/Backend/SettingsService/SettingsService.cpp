@@ -198,7 +198,7 @@ void SettingsService::FetchAllSettings()
    }
 }
 
-void SettingsService::HandleWriteSettingValue(const Setting setting, const QVariant val)
+void SettingsService::HandleCacheSettingValue(const Setting setting, const QVariant val)
 {
    QSqlDatabase db = GetDb();
    if(OpenDb(db))

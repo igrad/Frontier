@@ -54,8 +54,8 @@ void SettingsClient::ConnectToService()
       connect(SettingsClient::Service, &SettingsServiceInterface::SettingUpdated,
               this, &SettingsClient::HandleSettingUpdated,
               conn);
-      connect(this, &SettingsClient::WriteSettingValue,
-              SettingsClient::Service, &SettingsServiceInterface::HandleWriteSettingValue,
+      connect(this, &SettingsClient::CacheSettingValue,
+              SettingsClient::Service, &SettingsServiceInterface::HandleCacheSettingValue,
               conn);
    }
    else
@@ -64,7 +64,7 @@ void SettingsClient::ConnectToService()
    }
 }
 
-bool SettingsClient::SubscribeToSetting(const Setting& setting, QObject* subscriber)
+bool SettingsClient::SubscribeToSetting(Setting setting, QObject* subscriber)
 {
    bool retVal = false;
    const std::string methodStr = GetSettingHandlerMethodStr(setting, true);
@@ -86,6 +86,23 @@ bool SettingsClient::SubscribeToSetting(const Setting& setting, QObject* subscri
    else
    {
       LogError("A nullptr cannot subscribe to a setting!");
+   }
+
+   return retVal;
+}
+
+bool SettingsClient::WriteSettingValue(Setting setting, const QVariant& value)
+{
+   bool retVal = false;
+
+   if(Setting::None != setting)
+   {
+      emit CacheSettingValue(setting, value);
+      retVal = true;
+   }
+   else
+   {
+      LogError("Cannot write to None setting. This is a code error.");
    }
 
    return retVal;

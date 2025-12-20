@@ -7,5 +7,6 @@
 class SettingsClientMock: public SettingsClientInterface
 {
 public:
-   MOCK_METHOD(bool, SubscribeToSetting, (const Settings::Setting&, QObject*), (override));
+   MOCK_METHOD(bool, SubscribeToSetting, (Settings::Setting, QObject*), (override));
+   MOCK_METHOD(bool, WriteSettingValue, (Settings::Setting, const QVariant&), (override));
 };

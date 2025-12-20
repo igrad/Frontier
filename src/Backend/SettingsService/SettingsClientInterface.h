@@ -13,6 +13,10 @@ namespace Settings
    public:
       ~SettingsClientInterface() = default;
 
-      virtual bool SubscribeToSetting(const Setting& setting, QObject* subscriber) = 0;
+      virtual bool SubscribeToSetting(Setting setting, QObject* subscriber) = 0;
+      virtual bool WriteSettingValue(Setting setting, const QVariant& value) = 0;
+
+   signals:
+      void CacheSettingValue(Setting setting, const QVariant& value);
    };
 }

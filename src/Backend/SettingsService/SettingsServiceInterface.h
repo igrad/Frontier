@@ -17,7 +17,7 @@ namespace Settings
       virtual void FetchAllSettings() = 0;
 
    public slots:
-      virtual void HandleWriteSettingValue(const Setting setting,
+      virtual void HandleCacheSettingValue(const Setting setting,
                                            const QVariant value) = 0;
 
    signals:
