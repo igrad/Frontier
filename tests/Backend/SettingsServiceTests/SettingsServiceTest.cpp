@@ -10,6 +10,7 @@
 #include <QSignalSpy>
 #include <QLoggingCategory>
 
+using namespace Settings;
 using namespace testing;
 
 namespace

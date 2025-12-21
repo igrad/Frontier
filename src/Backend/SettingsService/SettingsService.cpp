@@ -179,7 +179,7 @@ void SettingsService::FetchAllSettings()
          while(query.next())
          {
             const QString settingStr = query.value(0).toString();
-            const Setting setting = FromString(settingStr);
+            const Setting setting = ToSetting(settingStr);
 
             if(Setting::None != setting)
             {

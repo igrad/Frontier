@@ -2,9 +2,12 @@ set(SharedSources
    ArgParser.cpp
    ArgParser.h
    Log.h
+
    Logging/Log.cpp
    Logging/Logger.cpp
    Logging/Logger.h
+
+   Utilities/EnumHelpers.h
 )
 
 add_library(Shared ${SharedSources})

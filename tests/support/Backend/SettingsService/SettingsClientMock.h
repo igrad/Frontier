@@ -4,7 +4,7 @@
 
 #include <gmock/gmock.h>
 
-class SettingsClientMock: public SettingsClientInterface
+class SettingsClientMock: public Settings::SettingsClientInterface
 {
 public:
    MOCK_METHOD(bool, SubscribeToSetting, (Settings::Setting, QObject*), (override));

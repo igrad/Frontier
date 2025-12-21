@@ -4,10 +4,10 @@
 
 #include <gmock/gmock.h>
 
-class SettingsServiceMock: public SettingsServiceInterface
+class SettingsServiceMock: public Settings::SettingsServiceInterface
 {
 public:
-   void EmitSettingUpdated(const Setting setting,
+   void EmitSettingUpdated(const Settings::Setting setting,
                            const QVariant val)
    {
       emit SettingUpdated(setting, val);
@@ -18,6 +18,6 @@ public:
    // Slots
    MOCK_METHOD(void,
                HandleCacheSettingValue,
-               (const Setting setting, const QVariant value),
+               (const Settings::Setting setting, const QVariant value),
                (override));
 };

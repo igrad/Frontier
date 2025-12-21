@@ -1,5 +1,7 @@
 #pragma once
 
+#include "WallpaperTypes.h"
+
 #include <SettingsClient.h>
 
 #include <QObject>
@@ -14,6 +16,9 @@ namespace Wallpaper
       WallpaperService();
       ~WallpaperService();
 
+   signals:
+      void WallpaperScheduleChanged(WallpaperSchedule schedule);
+
    private slots:
       // Need to decide what the settings for wallpapers will look like
       // A schedule? shuffle, static, sequenced
@@ -23,5 +28,7 @@ namespace Wallpaper
       void SubscribeToSettings();
 
       Settings::SettingsClient Settings;
+
+      WallpaperSchedule Schedule;
    };
 }
