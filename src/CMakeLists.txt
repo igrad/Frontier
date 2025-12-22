@@ -2,7 +2,6 @@ add_subdirectory(Backend)
 add_subdirectory(Shared)
 add_subdirectory(UI)
 
-# --- 2. Main Executable ---
 set(PROJECT_SOURCES
    main.cpp
 )
@@ -23,7 +22,6 @@ target_link_libraries(Frontier
    Qt6::Widgets
 )
 
-# OS Specific Bundle logic
 if(${Qt6_VERSION} VERSION_LESS 6.1.0)
    set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.FrontierLauncher)
 endif()
@@ -33,7 +31,6 @@ set_target_properties(Frontier PROPERTIES
    WIN32_EXECUTABLE TRUE
 )
 
-# Installation logic
 include(GNUInstallDirs)
 install(TARGETS Frontier
    BUNDLE DESTINATION .

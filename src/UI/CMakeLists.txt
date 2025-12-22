@@ -1,21 +1,4 @@
-set(CoreUISources
-   ShellWindow.cpp
-   ShellWindow.h
-
-   Widgets/AppWindow.cpp
-   Widgets/AppWindow.h
-   Widgets/Overlay.cpp
-   Widgets/Overlay.h
-)
-
-add_library(CoreUI ${CoreUISources})
-target_include_directories(CoreUI PUBLIC
-   ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-target_link_libraries(CoreUI PRIVATE
-   Qt6::Core
-   Qt6::Gui
-   Qt6::Widgets
-   Shared
-)
+add_subdirectory(CoreUI)
+add_subdirectory(DesktopWidgets)
+add_subdirectory(Overlays)
+add_subdirectory(SharedUIComponents)
