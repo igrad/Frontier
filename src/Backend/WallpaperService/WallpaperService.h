@@ -5,6 +5,7 @@
 #include <SettingsClient.h>
 
 #include <QObject>
+#include <QStringList>
 
 namespace Wallpaper
 {
@@ -19,10 +20,12 @@ namespace Wallpaper
    signals:
       void WallpaperScheduleChanged(WallpaperSchedule schedule);
 
-   private slots:
-      // Need to decide what the settings for wallpapers will look like
-      // A schedule? shuffle, static, sequenced
+   public slots:
       void HandleSettingWallpaperScheduleChanged(const QVariant& value);
+      void HandleSettingWallpaperImagePaths(const QVariant& value);
+      void HandleSettingWallpaperColor(const QVariant& value);
+      void HandleSettingWallpaperDuration(const QVariant& value);
+      void HandleSettingWallpaperActiveMode(const QVariant& value);
 
    private:
       void SubscribeToSettings();
@@ -30,5 +33,6 @@ namespace Wallpaper
       Settings::SettingsClient Settings;
 
       WallpaperSchedule Schedule;
+      QStringList ImagePaths;
    };
 }

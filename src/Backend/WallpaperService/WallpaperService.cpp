@@ -13,6 +13,7 @@ WallpaperService::WallpaperService()
    : Settings("WallpaperService")
    , Schedule(WallpaperSchedule::None)
 {
+   SubscribeToSettings();
 }
 
 WallpaperService::~WallpaperService() = default;
@@ -26,6 +27,34 @@ void WallpaperService::HandleSettingWallpaperScheduleChanged(const QVariant& val
       Schedule = newSchedule;
       LogInfo("Wallpaper schedule changed to: ")
    }
+}
+
+void WallpaperService::HandleSettingWallpaperImagePaths(const QVariant& value)
+{
+   if(value.canConvert<QStringList>())
+   {
+      // It's a list
+      ImagePaths = value.toStringList();
+   }
+   else
+   {
+      ImagePaths.push_back(value.toString());
+   }
+}
+
+void WallpaperService::HandleSettingWallpaperColor(const QVariant& value)
+{
+
+}
+
+void WallpaperService::HandleSettingWallpaperDuration(const QVariant& value)
+{
+
+}
+
+void WallpaperService::HandleSettingWallpaperActiveMode(const QVariant& value)
+{
+
 }
 
 void WallpaperService::SubscribeToSettings()

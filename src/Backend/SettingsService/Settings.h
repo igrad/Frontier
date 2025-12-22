@@ -12,6 +12,10 @@ namespace Settings
    {
       None = 0,
       WallpaperSchedule,
+      WallpaperImagePaths,
+      WallpaperColor,
+      WallpaperDuration,
+      WallpaperActiveMode,
       TestSetting = INT_MAX
    };
    Q_ENUM_NS(Setting)
