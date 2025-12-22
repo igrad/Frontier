@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QColor>
 
 namespace Wallpaper
 {
@@ -23,7 +24,7 @@ namespace Wallpaper
    public slots:
       void HandleSettingWallpaperScheduleChanged(const QVariant& value);
       void HandleSettingWallpaperImagePaths(const QVariant& value);
-      void HandleSettingWallpaperColor(const QVariant& value);
+      void HandleSettingWallpaperColors(const QVariant& value);
       void HandleSettingWallpaperDuration(const QVariant& value);
       void HandleSettingWallpaperActiveMode(const QVariant& value);
 
@@ -34,5 +35,8 @@ namespace Wallpaper
 
       WallpaperSchedule Schedule;
       QStringList ImagePaths;
+      QList<QColor> Colors;
+      int Duration;
+      WallpaperMode Mode;
    };
 }

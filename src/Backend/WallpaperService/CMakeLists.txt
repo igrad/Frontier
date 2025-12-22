@@ -23,4 +23,5 @@ target_link_libraries(WallpaperService PUBLIC
    PRIVATE
    Shared
    Qt6::Core
+   Qt6::Gui
 )

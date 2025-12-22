@@ -13,7 +13,7 @@ namespace Settings
       None = 0,
       WallpaperSchedule,
       WallpaperImagePaths,
-      WallpaperColor,
+      WallpaperColors,
       WallpaperDuration,
       WallpaperActiveMode,
       TestSetting = INT_MAX

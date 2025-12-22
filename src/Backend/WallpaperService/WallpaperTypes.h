@@ -20,7 +20,12 @@ namespace Wallpaper
 
    inline QString ToString(WallpaperMode value)
    {
-      return EnumToString<WallpaperMode>(value);
+      return EnumToString(value);
+   }
+
+   inline WallpaperMode FromString(const QString& str)
+   {
+      return StringToEnum<WallpaperMode>(str);
    }
 
    enum class WallpaperSchedule: int
