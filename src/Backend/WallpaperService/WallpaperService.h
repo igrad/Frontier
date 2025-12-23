@@ -19,7 +19,7 @@ namespace Wallpaper
       ~WallpaperService();
 
    signals:
-      void WallpaperScheduleChanged(WallpaperSchedule schedule);
+      void WallpaperDataChanged(const Wallpaper::WallpaperData& data);
 
    public slots:
       void HandleSettingWallpaperScheduleChanged(const QVariant& value);
@@ -29,6 +29,7 @@ namespace Wallpaper
       void HandleSettingWallpaperActiveMode(const QVariant& value);
 
    private:
+      void RegisterMetaTypes() const;
       void SubscribeToSettings();
 
       Settings::SettingsClient Settings;

@@ -17,7 +17,12 @@ namespace
 WallpaperService::WallpaperService()
    : Settings("WallpaperService")
    , Schedule(WallpaperSchedule::None)
+   , ImagePaths()
+   , Colors{QColor("blue")}
+   , Duration(0)
+   , Mode(WallpaperMode::StaticColor)
 {
+   RegisterMetaTypes();
    SubscribeToSettings();
 }
 
@@ -36,6 +41,8 @@ void WallpaperService::HandleSettingWallpaperScheduleChanged(const QVariant& val
 
 void WallpaperService::HandleSettingWallpaperImagePaths(const QVariant& value)
 {
+   ImagePaths.clear();
+
    if(value.canConvert<QStringList>())
    {
       ImagePaths = value.toStringList();
@@ -50,6 +57,8 @@ void WallpaperService::HandleSettingWallpaperColors(const QVariant& value)
 {
    if(value.canConvert<QStringList>())
    {
+      Colors.clear();
+
       const QStringList strList = value.toStringList();
       for(const QString& str : strList)
       {
@@ -80,6 +89,11 @@ void WallpaperService::HandleSettingWallpaperActiveMode(const QVariant& value)
    }
 
    Mode = mode;
+}
+
+void WallpaperService::RegisterMetaTypes() const
+{
+   qRegisterMetaType<WallpaperData>("Wallpaper::WallpaperData");
 }
 
 void WallpaperService::SubscribeToSettings()

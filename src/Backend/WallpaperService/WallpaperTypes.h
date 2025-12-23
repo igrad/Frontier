@@ -41,4 +41,28 @@ namespace Wallpaper
    {
       return EnumToString<WallpaperSchedule>(value);
    }
+
+   enum class WallpaperImageType: int
+   {
+      None = 0,
+      StaticColor,
+      DynamicColor,
+      Image,
+      Video
+   };
+   Q_ENUM_NS(WallpaperImageType)
+
+   inline QString ToString(WallpaperImageType type)
+   {
+      return EnumToString<WallpaperImageType>(type);
+   }
+
+   struct WallpaperData
+   {
+      WallpaperImageType ImageType;
+      QList<QColor> Colors;
+      QString ImagePath;
+   };
 }
+
+Q_DECLARE_METATYPE(Wallpaper::WallpaperData);

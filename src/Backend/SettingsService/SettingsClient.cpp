@@ -50,7 +50,8 @@ void SettingsClient::ConnectToService()
    {
       // Prevents a clang warning about bitwise OR (|) op on these connection types
       // NOLINTNEXTLINE
-      auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection | Qt::QueuedConnection);
+      const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
+                                                        Qt::QueuedConnection);
       connect(SettingsClient::Service, &SettingsServiceInterface::SettingUpdated,
               this, &SettingsClient::HandleSettingUpdated,
               conn);

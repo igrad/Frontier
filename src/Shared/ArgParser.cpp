@@ -57,7 +57,7 @@ bool ArgParser::RunningInCleanMode()
 
 bool ArgParser::RunningUnitTests()
 {
-   return QCoreApplication::applicationName() == UNIT_TEST_EXECUTABLE_NAME;
+   return (UNIT_TEST_EXECUTABLE_NAME == QCoreApplication::applicationName());
 }
 
 int ArgParser::GetArgAsInt(const Arg arg, const int defaultValue)
