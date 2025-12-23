@@ -20,8 +20,8 @@ target_include_directories(WallpaperService PUBLIC
 
 target_link_libraries(WallpaperService PUBLIC
    SettingsService
+   Qt6::Gui
    PRIVATE
    Shared
    Qt6::Core
-   Qt6::Gui
 )

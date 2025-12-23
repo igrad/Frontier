@@ -1,6 +1,8 @@
 set(CoreUISources
    ShellWindow.cpp
    ShellWindow.h
+   UIManager.cpp
+   UIManager.h
 
    Wallpaper/WallpaperView.cpp
    Wallpaper/WallpaperView.h

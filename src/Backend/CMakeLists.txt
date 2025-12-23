@@ -1,2 +1,3 @@
+add_subdirectory(BackendThreadMAnager)
 add_subdirectory(SettingsService)
 add_subdirectory(WallpaperService)

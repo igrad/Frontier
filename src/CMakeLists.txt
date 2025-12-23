@@ -14,11 +14,10 @@ qt_add_executable(Frontier
 target_link_libraries(Frontier
    PRIVATE
    CoreUI
-   Shared
+   BackendThreadManager
    SettingsService
    Qt6::Core
    Qt6::Gui
-   Qt6::Sql
    Qt6::Widgets
 )
 

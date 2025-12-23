@@ -3,32 +3,23 @@
 #include <Logging/Logger.h>
 #include <Log.h>
 #include <SettingsService.h>
-#include <ShellWindow.h>
+#include <BackendThreadManager/BackendThreadManager.h>
+#include <UIManager.h>
 
 #include <QApplication>
+#include <QThread>
 
 namespace
 {
-   Logger* LOGGER = nullptr;
-   Settings::SettingsService* SETTINGS_SERVICE = nullptr;
-}
-
-// Only components on the heap should be set up here.
-// Making sure a matching delete or deleteLater is in tear down.
-void SetUpComponents(QApplication* app)
-{
-   SETTINGS_SERVICE = new Settings::SettingsService;
+   std::unique_ptr<Logger> LOGGER = nullptr;
+   std::unique_ptr<BackendThreadManager> BACKEND_THREAD_MANAGER = nullptr;
+   std::unique_ptr<UIManager> UI_MANAGER = nullptr;
 }
 
 void TearDownComponents()
 {
-   // Last
    LOGGER->deleteLater();
    LOGGER = nullptr;
-
-   SETTINGS_SERVICE->deleteLater();
-   SETTINGS_SERVICE = nullptr;
-   // First
 }
 
 int main(int argc, char *argv[])
@@ -46,7 +37,7 @@ int main(int argc, char *argv[])
    }
 
    // LOGGER is a special case since we need logging before launching the app
-   LOGGER = new Logger(nullptr);
+   LOGGER.reset(new Logger(nullptr));
    if(ArgParser::RunningInCleanMode())
    {
       LogInfo("Running in clean mode");
@@ -58,17 +49,21 @@ int main(int argc, char *argv[])
       LogInfo(QString("arg %1: %2").arg(iter).arg(argv[iter]));
    }
 
-   SetUpComponents(&app);
+   // Set up backend thread and its components
+   BACKEND_THREAD_MANAGER.reset(new BackendThreadManager());
+   std::unique_ptr<QThread> backendThread(new QThread());
+   BACKEND_THREAD_MANAGER->AssignToThread(backendThread.get());
+   backendThread->start(QThread::NormalPriority);
 
-   ShellWindow w;
+   // Set up UI components
+   UI_MANAGER.reset(new UIManager(BACKEND_THREAD_MANAGER));
 
-   SETTINGS_SERVICE->FetchAllSettings();
-
-   w.show();
-
+   // Execute
+   BACKEND_THREAD_MANAGER->GetTheSettingsService()->FetchAllSettings();
+   UI_MANAGER->Start();
    const int rVal = app.exec();
 
+   // Tear down
    TearDownComponents();
-
    return rVal;
 }

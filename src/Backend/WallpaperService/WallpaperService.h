@@ -4,9 +4,9 @@
 
 #include <SettingsClient.h>
 
+#include <QColor>
 #include <QObject>
 #include <QStringList>
-#include <QColor>
 
 namespace Wallpaper
 {

@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-namespace wp
+namespace Wallpaper
 {
    // A static wallpaper with a single color
    class StaticColorWallpaper: public QObject
@@ -10,6 +10,7 @@ namespace wp
       Q_OBJECT
 
    public:
-      StaticColorWallpaper();
+      StaticColorWallpaper() = default;
+      ~StaticColorWallpaper() = default;
    };
 }
