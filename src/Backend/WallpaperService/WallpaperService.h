@@ -34,10 +34,10 @@ namespace Wallpaper
 
       Settings::SettingsClient Settings;
 
-      WallpaperSchedule Schedule;
-      QStringList ImagePaths;
-      QList<QColor> Colors;
-      int Duration;
-      WallpaperMode Mode;
+      Schedule CurrentSchedule;
+      QStringList CurrentImagePaths;
+      QList<QColor> CurrentColors;
+      int CurrentDuration;
+      Mode CurrentMode;
    };
 }

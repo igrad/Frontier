@@ -11,16 +11,16 @@ using namespace Wallpaper;
 
 namespace
 {
-   constexpr WallpaperMode DEFAULT_WALLPAPER_MODE = WallpaperMode::StaticImage;
+   constexpr Mode DEFAULT_WALLPAPER_MODE = Mode::StaticImage;
 }
 
 WallpaperService::WallpaperService()
    : Settings("WallpaperService")
-   , Schedule(WallpaperSchedule::None)
-   , ImagePaths()
-   , Colors{QColor("blue")}
-   , Duration(0)
-   , Mode(WallpaperMode::StaticColor)
+   , CurrentSchedule(Schedule::None)
+   , CurrentImagePaths()
+   , CurrentColors{QColor("blue")}
+   , CurrentDuration(0)
+   , CurrentMode(Mode::StaticColor)
 {
    RegisterMetaTypes();
    SubscribeToSettings();
@@ -30,26 +30,26 @@ WallpaperService::~WallpaperService() = default;
 
 void WallpaperService::HandleSettingWallpaperScheduleChanged(const QVariant& value)
 {
-   const WallpaperSchedule newSchedule = value.value<WallpaperSchedule>();
+   const Schedule newSchedule = value.value<Schedule>();
 
-   if(newSchedule != Schedule)
+   if(newSchedule != CurrentSchedule)
    {
-      Schedule = newSchedule;
+      CurrentSchedule = newSchedule;
       LogInfo("Wallpaper schedule changed to: ")
    }
 }
 
 void WallpaperService::HandleSettingWallpaperImagePaths(const QVariant& value)
 {
-   ImagePaths.clear();
+   CurrentImagePaths.clear();
 
    if(value.canConvert<QStringList>())
    {
-      ImagePaths = value.toStringList();
+      CurrentImagePaths = value.toStringList();
    }
    else
    {
-      ImagePaths.push_back(value.toString());
+      CurrentImagePaths.push_back(value.toString());
    }
 }
 
@@ -57,17 +57,17 @@ void WallpaperService::HandleSettingWallpaperColors(const QVariant& value)
 {
    if(value.canConvert<QStringList>())
    {
-      Colors.clear();
+      CurrentColors.clear();
 
       const QStringList strList = value.toStringList();
       for(const QString& str : strList)
       {
-         Colors.push_back(QColor(str));
+         CurrentColors.push_back(QColor(str));
       }
    }
    else
    {
-      Colors.push_back(QColor(value.toString()));
+      CurrentColors.push_back(QColor(value.toString()));
    }
 }
 
@@ -75,20 +75,20 @@ void WallpaperService::HandleSettingWallpaperDuration(const QVariant& value)
 {
    if(value.canConvert<int>())
    {
-      Duration = value.toInt();
+      CurrentDuration = value.toInt();
    }
 }
 
 void WallpaperService::HandleSettingWallpaperActiveMode(const QVariant& value)
 {
-   WallpaperMode mode = StringToEnum<WallpaperMode>(value.toString());
+   Mode mode = StringToEnum<Mode>(value.toString());
 
-   if(WallpaperMode::None == mode)
+   if(Mode::None == mode)
    {
       mode = DEFAULT_WALLPAPER_MODE;
    }
 
-   Mode = mode;
+   CurrentMode = mode;
 }
 
 void WallpaperService::RegisterMetaTypes() const

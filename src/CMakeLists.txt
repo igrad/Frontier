@@ -11,6 +11,8 @@ qt_add_executable(Frontier
    ${PROJECT_SOURCES}
 )
 
+find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
+
 target_link_libraries(Frontier
    PRIVATE
    CoreUI
@@ -18,6 +20,8 @@ target_link_libraries(Frontier
    SettingsService
    Qt6::Core
    Qt6::Gui
+   Qt6::Multimedia
+   Qt6::MultimediaWidgets
    Qt6::Widgets
 )
 

@@ -4,6 +4,8 @@ set(CoreUISources
    UIManager.cpp
    UIManager.h
 
+   Wallpaper/DynamicColorWallpaper.cpp
+   Wallpaper/DynamicColorWallpaper.h
    Wallpaper/WallpaperView.cpp
    Wallpaper/WallpaperView.h
 )
@@ -16,9 +18,13 @@ target_include_directories(CoreUI PUBLIC
    ${CMAKE_SOURCE_DIR}/src/Shared
 )
 
+find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
+
 target_link_libraries(CoreUI PRIVATE
    Qt6::Core
    Qt6::Gui
+   Qt6::Multimedia
+   Qt6::MultimediaWidgets
    Qt6::Widgets
    Shared
    WallpaperService
