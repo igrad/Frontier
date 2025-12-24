@@ -7,17 +7,19 @@
 #include <QVideoWidget>
 #include <QWidget>
 
+class ShellWindow;
+
 namespace Wallpaper
 {
    class WallpaperService;
 
-   // TODO: Change QObject here to a widget or frame or something
    class WallpaperView: public QWidget
    {
       Q_OBJECT
 
    public:
-      explicit WallpaperView(std::unique_ptr<WallpaperService>& service);
+      WallpaperView(std::unique_ptr<WallpaperService>& service,
+                    std::unique_ptr<ShellWindow>& window);
       ~WallpaperView();
 
    public slots:
@@ -31,6 +33,7 @@ namespace Wallpaper
       void HandleImage(const WallpaperData& data);
       void HandleVideo(const WallpaperData& data);
 
+      std::unique_ptr<ShellWindow>& Window;
       WallpaperData CurrentData;
       std::unique_ptr<QStackedLayout> Layout;
       std::unique_ptr<QWidget> Widget;

@@ -35,5 +35,6 @@ void UIManager::BuildTheShellWindow()
 
 void UIManager::BuildTheWallpaperView()
 {
-   TheWallpaperView.reset(new Wallpaper::WallpaperView(Backend->GetTheWallpaperService()));
+   TheWallpaperView.reset(new Wallpaper::WallpaperView(Backend->GetTheWallpaperService(),
+                                                       TheShellWindow));
 }

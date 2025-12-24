@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
    const int rVal = app.exec();
 
    // Tear down
+   // TODO: Cleanly tear down backendThread
    TearDownComponents();
    return rVal;
 }

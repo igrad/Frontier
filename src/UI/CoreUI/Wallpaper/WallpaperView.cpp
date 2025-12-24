@@ -1,11 +1,15 @@
 #include "WallpaperView.h"
 
+#include <ShellWindow.h>
 #include <WallpaperService.h>
 
 using namespace Wallpaper;
 
-WallpaperView::WallpaperView(std::unique_ptr<WallpaperService>& service)
-   : CurrentData()
+WallpaperView::WallpaperView(std::unique_ptr<WallpaperService>& service,
+                             std::unique_ptr<ShellWindow>& window)
+   : QWidget(window.get())
+   , Window(window)
+   , CurrentData()
    , Layout(nullptr)
    , Widget(nullptr)
    , MediaPlayer(nullptr)
@@ -55,11 +59,25 @@ void WallpaperView::CreateUI()
    Layout.reset(new QStackedLayout(this));
 
    Widget.reset(new QWidget(this));
+   Layout->addWidget(Widget.get());
+
    MediaPlayer.reset(new QMediaPlayer(this));
    VideoWidget.reset(new QVideoWidget(this));
    MediaPlayer->setVideoOutput(VideoWidget.get());
+   Layout->addWidget(VideoWidget.get());
 
    setLayout(Layout.get());
+   Layout->setGeometry({0, 0, 1920, 1080});
+   setGeometry({0, 0, 1920, 1080});
+
+   WallpaperData data;
+   data.AssignedMonitor = 0;
+   data.Colors = {Qt::blue};
+   data.ImagePath = "";
+   data.ImageType = ImageType::StaticColor;
+   data.Mode = DisplayMode::Fill;
+   HandleWallpaperDataChanged(data);
+   show();
 }
 
 void WallpaperView::ConnectToServiceSignals(std::unique_ptr<WallpaperService>& service)

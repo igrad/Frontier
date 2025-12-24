@@ -9,32 +9,29 @@ namespace
    constexpr int DEV_WINDOW_HEIGHT = 1080;
 }
 
-ShellWindow::ShellWindow(QWidget *parent)
-   : QMainWindow(parent)
+ShellWindow::ShellWindow(QWidget* parent)
+   : QWidget(parent)
 {
-   QWidget window;
    {
       typedef ArgParser::Arg Arg;
       if(ArgParser::GetArgAsBool(Arg::Dev, false))
       {
          LogInfo("Launching in dev mode");
 
-         window.setWindowTitle("Frontier - Dev Mode");
+         setWindowTitle("Frontier - Dev Mode");
          const int devWindowWidth = ArgParser::GetArgAsInt(Arg::DevWindowWidth,
                                                            DEV_WINDOW_WIDTH);
          const int devWindowHeight = ArgParser::GetArgAsInt(Arg::DevWindowHeight,
                                                             DEV_WINDOW_HEIGHT);
 
          resize(devWindowWidth, devWindowHeight);
-         window.show();
+         show();
       }
       else
       {
-         window.setWindowTitle("Frontier");
-         window.setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+         setWindowTitle("Frontier");
+         setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
          showFullScreen();
       }
    }
-
-   setCentralWidget(&window);
 }

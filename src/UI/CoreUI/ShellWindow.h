@@ -1,12 +1,17 @@
 #pragma once
 
-#include <QMainWindow>
+#include <Wallpaper/WallpaperView.h>
 
-class ShellWindow : public QMainWindow
+#include <QWidget>
+
+class ShellWindow : public QWidget
 {
    Q_OBJECT
 
 public:
-   explicit ShellWindow(QWidget *parent = nullptr);
+   explicit ShellWindow(QWidget* parent = nullptr);
    ~ShellWindow() = default;
+
+private:
+   std::unique_ptr<Wallpaper::WallpaperView> Wallpaper;
 };
