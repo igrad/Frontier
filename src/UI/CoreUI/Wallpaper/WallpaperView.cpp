@@ -4,7 +4,7 @@
 
 using namespace Wallpaper;
 
-WallpaperView::WallpaperView(WallpaperService* service)
+WallpaperView::WallpaperView(std::unique_ptr<WallpaperService>& service)
    : CurrentData()
 {
    ConnectToServiceSignals(service);
@@ -22,7 +22,7 @@ void WallpaperView::HandleWallpaperDataChanged(const WallpaperData& data)
    // Run a switch on the WallpaperImageType, and invoke specific handler functions appropriately
 }
 
-void WallpaperView::ConnectToServiceSignals(WallpaperService* service)
+void WallpaperView::ConnectToServiceSignals(std::unique_ptr<WallpaperService>& service)
 {
    if(nullptr != service)
    {
@@ -31,7 +31,7 @@ void WallpaperView::ConnectToServiceSignals(WallpaperService* service)
       const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
                                                         Qt::QueuedConnection);
 
-      connect(service, &WallpaperService::WallpaperDataChanged,
+      connect(service.get(), &WallpaperService::WallpaperDataChanged,
               this, &WallpaperView::HandleWallpaperDataChanged,
               conn);
    }

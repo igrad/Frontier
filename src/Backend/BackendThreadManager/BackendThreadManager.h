@@ -22,13 +22,13 @@ public:
 
    void AssignToThread(QThread* thread);
 
-   Settings::SettingsServiceInterface* GetTheSettingsService() const;
-   Wallpaper::WallpaperService* GetTheWallpaperService() const;
+   std::unique_ptr<Settings::SettingsServiceInterface>& GetTheSettingsService();
+   std::unique_ptr<Wallpaper::WallpaperService>& GetTheWallpaperService();
 
 private slots:
    void HandleServiceThreadStarted();
 
 private:
-   Settings::SettingsServiceInterface* TheSettingsService;
-   Wallpaper::WallpaperService* TheWallpaperService;
+   std::unique_ptr<Settings::SettingsServiceInterface> TheSettingsService;
+   std::unique_ptr<Wallpaper::WallpaperService> TheWallpaperService;
 };

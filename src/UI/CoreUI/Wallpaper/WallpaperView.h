@@ -12,14 +12,14 @@ namespace Wallpaper
       Q_OBJECT
 
    public:
-      explicit WallpaperView(WallpaperService* service);
+      explicit WallpaperView(std::unique_ptr<WallpaperService>& service);
       ~WallpaperView();
 
    public slots:
       void HandleWallpaperDataChanged(const WallpaperData& data);
 
    private:
-      void ConnectToServiceSignals(WallpaperService* service);
+      void ConnectToServiceSignals(std::unique_ptr<WallpaperService>& service);
 
       WallpaperData CurrentData;
    };
