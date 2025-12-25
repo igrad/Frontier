@@ -4,7 +4,7 @@
 #include <Wallpaper/WallpaperView.h>
 #include <BackendThreadManager/BackendThreadManager.h>
 
-UIManager::UIManager(std::unique_ptr<BackendThreadManager>& backend)
+UIManager::UIManager(BackendThreadManager* backend)
    : Backend(backend)
    , TheShellWindow(nullptr)
    , TheWallpaperView(nullptr)
@@ -30,11 +30,11 @@ void UIManager::BuildUIComponents()
 
 void UIManager::BuildTheShellWindow()
 {
-   TheShellWindow.reset(new ShellWindow());
+   TheShellWindow = new ShellWindow();
 }
 
 void UIManager::BuildTheWallpaperView()
 {
-   TheWallpaperView.reset(new Wallpaper::WallpaperView(Backend->GetTheWallpaperService(),
-                                                       TheShellWindow));
+   TheWallpaperView = new Wallpaper::WallpaperView(Backend->GetTheWallpaperService(),
+                                                   TheShellWindow);
 }

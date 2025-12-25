@@ -5,10 +5,9 @@
 
 using namespace Wallpaper;
 
-WallpaperView::WallpaperView(std::unique_ptr<WallpaperService>& service,
-                             std::unique_ptr<ShellWindow>& window)
-   : QWidget(window.get())
-   , Window(window)
+WallpaperView::WallpaperView(WallpaperService* service,
+                             ShellWindow* window)
+   : QWidget(window)
    , CurrentData()
    , Layout(nullptr)
    , Widget(nullptr)
@@ -21,7 +20,26 @@ WallpaperView::WallpaperView(std::unique_ptr<WallpaperService>& service,
 
 WallpaperView::~WallpaperView()
 {
+   if(MediaPlayer)
+   {
+      MediaPlayer->stop();
+   }
 
+   Layout->removeWidget(VideoWidget);
+
+   // if(VideoWidget)
+   // {
+   // // VideoWidget->deleteLater();
+   // }
+
+   // if(MediaPlayer)
+   // {
+   // MediaPlayer->deleteLater();
+   // }
+
+   // Widget->deleteLater();
+
+   // Layout->deleteLater();
 }
 
 void WallpaperView::HandleWallpaperDataChanged(const WallpaperData& data)
@@ -56,17 +74,17 @@ void WallpaperView::HandleWallpaperDataChanged(const WallpaperData& data)
 
 void WallpaperView::CreateUI()
 {
-   Layout.reset(new QStackedLayout(this));
+   Layout = new QStackedLayout(this);
 
-   Widget.reset(new QWidget(this));
-   Layout->addWidget(Widget.get());
+   Widget = new QWidget(this);
+   Layout->addWidget(Widget);
 
-   MediaPlayer.reset(new QMediaPlayer(this));
-   VideoWidget.reset(new QVideoWidget(this));
-   MediaPlayer->setVideoOutput(VideoWidget.get());
-   Layout->addWidget(VideoWidget.get());
+   MediaPlayer = new QMediaPlayer(this);
+   VideoWidget = new QVideoWidget(this);
+   MediaPlayer->setVideoOutput(VideoWidget);
+   Layout->addWidget(VideoWidget);
 
-   setLayout(Layout.get());
+   setLayout(Layout);
    Layout->setGeometry({0, 0, 1920, 1080});
    setGeometry({0, 0, 1920, 1080});
 
@@ -80,7 +98,7 @@ void WallpaperView::CreateUI()
    show();
 }
 
-void WallpaperView::ConnectToServiceSignals(std::unique_ptr<WallpaperService>& service)
+void WallpaperView::ConnectToServiceSignals(WallpaperService* service)
 {
    if(nullptr != service)
    {
@@ -89,7 +107,7 @@ void WallpaperView::ConnectToServiceSignals(std::unique_ptr<WallpaperService>& s
       const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
                                                         Qt::QueuedConnection);
 
-      connect(service.get(), &WallpaperService::WallpaperDataChanged,
+      connect(service, &WallpaperService::WallpaperDataChanged,
               this, &WallpaperView::HandleWallpaperDataChanged,
               conn);
    }
@@ -97,7 +115,7 @@ void WallpaperView::ConnectToServiceSignals(std::unique_ptr<WallpaperService>& s
 
 void WallpaperView::HandleStaticColor(const WallpaperData& data)
 {
-   Layout->setCurrentWidget(Widget.get());
+   Layout->setCurrentWidget(Widget);
    const QString color = (0 < data.Colors.count()) ? data.Colors[0].name() : "#000000";
    Widget->setStyleSheet(QString("background-color: %1")
                                .arg(color));
@@ -106,12 +124,12 @@ void WallpaperView::HandleStaticColor(const WallpaperData& data)
 
 void WallpaperView::HandleDynamicColor(const WallpaperData& data)
 {
-   Layout->setCurrentWidget(Widget.get());
+   Layout->setCurrentWidget(Widget);
 }
 
 void WallpaperView::HandleImage(const WallpaperData& data)
 {
-   Layout->setCurrentWidget(Widget.get());
+   Layout->setCurrentWidget(Widget);
 }
 
 void WallpaperView::HandleVideo(const WallpaperData& data)

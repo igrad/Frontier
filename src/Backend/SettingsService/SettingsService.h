@@ -13,7 +13,7 @@ namespace Settings
       Q_OBJECT
 
    public:
-      SettingsService();
+      explicit SettingsService(QObject* parent = nullptr);
       ~SettingsService();
 
       void FetchAllSettings() override;

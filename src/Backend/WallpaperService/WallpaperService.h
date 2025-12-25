@@ -15,7 +15,7 @@ namespace Wallpaper
       Q_OBJECT
 
    public:
-      WallpaperService();
+      explicit WallpaperService(QObject* parent = nullptr);
       ~WallpaperService();
 
    signals:

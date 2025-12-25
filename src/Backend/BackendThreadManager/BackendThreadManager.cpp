@@ -27,18 +27,18 @@ void BackendThreadManager::AssignToThread(QThread* thread)
            Qt::UniqueConnection);
 }
 
-std::unique_ptr<Settings::SettingsServiceInterface>& BackendThreadManager::GetTheSettingsService()
+Settings::SettingsServiceInterface* BackendThreadManager::GetTheSettingsService()
 {
    return TheSettingsService;
 }
 
-std::unique_ptr<Wallpaper::WallpaperService>& BackendThreadManager::GetTheWallpaperService()
+Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService()
 {
    return TheWallpaperService;
 }
 
 void BackendThreadManager::HandleServiceThreadStarted()
 {
-   TheSettingsService.reset(new Settings::SettingsService());
-   TheWallpaperService.reset(new Wallpaper::WallpaperService());
+   TheSettingsService = new Settings::SettingsService(this);
+   TheWallpaperService = new Wallpaper::WallpaperService(this);
 }

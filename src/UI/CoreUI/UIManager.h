@@ -15,7 +15,7 @@ class UIManager: public QObject
    Q_OBJECT
 
 public:
-   explicit UIManager(std::unique_ptr<BackendThreadManager>& backend);
+   explicit UIManager(BackendThreadManager* backend);
    ~UIManager();
 
    void Start();
@@ -25,7 +25,7 @@ private:
    void BuildTheShellWindow();
    void BuildTheWallpaperView();
 
-   std::unique_ptr<BackendThreadManager>& Backend;
-   std::unique_ptr<ShellWindow> TheShellWindow;
-   std::unique_ptr<Wallpaper::WallpaperView> TheWallpaperView;
+   BackendThreadManager* Backend;
+   ShellWindow* TheShellWindow;
+   Wallpaper::WallpaperView* TheWallpaperView;
 };

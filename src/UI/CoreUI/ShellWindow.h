@@ -11,7 +11,4 @@ class ShellWindow : public QWidget
 public:
    explicit ShellWindow(QWidget* parent = nullptr);
    ~ShellWindow() = default;
-
-private:
-   std::unique_ptr<Wallpaper::WallpaperView> Wallpaper;
 };

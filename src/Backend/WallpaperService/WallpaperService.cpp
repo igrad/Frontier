@@ -14,8 +14,9 @@ namespace
    constexpr Mode DEFAULT_WALLPAPER_MODE = Mode::StaticImage;
 }
 
-WallpaperService::WallpaperService()
-   : Settings("WallpaperService")
+WallpaperService::WallpaperService(QObject* parent)
+   : QObject(parent)
+   , Settings("WallpaperService")
    , CurrentSchedule(Schedule::None)
    , CurrentImagePaths()
    , CurrentColors{QColor("blue")}

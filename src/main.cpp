@@ -20,6 +20,9 @@ void TearDownComponents()
 {
    LOGGER->deleteLater();
    LOGGER = nullptr;
+
+   BACKEND_THREAD_MANAGER->deleteLater();
+   BACKEND_THREAD_MANAGER = nullptr;
 }
 
 int main(int argc, char *argv[])
@@ -56,7 +59,7 @@ int main(int argc, char *argv[])
    backendThread->start(QThread::NormalPriority);
 
    // Set up UI components
-   UI_MANAGER.reset(new UIManager(BACKEND_THREAD_MANAGER));
+   UI_MANAGER.reset(new UIManager(BACKEND_THREAD_MANAGER.get()));
 
    // Execute
    BACKEND_THREAD_MANAGER->GetTheSettingsService()->FetchAllSettings();
@@ -66,5 +69,7 @@ int main(int argc, char *argv[])
    // Tear down
    // TODO: Cleanly tear down backendThread
    TearDownComponents();
+   backendThread->quit();
+   backendThread->wait();
    return rVal;
 }

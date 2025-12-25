@@ -36,10 +36,12 @@ namespace
       "value STRING)";
 }
 
-SettingsService::SettingsService()
+SettingsService::SettingsService(QObject* parent)
    : SettingsDbPath("")
    , DatabaseName("")
 {
+   setParent(parent);
+
    SetUpSettingsDatabase();
    SetPointerInClientClass();
    // TODO: Set a database version number, and implement migration logic
