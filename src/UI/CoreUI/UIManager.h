@@ -20,6 +20,9 @@ public:
 
    void Start();
 
+signals:
+   void UIConnectedToServiceComponents();
+
 private:
    void BuildUIComponents();
    void BuildTheShellWindow();

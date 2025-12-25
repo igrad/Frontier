@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
    UI_MANAGER.reset(new UIManager(BACKEND_THREAD_MANAGER.get()));
 
    // Execute
-   BACKEND_THREAD_MANAGER->GetTheSettingsService()->FetchAllSettings();
    UI_MANAGER->Start();
    const int rVal = app.exec();
 

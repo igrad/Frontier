@@ -37,6 +37,11 @@ Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService()
    return TheWallpaperService;
 }
 
+void BackendThreadManager::HandleUIConnectedToServiceComponents()
+{
+   TheSettingsService->FetchAllSettings();
+}
+
 void BackendThreadManager::HandleServiceThreadStarted()
 {
    TheSettingsService = new Settings::SettingsService(this);

@@ -25,6 +25,9 @@ public:
    Settings::SettingsServiceInterface* GetTheSettingsService();
    Wallpaper::WallpaperService* GetTheWallpaperService();
 
+public slots:
+   void HandleUIConnectedToServiceComponents();
+
 private slots:
    void HandleServiceThreadStarted();
 

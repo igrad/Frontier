@@ -72,11 +72,11 @@ Logger::Logger(QObject* parent)
              std::string("Failed to create log_file.txt at ")
                 .append(LogFilePath.string())
                 .c_str());
+      LogFile.close();
    }
 
    WriteToLogFile("INF", __PRETTY_FUNCTION__,
       "\n===== Logger initialized! =====");
-   LogFile.close();
 
    if(!HistoryFile.exists())
    {
@@ -88,9 +88,8 @@ Logger::Logger(QObject* parent)
              std::string("Failed to create history_file.txt at ")
                 .append(HistoryFilePath.string())
                 .c_str());
+      HistoryFile.close();
    }
-
-   HistoryFile.close();
 }
 
 Logger::~Logger()
