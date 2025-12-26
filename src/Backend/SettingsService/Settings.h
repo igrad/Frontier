@@ -16,6 +16,8 @@ namespace Settings
       WallpaperColors,
       WallpaperDuration,
       WallpaperActiveMode,
+      TaskBarAlignment,
+      TaskBarDirectionality,
       TestSetting = INT_MAX
    };
    Q_ENUM_NS(Setting)
