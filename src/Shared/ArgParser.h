@@ -14,7 +14,8 @@ public:
       TestMode,
       Dev,
       DevWindowWidth,
-      DevWindowHeight
+      DevWindowHeight,
+      Enterprise
    };
 
    ArgParser();
@@ -26,6 +27,7 @@ public:
    static bool HasArg(const Arg arg);
    static bool RunningInCleanMode();
    static bool RunningUnitTests();
+   static bool RunningWithEnterprise();
    static int GetArgAsInt(const Arg arg, const int defaultValue = 0);
    static bool GetArgAsBool(const Arg arg, const bool defaultValue = false);
    static QString GetArgAsString(const Arg arg, const QString defaultValue = "");
@@ -36,10 +38,12 @@ private:
 
    static QMap<Arg, QVariant> ParsedArgs;
    static bool CleanMode;
+   static bool Enterprise;
 
    void ArgDebug();
    void ArgTestMode();
    void ArgDev();
    void ArgDevWindowWidth();
    void ArgDevWindowHeight();
+   void ArgEnterprise();
 };

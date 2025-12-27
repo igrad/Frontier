@@ -46,4 +46,6 @@ void BackendThreadManager::HandleServiceThreadStarted()
 {
    TheSettingsService = new Settings::SettingsService(this);
    TheWallpaperService = new Wallpaper::WallpaperService(this);
+
+   emit ServiceThreadStarted();
 }

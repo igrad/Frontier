@@ -18,12 +18,15 @@ public:
    explicit UIManager(BackendThreadManager* backend);
    ~UIManager();
 
-   void Start();
-
 signals:
    void UIConnectedToServiceComponents();
 
+private slots:
+   void HandleServiceThreadStarted();
+
 private:
+   void Start();
+
    void BuildUIComponents();
    void BuildTheShellWindow();
    void BuildTheWallpaperView();

@@ -9,11 +9,9 @@ UIManager::UIManager(BackendThreadManager* backend)
    , TheShellWindow(nullptr)
    , TheWallpaperView(nullptr)
 {
-   BuildUIComponents();
-
    connect(this, &UIManager::UIConnectedToServiceComponents,
-Backend, &BackendThreadManager::HandleUIConnectedToServiceComponents,
-Qt::UniqueConnection);
+           Backend, &BackendThreadManager::HandleUIConnectedToServiceComponents,
+           Qt::UniqueConnection);
 }
 
 UIManager::~UIManager()
@@ -26,6 +24,12 @@ void UIManager::Start()
    emit UIConnectedToServiceComponents();
 
    TheShellWindow->show();
+}
+
+void UIManager::HandleServiceThreadStarted()
+{
+   BuildUIComponents();
+   Start();
 }
 
 void UIManager::BuildUIComponents()

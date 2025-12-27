@@ -11,6 +11,7 @@ typedef ArgParser::Arg Arg;
 
 QMap<Arg, QVariant> ArgParser::ParsedArgs;
 bool ArgParser::CleanMode = false;
+bool ArgParser::Enterprise = false;
 
 ArgParser::ArgParser()
    : QCommandLineParser()
@@ -27,6 +28,7 @@ void ArgParser::SetUpArgs()
    ArgTestMode();
    ArgDevWindowWidth();
    ArgDevWindowHeight();
+   ArgEnterprise();
 }
 
 QString ArgParser::ArgNameAsString(const Arg arg)
@@ -39,6 +41,7 @@ QString ArgParser::ArgNameAsString(const Arg arg)
       { Arg::Dev, "dev" },
       { Arg::DevWindowWidth, "dev-window-width" },
       { Arg::DevWindowHeight, "dev-window-height" },
+      { Arg::Enterprise, "Enterprise" },
       // { Arg::, "" },
    };
 
@@ -58,6 +61,11 @@ bool ArgParser::RunningInCleanMode()
 bool ArgParser::RunningUnitTests()
 {
    return (UNIT_TEST_EXECUTABLE_NAME == QCoreApplication::applicationName());
+}
+
+bool ArgParser::RunningWithEnterprise()
+{
+   return Enterprise;
 }
 
 int ArgParser::GetArgAsInt(const Arg arg, const int defaultValue)
@@ -117,6 +125,15 @@ void ArgParser::ArgDevWindowHeight()
    });
 }
 
+void ArgParser::ArgEnterprise()
+{
+   addOption({
+      "enterprise",
+      QCoreApplication::translate("ArgParser", "Enterprise debugging tool"),
+      "enterprise"
+   });
+}
+
 void ArgParser::HandleArgParsing(const Arg arg, const bool expectsValue)
 {
    const QString str = ArgNameAsString(arg);
@@ -138,10 +155,13 @@ void ArgParser::ParseArgs(const QCoreApplication& app)
    HandleArgParsing(Arg::Dev);
    HandleArgParsing(Arg::DevWindowWidth);
    HandleArgParsing(Arg::DevWindowHeight);
+   HandleArgParsing(Arg::Enterprise);
 
    if(ArgParser::GetArgAsBool(Arg::Dev, false) ||
        ArgParser::GetArgAsBool(Arg::TestMode, false))
    {
       ArgParser::CleanMode = true;
    }
+
+   ArgParser::Enterprise = ArgParser::GetArgAsBool(Arg::Enterprise, false);
 }

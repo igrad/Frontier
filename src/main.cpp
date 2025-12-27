@@ -5,6 +5,7 @@
 #include <SettingsService.h>
 #include <BackendThreadManager/BackendThreadManager.h>
 #include <UIManager.h>
+#include <Enterprise/EnterpriseService.h>
 
 #include <QApplication>
 #include <QThread>
@@ -14,6 +15,7 @@ namespace
    std::unique_ptr<Logger> LOGGER = nullptr;
    std::unique_ptr<BackendThreadManager> BACKEND_THREAD_MANAGER = nullptr;
    std::unique_ptr<UIManager> UI_MANAGER = nullptr;
+   std::unique_ptr<Enterprise::EnterpriseService> ENTERPRISE = nullptr;
 }
 
 void TearDownComponents()
@@ -56,13 +58,23 @@ int main(int argc, char *argv[])
    BACKEND_THREAD_MANAGER.reset(new BackendThreadManager());
    std::unique_ptr<QThread> backendThread(new QThread());
    BACKEND_THREAD_MANAGER->AssignToThread(backendThread.get());
-   backendThread->start(QThread::NormalPriority);
+
+   // Assign control to Enterprise, if it's enabled
+   const bool enterprise = ArgParser::RunningWithEnterprise();
+   if(enterprise)
+   {
+      ENTERPRISE.reset(new Enterprise::EnterpriseService());
+      ENTERPRISE->SetBackendThread(backendThread.get());
+   }
+   else
+   {
+      backendThread->start(QThread::NormalPriority);
+   }
 
    // Set up UI components
    UI_MANAGER.reset(new UIManager(BACKEND_THREAD_MANAGER.get()));
 
    // Execute
-   UI_MANAGER->Start();
    const int rVal = app.exec();
 
    // Tear down

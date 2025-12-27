@@ -28,6 +28,9 @@ public:
 public slots:
    void HandleUIConnectedToServiceComponents();
 
+signals:
+   void ServiceThreadStarted();
+
 private slots:
    void HandleServiceThreadStarted();
 

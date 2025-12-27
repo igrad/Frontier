@@ -1,4 +1,5 @@
 add_subdirectory(Backend)
+add_subdirectory(Enterprise)
 add_subdirectory(Shared)
 add_subdirectory(UI)
 
@@ -17,6 +18,7 @@ target_link_libraries(Frontier
    PRIVATE
    CoreUI
    BackendThreadManager
+   Enterprise
    SettingsService
    Qt6::Core
    Qt6::Gui
