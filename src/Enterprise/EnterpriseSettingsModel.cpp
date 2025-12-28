@@ -3,9 +3,12 @@
 using namespace Enterprise;
 using namespace Settings;
 
-EnterpriseSettingsModel::EnterpriseSettingsModel(QObject* parent)
+
+EnterpriseSettingsModel::EnterpriseSettingsModel(SettingsClientInterface* settingsClient,
+                                                 QObject* parent)
    : Data()
 {
+   settingsClient->SubscribeToAllSettings(this);
    setParent(parent);
 }
 

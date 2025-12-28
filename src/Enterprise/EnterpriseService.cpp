@@ -1,6 +1,8 @@
 #include "EnterpriseService.h"
 #include "EnterpriseWindow.h"
 
+#include <SettingsService/SettingsClient.h>
+
 #include <QThread>
 
 using namespace Enterprise;
@@ -8,11 +10,16 @@ using namespace Enterprise;
 EnterpriseService::EnterpriseService(QObject* parent)
    : QObject(parent)
    , BackendThread(nullptr)
-   , Window(new EnterpriseWindow())
+   , SettingsClient(new Settings::SettingsClient("Enterprise"))
+   , Window(new EnterpriseWindow(SettingsClient))
    , SuspendTimer()
    , FrontierStarted(false)
    , FrontierSuspended(false)
 {
+   connect(Window, &EnterpriseWindow::Resume,
+           this, &EnterpriseService::HandleResume);
+   connect(Window, &EnterpriseWindow::Suspend,
+           this, &EnterpriseService::HandleSuspend);
 }
 
 EnterpriseService::~EnterpriseService()

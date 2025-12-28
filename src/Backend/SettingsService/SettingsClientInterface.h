@@ -14,6 +14,7 @@ namespace Settings
       ~SettingsClientInterface() = default;
 
       virtual bool SubscribeToSetting(Setting setting, QObject* subscriber) = 0;
+      virtual bool SubscribeToAllSettings(QObject* subscriber) = 0;
       virtual bool WriteSettingValue(Setting setting, const QVariant& value) = 0;
 
    signals:

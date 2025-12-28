@@ -18,7 +18,8 @@ namespace Settings
       WallpaperActiveMode,
       TaskBarAlignment,
       TaskBarDirectionality,
-      TestSetting = INT_MAX
+      _All,							// Keep as penultimate
+      _TestSetting = INT_MAX	// Must be last
    };
    Q_ENUM_NS(Setting)
 

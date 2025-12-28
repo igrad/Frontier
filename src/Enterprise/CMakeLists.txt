@@ -7,6 +7,8 @@ set(EnterpriseSources
    EnterpriseSettingsModel.h
    EnterpriseSettingsView.cpp
    EnterpriseSettingsView.h
+
+   RowData.h
 )
 
 add_library(Enterprise ${EnterpriseSources})

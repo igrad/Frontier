@@ -3,6 +3,11 @@
 #include <QDeadlineTimer>
 #include <QObject>
 
+namespace Settings
+{
+   class SettingsClientInterface;
+}
+
 namespace Enterprise
 {
    class EnterpriseWindow;
@@ -12,17 +17,18 @@ namespace Enterprise
       Q_OBJECT
 
    public:
-      explicit EnterpriseService(QObject* parent = nullptr);
+      EnterpriseService(QObject* parent = nullptr);
       ~EnterpriseService();
 
       void SetBackendThread(QThread* backendThread);
 
-   private slots:
+   public slots:
       void HandleSuspend();
       void HandleResume();
 
    private:
       QThread* BackendThread;
+      Settings::SettingsClientInterface* SettingsClient;
       EnterpriseWindow* Window;
 
       QDeadlineTimer SuspendTimer;

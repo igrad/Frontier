@@ -50,7 +50,7 @@ TEST_F(SettingsClientTest, SubscribeToSetting2)
        "Trying to subscribe to a nullptr",
        "Subscription fails");
 
-   EXPECT_FALSE(Client.SubscribeToSetting(Setting::TestSetting, nullptr));
+   EXPECT_FALSE(Client.SubscribeToSetting(Setting::_TestSetting, nullptr));
 }
 
 TEST_F(SettingsClientTest, SubscribeToSetting3)
@@ -61,12 +61,12 @@ TEST_F(SettingsClientTest, SubscribeToSetting3)
 
    FakeSettingSubscriber sub;
 
-   Client.SubscribeToSetting(Setting::TestSetting, &sub);
+   Client.SubscribeToSetting(Setting::_TestSetting, &sub);
 
    QSignalSpy spy(&sub, &FakeSettingSubscriber::TestSettingReceived);
 
    const QVariant value = QString("SomeValue");
-   ServiceMock.EmitSettingUpdated(Setting::TestSetting, value);
+   ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);
 
    ASSERT_TRUE(spy.wait());
 
@@ -82,7 +82,7 @@ TEST_F(SettingsClientTest, WriteSettingValue1)
        "Emit CacheSettingValue signal");
    QSignalSpy spy(&Client, &SettingsClientInterface::CacheSettingValue);
 
-   const Setting setting = Setting::TestSetting;
+   const Setting setting = Setting::_TestSetting;
    const QVariant value = "SomeValue";
    Client.WriteSettingValue(setting, value);
 

@@ -22,6 +22,7 @@ namespace Settings
       static const SettingsServiceInterface* GetSettingsServicePtr();
 
       bool SubscribeToSetting(Setting setting, QObject* subscriber) override;
+      bool SubscribeToAllSettings(QObject* subscriber) override;
       bool WriteSettingValue(Setting setting, const QVariant& value) override;
 
    private slots:
@@ -37,5 +38,6 @@ namespace Settings
 
       QString Owner;
       QMultiHash<Setting, QObject*> Subscriptions;
+      QList<QObject*> ObjectsSubscribedToAllSignals;
    };
 }

@@ -5,6 +5,7 @@
 #include <QString>
 
 #include <QMetaEnum>
+#include <QIterable>
 
 template <typename T>
 QString EnumToString(T value)

@@ -92,6 +92,30 @@ bool SettingsClient::SubscribeToSetting(Setting setting, QObject* subscriber)
    return retVal;
 }
 
+bool SettingsClient::SubscribeToAllSettings(QObject* subscriber)
+{
+   bool retVal = false;
+
+   constexpr const char* const methodStr = "HandleAllSettings";
+   if(nullptr != subscriber)
+   {
+      if(0 <= subscriber->metaObject()->indexOfMethod(methodStr))
+      {
+         Subscriptions.insert(Setting::_All, subscriber);
+         retVal = true;
+      }
+      else
+      {
+         LogError(QString("Could not find method %1 to handle setting %2 in object %3")
+                     .arg(methodStr,
+                          ToString(Setting::_All),
+                          subscriber->metaObject()->className()));
+      }
+   }
+
+   return retVal;
+}
+
 bool SettingsClient::WriteSettingValue(Setting setting, const QVariant& value)
 {
    bool retVal = false;
@@ -111,14 +135,29 @@ bool SettingsClient::WriteSettingValue(Setting setting, const QVariant& value)
 
 void SettingsClient::HandleSettingUpdated(const Setting& setting, const QVariant& value)
 {
-   QList<QObject*> subscribers = Subscriptions.values();
+   const QList<QObject*> subscribers = Subscriptions.values(setting);
 
    const std::string methodStr = GetSettingHandlerMethodStr(setting);
 
    for(QObject* sub : std::as_const(subscribers))
    {
-      QMetaObject::invokeMethod(sub,
-                                methodStr.c_str(),
-                                value);
+      if(nullptr != sub)
+      {
+         QMetaObject::invokeMethod(sub,
+                                   methodStr.c_str(),
+                                   value);
+      }
+   }
+
+   constexpr const char* allSubStr = "HandleSettingChanged";
+   for(QObject* sub : std::as_const(ObjectsSubscribedToAllSignals))
+   {
+      if(nullptr != sub)
+      {
+         QMetaObject::invokeMethod(sub,
+                                   allSubStr,
+                                   Q_ARG(Setting, setting),
+                                   Q_ARG(QVariant, value));
+      }
    }
 }

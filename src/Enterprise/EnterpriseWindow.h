@@ -18,14 +18,18 @@ namespace Enterprise
       Q_OBJECT
 
    public:
-      explicit EnterpriseWindow(QWidget* parent = nullptr);
+      EnterpriseWindow(Settings::SettingsClientInterface* settingsClient,
+                       QWidget* parent = nullptr);
       ~EnterpriseWindow() = default;
 
-      void ConnectToService(EnterpriseService* service);
+   signals:
+      void Resume();
+      void Suspend();
+      void MemoryDbSelected();
+      void DiskDbSelected();
+      void RetainAndRestoreStateChanged(bool active);
 
    private slots:
-      void HandleResumeBtnReleased();
-      void HandleSuspendBtnReleased();
       void HandleDatabaseSourceComboBoxSelection(const QString& str);
       void HandleRetainAndRestoreCheckBoxCheck(bool checked);
 
@@ -35,10 +39,14 @@ namespace Enterprise
       EnterpriseSettingsModel* SettingsModel;
 
       QVBoxLayout* Layout;
+      QHBoxLayout* SuspendControlsLayout;
       QPushButton* ResumeBtn;
       QPushButton* SuspendBtn;
+      QHBoxLayout* DbControlsLayout;
       QComboBox* DatabaseSourceComboBox;
       QCheckBox* RetainAndRestoreCheckBox;
       EnterpriseSettingsView* SettingsView;
+
+      bool RetainAndRestore;
    };
 }
