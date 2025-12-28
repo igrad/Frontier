@@ -29,6 +29,9 @@ namespace Enterprise
       void DiskDbSelected();
       void RetainAndRestoreStateChanged(bool active);
 
+   public slots:
+      void HandleFrontierStarted();
+
    private slots:
       void HandleDatabaseSourceComboBoxSelection(const QString& str);
       void HandleRetainAndRestoreCheckBoxCheck(bool checked);

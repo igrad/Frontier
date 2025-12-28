@@ -13,13 +13,15 @@ EnterpriseService::EnterpriseService(QObject* parent)
    , SettingsClient(new Settings::SettingsClient("Enterprise"))
    , Window(new EnterpriseWindow(SettingsClient))
    , SuspendTimer()
-   , FrontierStarted(false)
-   , FrontierSuspended(false)
+   , Started(false)
+   , Suspended(false)
 {
    connect(Window, &EnterpriseWindow::Resume,
            this, &EnterpriseService::HandleResume);
    connect(Window, &EnterpriseWindow::Suspend,
            this, &EnterpriseService::HandleSuspend);
+   connect(this, &EnterpriseService::FrontierStarted,
+           Window, &EnterpriseWindow::HandleFrontierStarted);
 }
 
 EnterpriseService::~EnterpriseService()
@@ -34,9 +36,9 @@ void EnterpriseService::SetBackendThread(QThread* backendThread)
 
 void EnterpriseService::HandleSuspend()
 {
-   if(FrontierStarted && !FrontierSuspended)
+   if(Started && !Suspended)
    {
-      FrontierSuspended = true;
+      Suspended = true;
       SuspendTimer = QDeadlineTimer();
       BackendThread->wait(SuspendTimer);
    }
@@ -44,15 +46,16 @@ void EnterpriseService::HandleSuspend()
 
 void EnterpriseService::HandleResume()
 {
-   if(!FrontierStarted)
+   if(!Started)
    {
-      FrontierStarted = true;
-      FrontierSuspended = false;
+      Started = true;
+      Suspended = false;
+      emit FrontierStarted();
       BackendThread->start();
    }
-   else if(FrontierSuspended)
+   else if(Suspended)
    {
-      FrontierSuspended = false;
+      Suspended = false;
       SuspendTimer.setRemainingTime(0);
    }
 }

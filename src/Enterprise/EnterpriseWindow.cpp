@@ -38,6 +38,12 @@ EnterpriseWindow::EnterpriseWindow(Settings::SettingsClientInterface* settingsCl
    show();
 }
 
+void EnterpriseWindow::HandleFrontierStarted()
+{
+   RetainAndRestoreCheckBox->setDisabled(true);
+   DatabaseSourceComboBox->setDisabled(true);
+}
+
 void EnterpriseWindow::HandleDatabaseSourceComboBoxSelection(const QString& str)
 {
    if(MEMORY_STR == str)

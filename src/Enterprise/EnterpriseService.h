@@ -22,6 +22,9 @@ namespace Enterprise
 
       void SetBackendThread(QThread* backendThread);
 
+   signals:
+      void FrontierStarted();
+
    public slots:
       void HandleSuspend();
       void HandleResume();
@@ -33,7 +36,7 @@ namespace Enterprise
 
       QDeadlineTimer SuspendTimer;
 
-      bool FrontierStarted;
-      bool FrontierSuspended;
+      bool Started;
+      bool Suspended;
    };
 }
