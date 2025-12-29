@@ -44,6 +44,8 @@ EnterpriseWindow::EnterpriseWindow(Settings::SettingsClientInterface* settingsCl
            this, &EnterpriseWindow::HandleRetainAndRestoreCheckBoxCheck);
    connect(StartDatabaseBtn, &QPushButton::released,
            this, &EnterpriseWindow::HandleStartDatabaseBtnReleased);
+
+   setWindowTitle("Enterprise");
    show();
 }
 
