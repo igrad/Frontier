@@ -15,7 +15,7 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
    , DataAccess(dataAccess)
    , DataAccessThread(nullptr)
    , BackendThread(nullptr)
-   , SettingsClient(new Settings::SettingsClient("Enterprise"))
+   , SettingsClient(new Settings::SettingsClient("Enterprise", this))
    , Window(new EnterpriseWindow(SettingsClient))
    , SuspendTimer()
    , Started(false)
@@ -42,17 +42,12 @@ void EnterpriseService::SetDataAccessThread(QThread* dataAccessThread)
 {
    std::cout << "Enterprise - DataAccess thread set" << std::endl;
    DataAccessThread = dataAccessThread;
-
-   // connect(dataAccessThread, &QThread::destroyed,
-   //         this, &QObject::deleteLater);
 }
 
 void EnterpriseService::SetBackendThread(QThread* backendThread)
 {
    std::cout << "Enterprise - Backend thread set" << std::endl;
    BackendThread = backendThread;
-   // connect(backendThread, &QThread::destroyed,
-   //         this, &QObject::deleteLater);
 }
 
 void EnterpriseService::HandleSuspend()
@@ -93,5 +88,8 @@ void EnterpriseService::HandleDatabaseStarted()
 
 void EnterpriseService::HandleShellWindowClosed()
 {
-   // deleteLater();
+   if(Window)
+   {
+      Window->close();
+   }
 }

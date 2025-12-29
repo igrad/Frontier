@@ -7,9 +7,10 @@ using namespace Settings;
 
 SettingsServiceInterface* SettingsClient::Service = nullptr;
 
-SettingsClient::SettingsClient(const QString& owner)
+SettingsClient::SettingsClient(const QString& owner, QObject* parent)
    : Owner(owner)
 {
+   setParent(parent);
    ConnectToService();
 }
 

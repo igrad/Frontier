@@ -13,14 +13,11 @@ class BackendThreadManager: public QObject
 
 public:
    BackendThreadManager();
-   ~BackendThreadManager();
+   ~BackendThreadManager() = default;
 
    void AssignToThread(QThread* thread);
 
    Wallpaper::WallpaperService* GetTheWallpaperService();
-
-public slots:
-   void HandleUIConnectedToServiceComponents();
 
 signals:
    void ServiceThreadStarted();

@@ -19,9 +19,9 @@ void DataAccessThreadManager::AssignToThread(QThread* thread)
    connect(thread, &QThread::started,
            this, &DataAccessThreadManager::HandleDataAccessThreadStarted,
            Qt::UniqueConnection);
-   connect(thread, &QThread::finished,
-           this, &QObject::deleteLater,
-           Qt::UniqueConnection);
+   // connect(thread, &QThread::finished,
+   //         this, &QObject::deleteLater,
+   //         Qt::UniqueConnection);
 }
 
 Settings::SettingsService* DataAccessThreadManager::GetTheSettingsService()

@@ -9,10 +9,6 @@ BackendThreadManager::BackendThreadManager()
 {
 }
 
-BackendThreadManager::~BackendThreadManager()
-{
-}
-
 void BackendThreadManager::AssignToThread(QThread* thread)
 {
    this->moveToThread(thread);
@@ -20,18 +16,11 @@ void BackendThreadManager::AssignToThread(QThread* thread)
    connect(thread, &QThread::started,
            this, &BackendThreadManager::HandleServiceThreadStarted,
            Qt::UniqueConnection);
-   connect(thread, &QThread::finished,
-           this, &QObject::deleteLater,
-           Qt::UniqueConnection);
 }
 
 Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService()
 {
    return TheWallpaperService;
-}
-
-void BackendThreadManager::HandleUIConnectedToServiceComponents()
-{
 }
 
 void BackendThreadManager::HandleServiceThreadStarted()

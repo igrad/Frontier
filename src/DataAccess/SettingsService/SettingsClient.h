@@ -16,7 +16,8 @@ namespace Settings
       Q_OBJECT
 
    public:
-      explicit SettingsClient(const QString& owner);
+      SettingsClient(const QString& owner,
+                     QObject* parent = nullptr);
       ~SettingsClient();
 
       static const SettingsServiceInterface* GetSettingsServicePtr();
