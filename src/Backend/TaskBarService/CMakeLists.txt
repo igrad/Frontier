@@ -8,10 +8,12 @@ set(TaskBarServiceSources
 add_library(TaskBarService ${TaskBarServiceSources})
 target_include_directories(TaskBarService PUBLIC
    ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_SOURCE_DIR}/src
+   ${CMAKE_SOURCE_DIR}/src/DataAccess
 )
 
 target_link_libraries(TaskBarService PUBLIC
-   SettingsService
+   DataAccess
    Qt6::Gui
    PRIVATE
    Shared

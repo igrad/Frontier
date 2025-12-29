@@ -16,10 +16,12 @@ set(WallpaperServiceSources
 add_library(WallpaperService ${WallpaperServiceSources})
 target_include_directories(WallpaperService PUBLIC
    ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_SOURCE_DIR}/src
+   ${CMAKE_SOURCE_DIR}/src/DataAccess
 )
 
 target_link_libraries(WallpaperService PUBLIC
-   SettingsService
+   DataAccess
    Qt6::Gui
    PRIVATE
    Shared

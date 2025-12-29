@@ -3,6 +3,7 @@
 #include <QObject>
 
 class BackendThreadManager;
+class DataAccessThreadManager;
 class ShellWindow;
 
 namespace Wallpaper
@@ -15,11 +16,13 @@ class UIManager: public QObject
    Q_OBJECT
 
 public:
-   explicit UIManager(BackendThreadManager* backend);
+   explicit UIManager(DataAccessThreadManager* dataAccess,
+                      BackendThreadManager* backend);
    ~UIManager();
 
 signals:
    void UIConnectedToServiceComponents();
+   void ShellWindowClosed();
 
 private slots:
    void HandleServiceThreadStarted();
@@ -31,6 +34,7 @@ private:
    void BuildTheShellWindow();
    void BuildTheWallpaperView();
 
+   DataAccessThreadManager* DataAccess;
    BackendThreadManager* Backend;
    ShellWindow* TheShellWindow;
    Wallpaper::WallpaperView* TheWallpaperView;

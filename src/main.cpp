@@ -2,8 +2,8 @@
 
 #include <Logging/Logger.h>
 #include <Log.h>
-#include <SettingsService.h>
 #include <BackendThreadManager/BackendThreadManager.h>
+#include <DataAccess/DataAccessThreadManager.h>
 #include <UIManager.h>
 #include <Enterprise/EnterpriseService.h>
 
@@ -13,6 +13,7 @@
 namespace
 {
    std::unique_ptr<Logger> LOGGER = nullptr;
+   std::unique_ptr<DataAccessThreadManager> DATA_ACCESS_THREAD_MANAGER = nullptr;
    std::unique_ptr<BackendThreadManager> BACKEND_THREAD_MANAGER = nullptr;
    std::unique_ptr<UIManager> UI_MANAGER = nullptr;
    std::unique_ptr<Enterprise::EnterpriseService> ENTERPRISE = nullptr;
@@ -20,11 +21,25 @@ namespace
 
 void TearDownComponents()
 {
-   LOGGER->deleteLater();
-   LOGGER = nullptr;
+   if(ENTERPRISE)
+   {
+      ENTERPRISE->deleteLater();
+   }
 
-   BACKEND_THREAD_MANAGER->deleteLater();
-   BACKEND_THREAD_MANAGER = nullptr;
+   if(BACKEND_THREAD_MANAGER)
+   {
+      BACKEND_THREAD_MANAGER->deleteLater();
+   }
+
+   if(DATA_ACCESS_THREAD_MANAGER)
+   {
+      DATA_ACCESS_THREAD_MANAGER->deleteLater();
+   }
+
+   if(LOGGER)
+   {
+      LOGGER->deleteLater();
+   }
 }
 
 int main(int argc, char *argv[])
@@ -54,6 +69,11 @@ int main(int argc, char *argv[])
       LogInfo(QString("arg %1: %2").arg(iter).arg(argv[iter]));
    }
 
+   // Set up data access thread and its components
+   DATA_ACCESS_THREAD_MANAGER.reset(new DataAccessThreadManager());
+   std::unique_ptr<QThread> dataAccessThread(new QThread());
+   DATA_ACCESS_THREAD_MANAGER->AssignToThread(dataAccessThread.get());
+
    // Set up backend thread and its components
    BACKEND_THREAD_MANAGER.reset(new BackendThreadManager());
    std::unique_ptr<QThread> backendThread(new QThread());
@@ -63,24 +83,34 @@ int main(int argc, char *argv[])
    const bool enterprise = ArgParser::RunningWithEnterprise();
    if(enterprise)
    {
-      ENTERPRISE.reset(new Enterprise::EnterpriseService());
+      ENTERPRISE.reset(new Enterprise::EnterpriseService(DATA_ACCESS_THREAD_MANAGER.get()));
+      ENTERPRISE->SetDataAccessThread(dataAccessThread.get());
       ENTERPRISE->SetBackendThread(backendThread.get());
    }
    else
    {
-      backendThread->start(QThread::NormalPriority);
+      dataAccessThread->start();
+      backendThread->start();
    }
 
    // Set up UI components
-   UI_MANAGER.reset(new UIManager(BACKEND_THREAD_MANAGER.get()));
+   UI_MANAGER.reset(new UIManager(DATA_ACCESS_THREAD_MANAGER.get(),
+                                  BACKEND_THREAD_MANAGER.get()));
+
+   if(enterprise)
+   {
+      QObject::connect(UI_MANAGER.get(), &UIManager::ShellWindowClosed,
+                       ENTERPRISE.get(), &Enterprise::EnterpriseService::HandleShellWindowClosed);
+   }
 
    // Execute
    const int rVal = app.exec();
 
    // Tear down
-   // TODO: Cleanly tear down backendThread
    TearDownComponents();
    backendThread->quit();
    backendThread->wait();
+   dataAccessThread->quit();
+   dataAccessThread->wait();
    return rVal;
 }

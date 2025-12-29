@@ -17,9 +17,11 @@ target_include_directories(Enterprise PUBLIC
    ${CMAKE_SOURCE_DIR}/src
    ${CMAKE_SOURCE_DIR}/src/Backend
    ${CMAKE_SOURCE_DIR}/src/Shared
+   ${CMAKE_SOURCE_DIR}/src/DataAccess
 )
 
 target_link_libraries(Enterprise PRIVATE
+   DataAccess
    Qt6::Core
    Qt6::Gui
    Qt6::Widgets

@@ -2,11 +2,6 @@
 
 #include <QObject>
 
-namespace Settings
-{
-class SettingsServiceInterface;
-}
-
 namespace Wallpaper
 {
 class WallpaperService;
@@ -22,7 +17,6 @@ public:
 
    void AssignToThread(QThread* thread);
 
-   Settings::SettingsServiceInterface* GetTheSettingsService();
    Wallpaper::WallpaperService* GetTheWallpaperService();
 
 public slots:
@@ -35,6 +29,5 @@ private slots:
    void HandleServiceThreadStarted();
 
 private:
-   Settings::SettingsServiceInterface* TheSettingsService;
    Wallpaper::WallpaperService* TheWallpaperService;
 };

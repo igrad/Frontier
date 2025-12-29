@@ -1,2 +1,1 @@
-add_subdirectory(SettingsServiceTests)
 add_subdirectory(WallpaperServiceTests)

@@ -36,8 +36,9 @@ namespace
       "value STRING)";
 }
 
-SettingsService::SettingsService(QObject* parent)
-   : SettingsDbPath("")
+SettingsService::SettingsService(bool useRAMDatabases, QObject* parent)
+   : UseRAMDatabases(useRAMDatabases)
+   , SettingsDbPath("")
    , DatabaseName("")
 {
    setParent(parent);

@@ -1,13 +1,11 @@
 #include "BackendThreadManager.h"
 
-#include <SettingsService.h>
 #include <WallpaperService.h>
 
 #include <QThread>
 
 BackendThreadManager::BackendThreadManager()
-   : TheSettingsService(nullptr)
-   , TheWallpaperService(nullptr)
+   : TheWallpaperService(nullptr)
 {
 }
 
@@ -27,11 +25,6 @@ void BackendThreadManager::AssignToThread(QThread* thread)
            Qt::UniqueConnection);
 }
 
-Settings::SettingsServiceInterface* BackendThreadManager::GetTheSettingsService()
-{
-   return TheSettingsService;
-}
-
 Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService()
 {
    return TheWallpaperService;
@@ -39,12 +32,10 @@ Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService()
 
 void BackendThreadManager::HandleUIConnectedToServiceComponents()
 {
-   TheSettingsService->FetchAllSettings();
 }
 
 void BackendThreadManager::HandleServiceThreadStarted()
 {
-   TheSettingsService = new Settings::SettingsService(this);
    TheWallpaperService = new Wallpaper::WallpaperService(this);
 
    emit ServiceThreadStarted();

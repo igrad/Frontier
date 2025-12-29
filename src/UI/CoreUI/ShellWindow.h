@@ -11,4 +11,10 @@ class ShellWindow : public QWidget
 public:
    explicit ShellWindow(QWidget* parent = nullptr);
    ~ShellWindow() = default;
+
+signals:
+   void Closed();
+
+private slots:
+   void closeEvent(QCloseEvent* event) override;
 };

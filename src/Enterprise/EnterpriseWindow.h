@@ -25,16 +25,19 @@ namespace Enterprise
    signals:
       void Resume();
       void Suspend();
-      void MemoryDbSelected();
-      void DiskDbSelected();
       void RetainAndRestoreStateChanged(bool active);
+      void UseRAMDatabases(bool useRAM);
+      void DatabaseStarted();
 
    public slots:
       void HandleFrontierStarted();
 
    private slots:
+      void HandleResumeBtnReleased();
+      void HandleSuspendBtnReleased();
       void HandleDatabaseSourceComboBoxSelection(const QString& str);
       void HandleRetainAndRestoreCheckBoxCheck(bool checked);
+      void HandleStartDatabaseBtnReleased();
 
    private:
       void BuildUI();
@@ -45,11 +48,17 @@ namespace Enterprise
       QHBoxLayout* SuspendControlsLayout;
       QPushButton* ResumeBtn;
       QPushButton* SuspendBtn;
-      QHBoxLayout* DbControlsLayout;
+      QVBoxLayout* DbControlsLayout;
+      QHBoxLayout* DbControlsUpperLayout;
       QComboBox* DatabaseSourceComboBox;
       QCheckBox* RetainAndRestoreCheckBox;
+      QPushButton* StartDatabaseBtn;
+      QHBoxLayout* DbControlsLowerLayout;
+      QLineEdit* DatabaseUploadTextEdit;
+      QPushButton* DatabaseUploadBtn;
       EnterpriseSettingsView* SettingsView;
 
+      bool UseRAMDbs;
       bool RetainAndRestore;
    };
 }

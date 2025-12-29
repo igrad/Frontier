@@ -2,7 +2,7 @@
 
 #include "WallpaperTypes.h"
 
-#include <SettingsClient.h>
+#include <SettingsService/SettingsClient.h>
 
 #include <QColor>
 #include <QObject>

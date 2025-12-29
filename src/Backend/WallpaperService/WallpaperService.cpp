@@ -2,7 +2,7 @@
 
 #include <Log.h>
 
-#include <Settings.h>
+#include <SettingsService/Settings.h>
 
 #include <QVariant>
 

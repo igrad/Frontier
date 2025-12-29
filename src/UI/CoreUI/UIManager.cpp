@@ -3,20 +3,31 @@
 
 #include <Wallpaper/WallpaperView.h>
 #include <BackendThreadManager/BackendThreadManager.h>
+#include <DataAccess/DataAccessThreadManager.h>
 
-UIManager::UIManager(BackendThreadManager* backend)
-   : Backend(backend)
+#include <iostream>
+
+UIManager::UIManager(DataAccessThreadManager* dataAccess,
+                     BackendThreadManager* backend)
+   : DataAccess(dataAccess)
+   , Backend(backend)
    , TheShellWindow(nullptr)
    , TheWallpaperView(nullptr)
 {
    connect(this, &UIManager::UIConnectedToServiceComponents,
-           Backend, &BackendThreadManager::HandleUIConnectedToServiceComponents,
+           DataAccess, &DataAccessThreadManager::HandleUIConnectedToComponents,
            Qt::UniqueConnection);
+   connect(Backend, &BackendThreadManager::ServiceThreadStarted,
+           this, &UIManager::HandleServiceThreadStarted);
 }
 
 UIManager::~UIManager()
 {
-   TheShellWindow->deleteLater();
+   if(TheShellWindow)
+   {
+      TheShellWindow->deleteLater();
+      TheShellWindow = nullptr;
+   }
 }
 
 void UIManager::Start()
@@ -28,6 +39,7 @@ void UIManager::Start()
 
 void UIManager::HandleServiceThreadStarted()
 {
+   std::cout << "HandleServiceThreadStarted" <<  std::endl;
    BuildUIComponents();
    Start();
 }
@@ -41,6 +53,8 @@ void UIManager::BuildUIComponents()
 void UIManager::BuildTheShellWindow()
 {
    TheShellWindow = new ShellWindow();
+   connect(TheShellWindow, &ShellWindow::Closed,
+           this, &UIManager::ShellWindowClosed);
 }
 
 void UIManager::BuildTheWallpaperView()

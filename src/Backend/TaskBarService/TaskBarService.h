@@ -3,7 +3,7 @@
 #include "TaskBarTypes.h"
 #include "TaskBarServiceInterface.h"
 
-#include <SettingsClient.h>
+#include <SettingsService/SettingsClient.h>
 
 namespace TaskBar
 {

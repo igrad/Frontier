@@ -13,7 +13,7 @@ namespace Settings
       Q_OBJECT
 
    public:
-      explicit SettingsService(QObject* parent = nullptr);
+      SettingsService(bool useRAMDatabases, QObject* parent = nullptr);
       ~SettingsService();
 
       void FetchAllSettings() override;
@@ -32,6 +32,7 @@ namespace Settings
       bool RunQuery(QSqlQuery& query);
       void WriteSettingToDatabase(const Setting setting, const QVariant val);
 
+      bool UseRAMDatabases;
       std::filesystem::path SettingsDbPath;
       QString DatabaseName;
    };

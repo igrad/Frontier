@@ -1,4 +1,5 @@
 add_subdirectory(Backend)
+add_subdirectory(DataAccess)
 add_subdirectory(Enterprise)
 add_subdirectory(Shared)
 add_subdirectory(UI)
@@ -19,7 +20,7 @@ target_link_libraries(Frontier
    CoreUI
    BackendThreadManager
    Enterprise
-   SettingsService
+   DataAccess
    Qt6::Core
    Qt6::Gui
    Qt6::Multimedia

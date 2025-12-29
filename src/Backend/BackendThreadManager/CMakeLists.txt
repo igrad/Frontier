@@ -11,7 +11,7 @@ target_include_directories(BackendThreadManager PUBLIC
 
 target_link_libraries(BackendThreadManager PUBLIC
    PRIVATE
-   SettingsService
+   DataAccess
    Shared
    WallpaperService
    Qt6::Core

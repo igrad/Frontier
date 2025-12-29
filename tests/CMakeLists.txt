@@ -14,7 +14,7 @@ add_executable(FrontierUnitTests
 target_link_libraries(FrontierUnitTests PRIVATE
    CoreUI
    Shared
-   SettingsService
+   DataAccess
    gtest
    gmock_main
    Qt6::Core

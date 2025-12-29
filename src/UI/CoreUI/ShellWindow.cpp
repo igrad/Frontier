@@ -35,3 +35,10 @@ ShellWindow::ShellWindow(QWidget* parent)
       }
    }
 }
+
+void ShellWindow::closeEvent(QCloseEvent* event)
+{
+   Q_UNUSED(event);
+
+   emit Closed();
+}

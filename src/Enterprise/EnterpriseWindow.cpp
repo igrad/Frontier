@@ -3,6 +3,8 @@
 #include "EnterpriseSettingsModel.h"
 #include "EnterpriseSettingsView.h"
 
+#include <QLineEdit>
+
 using namespace Enterprise;
 
 namespace
@@ -20,21 +22,28 @@ EnterpriseWindow::EnterpriseWindow(Settings::SettingsClientInterface* settingsCl
    , ResumeBtn(nullptr)
    , SuspendBtn(nullptr)
    , DbControlsLayout(nullptr)
+   , DbControlsUpperLayout(nullptr)
    , DatabaseSourceComboBox(nullptr)
-   , RetainAndRestoreCheckBox(nullptr)
+   , RetainAndRestoreCheckBox(nullptr)	// TODO: Unimplemented currently
+   , StartDatabaseBtn(nullptr)
+   , DbControlsLowerLayout(nullptr)
+   , DatabaseUploadTextEdit(nullptr)
+   , DatabaseUploadBtn(nullptr)
    , SettingsView(nullptr)
    , RetainAndRestore(false)
 {
    BuildUI();
 
    connect(ResumeBtn, &QPushButton::released,
-           this, &EnterpriseWindow::Resume);
+           this, &EnterpriseWindow::HandleResumeBtnReleased);
    connect(SuspendBtn, &QPushButton::released,
-           this, &EnterpriseWindow::Suspend);
+           this, &EnterpriseWindow::HandleSuspendBtnReleased);
    connect(DatabaseSourceComboBox, &QComboBox::currentTextChanged,
            this, &EnterpriseWindow::HandleDatabaseSourceComboBoxSelection);
    connect(RetainAndRestoreCheckBox, &QCheckBox::checkStateChanged,
            this, &EnterpriseWindow::HandleRetainAndRestoreCheckBoxCheck);
+   connect(StartDatabaseBtn, &QPushButton::released,
+           this, &EnterpriseWindow::HandleStartDatabaseBtnReleased);
    show();
 }
 
@@ -44,21 +53,35 @@ void EnterpriseWindow::HandleFrontierStarted()
    DatabaseSourceComboBox->setDisabled(true);
 }
 
+void EnterpriseWindow::HandleResumeBtnReleased()
+{
+   ResumeBtn->setDisabled(true);
+   SuspendBtn->setDisabled(false);
+   emit Resume();
+}
+
+void EnterpriseWindow::HandleSuspendBtnReleased()
+{
+   ResumeBtn->setDisabled(false);
+   SuspendBtn->setDisabled(true);
+   emit Suspend();
+}
+
 void EnterpriseWindow::HandleDatabaseSourceComboBoxSelection(const QString& str)
 {
    if(MEMORY_STR == str)
    {
-      emit MemoryDbSelected();
+      UseRAMDbs = true;
       if(RetainAndRestore)
       {
          RetainAndRestoreCheckBox->setCheckState(Qt::CheckState::Unchecked);
+         HandleRetainAndRestoreCheckBoxCheck(false);
          RetainAndRestoreCheckBox->setDisabled(true);
-         HandleRetainAndRestoreCheckBoxCheck(false);// maybe this triggers itself?
       }
    }
    else if(DISK_STR == str)
    {
-      emit DiskDbSelected();
+      UseRAMDbs = false;
       RetainAndRestoreCheckBox->setDisabled(false);
    }
 }
@@ -68,8 +91,20 @@ void EnterpriseWindow::HandleRetainAndRestoreCheckBoxCheck(bool checked)
    if(checked != RetainAndRestore)
    {
       RetainAndRestore = checked;
-      emit RetainAndRestoreStateChanged(checked);
    }
+}
+
+void EnterpriseWindow::HandleStartDatabaseBtnReleased()
+{
+   RetainAndRestoreCheckBox->setDisabled(true);
+   DatabaseSourceComboBox->setDisabled(true);
+   StartDatabaseBtn->setDisabled(true);
+
+   emit RetainAndRestoreStateChanged(RetainAndRestore);
+   emit UseRAMDatabases(UseRAMDbs);
+   emit DatabaseStarted();
+
+   ResumeBtn->setDisabled(false);
 }
 
 void EnterpriseWindow::BuildUI()
@@ -78,18 +113,35 @@ void EnterpriseWindow::BuildUI()
 
    SuspendControlsLayout = new QHBoxLayout(this);
    ResumeBtn = new QPushButton("Resume", this);
+   ResumeBtn->setDisabled(true);
    SuspendBtn = new QPushButton("Suspend", this);
+   SuspendBtn->setDisabled(true);
    SuspendControlsLayout->addWidget(ResumeBtn);
    SuspendControlsLayout->addWidget(SuspendBtn);
    Layout->addLayout(SuspendControlsLayout);
 
-   DbControlsLayout = new QHBoxLayout(this);
+   DbControlsLayout = new QVBoxLayout(this);
+   DbControlsUpperLayout = new QHBoxLayout(this);
    DatabaseSourceComboBox = new QComboBox(this);
    DatabaseSourceComboBox->addItem(MEMORY_STR);
    DatabaseSourceComboBox->addItem(DISK_STR);
+   DatabaseSourceComboBox->setCurrentText("");
    RetainAndRestoreCheckBox = new QCheckBox("Retain & Restore", this);
-   DbControlsLayout->addWidget(DatabaseSourceComboBox);
-   DbControlsLayout->addWidget(RetainAndRestoreCheckBox);
+   RetainAndRestoreCheckBox->setDisabled(true);
+   StartDatabaseBtn = new QPushButton("Start database", this);
+   DbControlsUpperLayout->addWidget(DatabaseSourceComboBox);
+   DbControlsUpperLayout->addWidget(RetainAndRestoreCheckBox);
+   DbControlsUpperLayout->addWidget(StartDatabaseBtn);
+   DbControlsLayout->addLayout(DbControlsUpperLayout);
+   DbControlsLowerLayout = new QHBoxLayout(this);
+   DatabaseUploadTextEdit = new QLineEdit(this);
+   DatabaseUploadTextEdit->setPlaceholderText("Upload Settings.db file");
+   DatabaseUploadTextEdit->setDisabled(true); // Disabled
+   DatabaseUploadBtn = new QPushButton("Select", this);
+   DatabaseUploadBtn->setDisabled(true); // Disabled
+   DbControlsLowerLayout->addWidget(DatabaseUploadTextEdit);
+   DbControlsLowerLayout->addWidget(DatabaseUploadBtn);
+   DbControlsLayout->addLayout(DbControlsLowerLayout);
    Layout->addLayout(DbControlsLayout);
 
    SettingsView = new EnterpriseSettingsView(this);

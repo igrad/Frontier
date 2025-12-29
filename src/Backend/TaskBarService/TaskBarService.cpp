@@ -1,6 +1,6 @@
 #include "TaskBarService.h"
 
-#include <Settings.h>
+#include <SettingsService/Settings.h>
 
 using namespace TaskBar;
 

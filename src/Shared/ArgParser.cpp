@@ -41,7 +41,7 @@ QString ArgParser::ArgNameAsString(const Arg arg)
       { Arg::Dev, "dev" },
       { Arg::DevWindowWidth, "dev-window-width" },
       { Arg::DevWindowHeight, "dev-window-height" },
-      { Arg::Enterprise, "Enterprise" },
+      { Arg::Enterprise, "enterprise" },
       // { Arg::, "" },
    };
 
@@ -129,8 +129,7 @@ void ArgParser::ArgEnterprise()
 {
    addOption({
       "enterprise",
-      QCoreApplication::translate("ArgParser", "Enterprise debugging tool"),
-      "enterprise"
+      QCoreApplication::translate("ArgParser", "Enterprise debugging tool")
    });
 }
 
