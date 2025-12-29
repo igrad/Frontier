@@ -33,7 +33,9 @@ target_include_directories(FrontierUnitTests PRIVATE
 # mocks, fakes, etc
 add_subdirectory(support)
 
+# Test subdirs
 add_subdirectory(Backend)
+add_subdirectory(DataAccess)
 
 include(GoogleTest)
 gtest_discover_tests(FrontierUnitTests)

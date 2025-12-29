@@ -63,7 +63,7 @@ TEST_F(SettingsClientTest, SubscribeToSetting3)
 
    Client.SubscribeToSetting(Setting::_TestSetting, &sub);
 
-   QSignalSpy spy(&sub, &FakeSettingSubscriber::TestSettingReceived);
+   QSignalSpy spy(&sub, &FakeSettingSubscriber::_TestSettingReceived);
 
    const QVariant value = QString("SomeValue");
    ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);

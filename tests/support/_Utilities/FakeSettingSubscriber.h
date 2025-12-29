@@ -11,11 +11,11 @@ public:
    ~FakeSettingSubscriber() = default;
 
 signals:
-   void TestSettingReceived(const QVariant& value);
+   void _TestSettingReceived(const QVariant& value);
 
 public slots:
-   void HandleSettingTestSettingChanged(const QVariant& value)
+   void HandleSetting_TestSettingChanged(const QVariant& value)
    {
-      emit TestSettingReceived(value);
+      emit _TestSettingReceived(value);
    }
 };
