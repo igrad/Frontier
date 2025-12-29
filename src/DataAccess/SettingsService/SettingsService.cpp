@@ -62,7 +62,7 @@ void SettingsService::SetPointerInClientClass()
 void SettingsService::SetUpSettingsDatabase()
 {
    QSqlDatabase db;
-   if(ArgParser::RunningUnitTests())
+   if(UseRAMDatabases || ArgParser::RunningUnitTests())
    {
       SettingsDbPath = ":memory:";
 

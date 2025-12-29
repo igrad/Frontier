@@ -1,14 +1,20 @@
 #include "EnterpriseSettingsModel.h"
 
+#include <iostream>
+
 using namespace Enterprise;
 using namespace Settings;
 
+namespace
+{
+   constexpr const int NUM_COLS = 2;
+}
 
 EnterpriseSettingsModel::EnterpriseSettingsModel(SettingsClientInterface* settingsClient,
                                                  QObject* parent)
-   : Data()
+   : SettingsClient(settingsClient)
+   , Data()
 {
-   settingsClient->SubscribeToAllSettings(this);
    setParent(parent);
 }
 
@@ -21,7 +27,7 @@ int EnterpriseSettingsModel::rowCount(const QModelIndex& parent) const
 int EnterpriseSettingsModel::columnCount(const QModelIndex& parent) const
 {
    Q_UNUSED(parent);
-   return 2;
+   return NUM_COLS;
 }
 
 QVariant EnterpriseSettingsModel::data(const QModelIndex& index, int role) const
@@ -30,7 +36,7 @@ QVariant EnterpriseSettingsModel::data(const QModelIndex& index, int role) const
    const int rowIndex = index.row();
    const int colIndex = index.column();
    if(rowIndex < Data.count() &&
-       colIndex < 2)
+       colIndex < NUM_COLS)
    {
       const RowData row = Data.at(index.row());
       val = row.GetValue(index.column(),
@@ -47,6 +53,7 @@ QVariant EnterpriseSettingsModel::data(const QModelIndex& index, int role) const
 void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
                                                    const QVariant& value)
 {
+   std::cout << "Enterprise - HandleSettingChanged " << ToString(setting).toStdString() << std::endl;
    auto iter = std::find_if(Data.begin(), Data.end(),
                        [&](const RowData& data){
                           return data.TheSetting == setting;
@@ -54,6 +61,7 @@ void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
 
    if(Data.end() == iter)
    {
+      std::cout << "Enterprise - " << ToString(setting).toStdString() << " not found, appending" << std::endl;
       RowData data;
       data.TheSetting = setting;
       data.SetValue(0, ToString(setting));
@@ -62,11 +70,20 @@ void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
    }
    else
    {
+      std::cout << "Enterprise - found, updating" << std::endl;
       // TODO: In the future, make a cell change color for a bit
       // after the value changes.
       RowData& data = *iter;
       data.SetValue(1, value);
    }
+
+   emit dataChanged(index(0, 0), index(rowCount(), NUM_COLS));
+}
+
+void EnterpriseSettingsModel::HandleDataAccessThreadStarted()
+{
+   std::cout << "Enterprise - SettingsModel subscribed to all signals" << std::endl;
+   SettingsClient->SubscribeToAllSettings(this);
 }
 
 int EnterpriseSettingsModel::GetIndexToInsertSetting(Setting setting) const

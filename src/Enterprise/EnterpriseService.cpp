@@ -31,6 +31,8 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
            DataAccess, &DataAccessThreadManager::HandleUseRAMDatabases);
    connect(Window, &EnterpriseWindow::DatabaseStarted,
            this, &EnterpriseService::HandleDatabaseStarted);
+   connect(DataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
+           Window, &EnterpriseWindow::DataAccessThreadStarted);
 }
 
 EnterpriseService::~EnterpriseService()

@@ -29,16 +29,33 @@ const std::string SettingsClient::GetSettingHandlerMethodStr(Setting setting, bo
    // This weirdness is just so that we can validate the handler function exists before we make the
    // connection. That way we don't have to validate at the time of setting value change.
    std::string str;
+   const bool allSetting = Setting::_All == setting;
    if(normalized)
    {
-      const QString rawStr = QString("HandleSetting%1Changed(const QVariant&)")
-                                .arg(Settings::ToString(setting));
+      QString rawStr;
+      if(allSetting)
+      {
+         rawStr = QString("HandleSettingChanged(const Settings::Setting, const QVariant&)");
+      }
+      else
+      {
+         rawStr = QString("HandleSetting%1Changed(const QVariant&)")
+                     .arg(ToString(setting));
+      }
       str = QMetaObject::normalizedSignature(rawStr.toStdString().c_str()).toStdString();
    }
    else
    {
-      const QString rawStr = QString("HandleSetting%1Changed")
-                                .arg(Settings::ToString(setting));
+      QString rawStr;
+      if(allSetting)
+      {
+         rawStr = QString("HAndleSettingChanged");
+      }
+      else
+      {
+         rawStr = QString("HandleSetting%1Changed")
+                     .arg(ToString(setting));
+      }
       str = rawStr.toStdString();
    }
 
@@ -97,10 +114,10 @@ bool SettingsClient::SubscribeToAllSettings(QObject* subscriber)
 {
    bool retVal = false;
 
-   constexpr const char* const methodStr = "HandleAllSettings";
+   const std::string methodStr = GetSettingHandlerMethodStr(Setting::_All, true);
    if(nullptr != subscriber)
    {
-      if(0 <= subscriber->metaObject()->indexOfMethod(methodStr))
+      if(0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str()))
       {
          Subscriptions.insert(Setting::_All, subscriber);
          retVal = true;
@@ -108,7 +125,7 @@ bool SettingsClient::SubscribeToAllSettings(QObject* subscriber)
       else
       {
          LogError(QString("Could not find method %1 to handle setting %2 in object %3")
-                     .arg(methodStr,
+                     .arg(methodStr.c_str(),
                           ToString(Setting::_All),
                           subscriber->metaObject()->className()));
       }

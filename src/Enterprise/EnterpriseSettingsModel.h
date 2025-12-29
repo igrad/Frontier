@@ -16,17 +16,23 @@ namespace Enterprise
                               QObject* parent = nullptr);
       ~EnterpriseSettingsModel() = default;
 
+
       int rowCount(const QModelIndex& parent = QModelIndex()) const override;
       int columnCount(const QModelIndex& parent = QModelIndex()) const override;
       QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
+   signals:
+      void SettingsUpdated();
+
    public slots:
       void HandleSettingChanged(Settings::Setting setting,
                                 const QVariant& value);
+      void HandleDataAccessThreadStarted();
 
    private:
       int GetIndexToInsertSetting(Settings::Setting setting) const;
 
+      Settings::SettingsClientInterface* SettingsClient;
       QList<RowData> Data;
    };
 }

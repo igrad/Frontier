@@ -28,6 +28,7 @@ namespace Enterprise
       void RetainAndRestoreStateChanged(bool active);
       void UseRAMDatabases(bool useRAM);
       void DatabaseStarted();
+      void DataAccessThreadStarted();
 
    public slots:
       void HandleFrontierStarted();

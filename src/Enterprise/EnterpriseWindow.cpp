@@ -44,6 +44,8 @@ EnterpriseWindow::EnterpriseWindow(Settings::SettingsClientInterface* settingsCl
            this, &EnterpriseWindow::HandleRetainAndRestoreCheckBoxCheck);
    connect(StartDatabaseBtn, &QPushButton::released,
            this, &EnterpriseWindow::HandleStartDatabaseBtnReleased);
+   connect(this, &EnterpriseWindow::DataAccessThreadStarted,
+           SettingsModel, &EnterpriseSettingsModel::HandleDataAccessThreadStarted);
 
    setWindowTitle("Enterprise");
    show();
@@ -128,7 +130,7 @@ void EnterpriseWindow::BuildUI()
    DatabaseSourceComboBox->addItem(MEMORY_STR);
    DatabaseSourceComboBox->addItem(DISK_STR);
    DatabaseSourceComboBox->setCurrentText("");
-   RetainAndRestoreCheckBox = new QCheckBox("Retain & Restore", this);
+   RetainAndRestoreCheckBox = new QCheckBox("Retain+Restore", this);
    RetainAndRestoreCheckBox->setDisabled(true);
    StartDatabaseBtn = new QPushButton("Start database", this);
    DbControlsUpperLayout->addWidget(DatabaseSourceComboBox);
