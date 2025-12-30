@@ -1,5 +1,7 @@
 #include "EnterpriseSettingsModel.h"
 
+#include <QFont>
+
 #include <iostream>
 
 using namespace Enterprise;
@@ -16,6 +18,7 @@ EnterpriseSettingsModel::EnterpriseSettingsModel(SettingsClientInterface* settin
    , Data()
 {
    setParent(parent);
+   PopulateSettings();
 }
 
 int EnterpriseSettingsModel::rowCount(const QModelIndex& parent) const
@@ -50,6 +53,75 @@ QVariant EnterpriseSettingsModel::data(const QModelIndex& index, int role) const
    return val;
 }
 
+
+QVariant EnterpriseSettingsModel::headerData(int section,
+                                             Qt::Orientation orientation,
+                                             int role) const
+{
+   QVariant retVal;
+
+   if(Qt::Horizontal == orientation)
+   {
+      if(Qt::FontRole == role)
+      {
+         QFont font;
+         font.setBold(true);
+         retVal = font;
+      }
+      else if(Qt::DisplayRole == role)
+      {
+         if(section == 0)
+         {
+            retVal = QString("Setting");
+         }
+         else if(section == 1)
+         {
+            retVal = QString("Value (as string)");
+         }
+      }
+   }
+
+   return retVal;
+}
+
+
+Qt::ItemFlags EnterpriseSettingsModel::flags(const QModelIndex& index) const
+{
+   Qt::ItemFlags flags;
+   if(!index.isValid())
+   {
+      flags = Qt::NoItemFlags;
+   }
+   else
+   {
+      flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+      if(index.column() > 0)
+      {
+         flags |= Qt::ItemIsEditable;
+      }
+   }
+
+   return flags;
+}
+
+
+bool EnterpriseSettingsModel::setData(const QModelIndex& index,
+                                      const QVariant& value,
+                                      int role)
+{
+   bool retVal = false;
+
+   if(Qt::EditRole == role)
+   {
+      const QModelIndex settingIndex = index.siblingAtColumn(0);
+      const Settings::Setting setting = Settings::ToSetting(settingIndex.data().toString());
+      retVal = WriteEditedSetting(setting, value);
+   }
+
+   return retVal;
+}
+
 void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
                                                    const QVariant& value)
 {
@@ -77,7 +149,7 @@ void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
       data.SetValue(1, value);
    }
 
-   emit dataChanged(index(0, 0), index(rowCount(), NUM_COLS));
+   // emit dataChanged(index(0, 0), index(rowCount(), NUM_COLS));
 }
 
 void EnterpriseSettingsModel::HandleDataAccessThreadStarted()
@@ -99,6 +171,47 @@ int EnterpriseSettingsModel::GetIndexToInsertSetting(Setting setting) const
          retVal = iter;
          break;
       }
+   }
+
+   return retVal;
+}
+
+int EnterpriseSettingsModel::GetIndexOfSetting(Settings::Setting setting) const
+{
+   int retVal = -1;
+   for(int iter = 0; iter < Data.count(); ++iter)
+   {
+      const RowData& data = Data[iter];
+      if(data.TheSetting == setting)
+      {
+         retVal = iter;
+         break;
+      }
+   }
+
+   return retVal;
+}
+
+void EnterpriseSettingsModel::PopulateSettings()
+{
+   for(int iter = 1; iter < static_cast<int>(Settings::Setting::_All); ++iter)
+   {
+      const Settings::Setting setting = static_cast<Settings::Setting>(iter);
+      HandleSettingChanged(setting, QVariant());
+   }
+
+   emit SettingsPopulated();
+}
+
+bool EnterpriseSettingsModel::WriteEditedSetting(Setting setting, const QVariant& value)
+{
+   bool retVal = false;
+   const int dataIndex = GetIndexOfSetting(setting);
+
+   if(-1 < dataIndex)
+   {
+      Data[dataIndex].SetValue(1, value);
+      retVal = SettingsClient->WriteSettingValue(setting, value);
    }
 
    return retVal;

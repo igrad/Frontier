@@ -152,5 +152,9 @@ void EnterpriseWindow::BuildUI()
    SettingsView->setModel(SettingsModel);
    Layout->addWidget(SettingsView);
 
+   connect(SettingsModel, &EnterpriseSettingsModel::SettingsPopulated,
+           SettingsView, &EnterpriseSettingsView::HandleSettingsPopulated,
+           Qt::UniqueConnection);
+
    setLayout(Layout);
 }

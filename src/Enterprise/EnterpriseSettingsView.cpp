@@ -6,3 +6,8 @@ EnterpriseSettingsView::EnterpriseSettingsView(QWidget* parent)
    : QTableView(parent)
 {
 }
+
+void EnterpriseSettingsView::HandleSettingsPopulated()
+{
+   resizeColumnsToContents();
+}

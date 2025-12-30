@@ -3,6 +3,8 @@
 
 #include <Log.h>
 
+#include <iostream>
+
 using namespace Settings;
 
 SettingsServiceInterface* SettingsClient::Service = nullptr;
@@ -140,6 +142,7 @@ bool SettingsClient::WriteSettingValue(Setting setting, const QVariant& value)
 
    if(Setting::None != setting)
    {
+      std::cout << "Caching setting value!" << std::endl;
       emit CacheSettingValue(setting, value);
       retVal = true;
    }

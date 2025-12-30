@@ -11,5 +11,8 @@ namespace Enterprise
    public:
       EnterpriseSettingsView(QWidget* parent = nullptr);
       ~EnterpriseSettingsView() = default;
+
+   public slots:
+      void HandleSettingsPopulated();
    };
 }

@@ -100,4 +100,8 @@ void WallpaperService::RegisterMetaTypes() const
 void WallpaperService::SubscribeToSettings()
 {
    Settings.SubscribeToSetting(Setting::WallpaperSchedule, this);
+   Settings.SubscribeToSetting(Setting::WallpaperColors, this);
+   Settings.SubscribeToSetting(Setting::WallpaperActiveMode, this);
+   Settings.SubscribeToSetting(Setting::WallpaperDuration, this);
+   Settings.SubscribeToSetting(Setting::WallpaperImagePaths, this);
 }
