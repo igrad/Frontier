@@ -8,24 +8,21 @@ namespace Wallpaper
 {
    Q_NAMESPACE
 
-   enum class Mode: int
+   enum class Fit: int
    {
       None = 0,
-      StaticColor,
-      DynamicColor,
-      StaticImage,
-      Video
+      Fill,
+      Fit,
+      Stretch,
+      Tile,
+      Center,
+      Span
    };
-   Q_ENUM_NS(Mode);
+   Q_ENUM_NS(Fit)
 
-   inline QString ToString(Mode value)
+   inline QString ToString(Fit fit)
    {
-      return EnumToString(value);
-   }
-
-   inline Mode FromString(const QString& str)
-   {
-      return StringToEnum<Mode>(str);
+      return EnumToString<Fit>(fit);
    }
 
    enum class Schedule: int
@@ -37,12 +34,12 @@ namespace Wallpaper
    };
    Q_ENUM_NS(Schedule)
 
-   inline QString ToString(Schedule value)
+   inline QString ToString(Schedule schedule)
    {
-      return EnumToString<Schedule>(value);
+      return EnumToString<Schedule>(schedule);
    }
 
-   enum class ImageType: int
+   enum class Style: int
    {
       None = 0,
       StaticColor,
@@ -50,38 +47,21 @@ namespace Wallpaper
       Image,
       Video
    };
-   Q_ENUM_NS(ImageType)
+   Q_ENUM_NS(Style)
 
-   inline QString ToString(ImageType type)
+   inline QString ToString(Style style)
    {
-      return EnumToString<ImageType>(type);
+      return EnumToString<Style>(style);
    }
 
-   enum class DisplayMode: int
+   struct ViewData
    {
-      None = 0,
-      Fill,
-      Fit,
-      Stretch,
-      Tile,
-      Center,
-      Span
-   };
-   Q_ENUM_NS(DisplayMode)
-
-   inline QString ToString(DisplayMode mode)
-   {
-      return EnumToString<DisplayMode>(mode);
-   }
-
-   struct WallpaperData
-   {
-      ImageType ImageType;
+      quint8 AssignedMonitor;
+      Fit Fit;
+      Style Style;
       QList<QColor> Colors;
       QString ImagePath;
-      DisplayMode Mode;
-      quint8 AssignedMonitor;
    };
 }
 
-Q_DECLARE_METATYPE(Wallpaper::WallpaperData);
+Q_DECLARE_METATYPE(Wallpaper::ViewData);

@@ -8,6 +8,8 @@ set(SharedSources
    Logging/Logger.h
 
    Utilities/EnumHelpers.h
+   Utilities/Rando.cpp
+   Utilities/Rando.h
 )
 
 add_library(Shared ${SharedSources})

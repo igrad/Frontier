@@ -11,13 +11,14 @@ namespace Settings
    enum class Setting: int
    {
       None = 0,
-      WallpaperSchedule,
-      WallpaperImagePaths,
-      WallpaperColors,
-      WallpaperDuration,
-      WallpaperActiveMode,
       TaskBarAlignment,
       TaskBarDirectionality,
+      WallpaperColors,
+      WallpaperDuration,
+      WallpaperFit,
+      WallpaperImagePaths,
+      WallpaperSchedule,
+      WallpaperStyle,
       _All,							// Keep as penultimate
       _TestSetting = INT_MAX	// Must be last
    };

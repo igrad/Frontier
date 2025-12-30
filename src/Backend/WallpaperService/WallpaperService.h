@@ -3,10 +3,12 @@
 #include "WallpaperTypes.h"
 
 #include <SettingsService/SettingsClient.h>
+#include <Utilities/Rando.h>
 
 #include <QColor>
 #include <QObject>
 #include <QStringList>
+#include <QTimer>
 
 namespace Wallpaper
 {
@@ -16,28 +18,40 @@ namespace Wallpaper
 
    public:
       explicit WallpaperService(QObject* parent = nullptr);
-      ~WallpaperService();
+      ~WallpaperService() = default;
+
+      void RegisterMetaTypes() const;
 
    signals:
-      void WallpaperDataChanged(const Wallpaper::WallpaperData& data);
+      void WallpaperDataChanged(const Wallpaper::ViewData& data);
 
    public slots:
+      void HandleSettingWallpaperColorsChanged(const QVariant& value);
+      void HandleSettingWallpaperDurationChanged(const QVariant& value);
+      void HandleSettingWallpaperFitChanged(const QVariant& value);
+      void HandleSettingWallpaperImagePathsChanged(const QVariant& value);
       void HandleSettingWallpaperScheduleChanged(const QVariant& value);
-      void HandleSettingWallpaperImagePaths(const QVariant& value);
-      void HandleSettingWallpaperColors(const QVariant& value);
-      void HandleSettingWallpaperDuration(const QVariant& value);
-      void HandleSettingWallpaperActiveMode(const QVariant& value);
+      void HandleSettingWallpaperStyleChanged(const QVariant& value);
+
+   private slots:
+      void HandleRotationTimeout();
 
    private:
-      void RegisterMetaTypes() const;
       void SubscribeToSettings();
+      void CalculateCurrentWallpaperData(bool triggeredByRotationTimer = false);
+      void CalculateNextColor(bool shuffled);
 
       Settings::SettingsClient Settings;
 
-      Schedule CurrentSchedule;
-      QStringList CurrentImagePaths;
       QList<QColor> CurrentColors;
       int CurrentDuration;
-      Mode CurrentMode;
+      Fit CurrentFit;
+      QStringList CurrentImagePaths;
+      Schedule CurrentSchedule;
+      Style CurrentStyle;
+
+      int CurrentColorsIndex;
+      QTimer RotationTimer;
+      Rando ShuffleRando;
    };
 }
