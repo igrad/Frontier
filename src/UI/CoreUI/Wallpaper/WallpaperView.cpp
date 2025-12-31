@@ -53,6 +53,7 @@ void WallpaperView::HandleWallpaperDataChanged(const ViewData& data)
       MediaPlayer->setSource(QUrl());
    }
 
+   LogInfo(QString("HandleWallpaperDataChanged. Style: %1").arg(ToString(data.Style)));
    switch(data.Style)
    {
    case Style::StaticColor:
@@ -115,11 +116,13 @@ void WallpaperView::ConnectToServiceSignals(WallpaperService* service)
 
 void WallpaperView::HandleStaticColor(const ViewData& data)
 {
+   LogInfo("Setting static color");
    Layout->setCurrentWidget(Widget);
    const QString color = (data.Color != QColor()) ? data.Color.name() : "#000000";
    Widget->setStyleSheet(QString("background-color: %1")
                                .arg(color));
    Widget->show();
+   Widget->update();
 }
 
 void WallpaperView::HandleDynamicColor(const ViewData& data)

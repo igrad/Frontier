@@ -68,6 +68,8 @@ void WallpaperService::CalculateCurrentWallpaperData(bool triggeredByRotationTim
 {
    ViewData data;
 
+   data.Style = SettingsProxy.GetStyle();
+
    const Schedule schedule = SettingsProxy.GetSchedule();
    switch(schedule)
    {
