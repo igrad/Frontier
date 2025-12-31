@@ -7,11 +7,16 @@ using namespace TaskBar;
 TaskBarService::TaskBarService(QObject* parent)
    : SettingsClient("TaskBarService")
    , CurrentAlignment(Alignment::Bottom)
-   , CurrentDirectionality(Directionality::Left)
+   , CurrentOrientation(Orientation::Left)
 {
    setParent(parent);
 
    SubscribeToSettings();
+}
+
+void TaskBarService::RegisterMetaTypes() const
+{
+   qRegisterMetaType<TaskBar::ViewData>("TaskBar::ViewData");
 }
 
 void TaskBarService::HandleSettingTaskBarAlignmentChanged(const QVariant& value)
@@ -28,16 +33,16 @@ void TaskBarService::HandleSettingTaskBarAlignmentChanged(const QVariant& value)
    }
 }
 
-void TaskBarService::HandleSettingTaskBarDirectionalityChanged(const QVariant& value)
+void TaskBarService::HandleSettingTaskBarOrientationChanged(const QVariant& value)
 {
-   if(value.canConvert<Directionality>())
+   if(value.canConvert<Orientation>())
    {
-      const Directionality val = value.value<Directionality>();
+      const Orientation val = value.value<Orientation>();
 
-      if(val != CurrentDirectionality)
+      if(val != CurrentOrientation)
       {
-         CurrentDirectionality = val;
-         emit TaskBarDirectionalityChanged(val);
+         CurrentOrientation = val;
+         emit TaskBarOrientationChanged(val);
       }
    }
 }
@@ -45,5 +50,5 @@ void TaskBarService::HandleSettingTaskBarDirectionalityChanged(const QVariant& v
 void TaskBarService::SubscribeToSettings()
 {
    SettingsClient.SubscribeToSetting(Settings::Setting::TaskBarAlignment, this);
-   SettingsClient.SubscribeToSetting(Settings::Setting::TaskBarDirectionality, this);
+   SettingsClient.SubscribeToSetting(Settings::Setting::TaskBarOrientation, this);
 }

@@ -13,6 +13,7 @@ target_link_libraries(BackendThreadManager PUBLIC
    PRIVATE
    DataAccess
    Shared
+   TaskBarService
    WallpaperService
    Qt6::Core
 )

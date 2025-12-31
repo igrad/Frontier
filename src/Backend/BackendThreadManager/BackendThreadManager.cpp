@@ -1,5 +1,6 @@
 #include "BackendThreadManager.h"
 
+#include <TaskBarService.h>
 #include <WallpaperService.h>
 
 #include <QThread>
@@ -26,6 +27,10 @@ Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService()
 void BackendThreadManager::HandleServiceThreadStarted()
 {
    TheWallpaperService = new Wallpaper::WallpaperService(this);
+   TheWallpaperService->RegisterMetaTypes();
+
+   TheTaskBarService = new TaskBar::TaskBarService(this);
+   TheTaskBarService->RegisterMetaTypes();
 
    emit ServiceThreadStarted();
 }

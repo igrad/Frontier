@@ -12,7 +12,7 @@ namespace Settings
    {
       None = 0,
       TaskBarAlignment,
-      TaskBarDirectionality,
+      TaskBarOrientation,
       WallpaperColors,
       WallpaperDuration,
       WallpaperFits,

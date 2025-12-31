@@ -101,17 +101,20 @@ void WallpaperView::CreateUI()
 
 void WallpaperView::ConnectToServiceSignals(WallpaperService* service)
 {
-   if(nullptr != service)
+   if(nullptr == service)
    {
-      // Prevents a clang warning about bitwise OR (|) op on these connection types
-      // NOLINTNEXTLINE
-      const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
-                                                        Qt::QueuedConnection);
-
-      connect(service, &WallpaperService::WallpaperDataChanged,
-              this, &WallpaperView::HandleWallpaperDataChanged,
-              conn);
+      LogError("WallpaperService should have been created first!");
+      return;
    }
+
+   // Prevents a clang warning about bitwise OR (|) op on these connection types
+   // NOLINTNEXTLINE
+   const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
+                                                     Qt::QueuedConnection);
+
+   connect(service, &WallpaperService::WallpaperDataChanged,
+           this, &WallpaperView::HandleWallpaperDataChanged,
+           conn);
 }
 
 void WallpaperView::HandleStaticColor(const ViewData& data)

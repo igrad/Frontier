@@ -13,12 +13,14 @@ namespace TaskBar
    public:
       ~TaskBarServiceInterface() = default;
 
+      virtual void RegisterMetaTypes() const = 0;
+
    public slots:
       virtual void HandleSettingTaskBarAlignmentChanged(const QVariant& value) = 0;
-      virtual void HandleSettingTaskBarDirectionalityChanged(const QVariant& value) = 0;
+      virtual void HandleSettingTaskBarOrientationChanged(const QVariant& value) = 0;
 
    signals:
-      void TaskBarAlignmentChanged(Alignment value);
-      void TaskBarDirectionalityChanged(Directionality value);
+      void ViewDataChanged(Alignment value);
+      void TaskBarOrientationChanged(Orientation value);
    };
 }

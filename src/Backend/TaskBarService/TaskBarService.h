@@ -15,15 +15,17 @@ namespace TaskBar
       explicit TaskBarService(QObject* parent = nullptr);
       ~TaskBarService() = default;
 
+      void RegisterMetaTypes() const override;
+
    public slots:
       void HandleSettingTaskBarAlignmentChanged(const QVariant& value) override;
-      void HandleSettingTaskBarDirectionalityChanged(const QVariant& value) override;
+      void HandleSettingTaskBarOrientationChanged(const QVariant& value) override;
 
    private:
       void SubscribeToSettings();
 
       Settings::SettingsClient SettingsClient;
       Alignment CurrentAlignment;
-      Directionality CurrentDirectionality;
+      Orientation CurrentOrientation;
    };
 }

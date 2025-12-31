@@ -22,8 +22,6 @@ WallpaperService::WallpaperService(QObject* parent)
    , RotationTimer(this)
    , ShuffleRando()
 {
-   RegisterMetaTypes();
-
    RotationTimer.setTimerType(Qt::TimerType::CoarseTimer);
    RotationTimer.setInterval(DEFAULT_ROTATION_DURATION_MS);
 

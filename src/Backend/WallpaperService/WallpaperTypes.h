@@ -9,6 +9,7 @@ namespace Wallpaper
 {
    Q_NAMESPACE
 
+   // The behavior to size/stretch the background to the monitor
    enum class Fit: int
    {
       None = 0,
@@ -26,6 +27,7 @@ namespace Wallpaper
       return EnumToString<Fit>(fit);
    }
 
+   // The pattern of determining the next background
    enum class Schedule: int
    {
       None = 0,
@@ -40,6 +42,7 @@ namespace Wallpaper
       return EnumToString<Schedule>(schedule);
    }
 
+   // The type of wallpaper
    enum class Style: int
    {
       None = 0,
@@ -55,6 +58,7 @@ namespace Wallpaper
       return EnumToString<Style>(style);
    }
 
+   // The necessary data to fully display any given wallpaper
    struct ViewData
    {
       quint8 AssignedMonitor;

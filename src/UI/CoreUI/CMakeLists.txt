@@ -4,6 +4,9 @@ set(CoreUISources
    UIManager.cpp
    UIManager.h
 
+   TaskBar/TaskBarView.cpp
+   TaskBar/TaskBarView.h
+
    Wallpaper/DynamicColorWallpaper.cpp
    Wallpaper/DynamicColorWallpaper.h
    Wallpaper/WallpaperView.cpp
@@ -21,12 +24,13 @@ target_include_directories(CoreUI PUBLIC
 find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
 
 target_link_libraries(CoreUI PRIVATE
+   Shared
+   SharedUIComponents
+   TaskBarService
+   WallpaperService
    Qt6::Core
    Qt6::Gui
    Qt6::Multimedia
    Qt6::MultimediaWidgets
    Qt6::Widgets
-   Shared
-   WallpaperService
-   SharedUIComponents
 )
