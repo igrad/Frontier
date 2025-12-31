@@ -12,10 +12,10 @@ namespace Enterprise
       Q_OBJECT
 
    public:
-      EnterpriseSettingsModel(Settings::SettingsClientInterface* settingsClient,
-                              QObject* parent = nullptr);
+      explicit EnterpriseSettingsModel(QObject* parent = nullptr);
       ~EnterpriseSettingsModel() = default;
 
+      void SetSettingsClient(Settings::SettingsClientInterface* settingsClient);
 
       int rowCount(const QModelIndex& parent = QModelIndex()) const override;
       int columnCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -33,7 +33,6 @@ namespace Enterprise
    public slots:
       void HandleSettingChanged(Settings::Setting setting,
                                 const QVariant& value);
-      void HandleDataAccessThreadStarted();
 
    private:
       int GetIndexToInsertSetting(Settings::Setting setting) const;

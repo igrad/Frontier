@@ -3,6 +3,8 @@
 #include "EnterpriseSettingsModel.h"
 #include "EnterpriseSettingsView.h"
 
+#include <SettingsService.h>
+
 #include <QLineEdit>
 
 using namespace Enterprise;
@@ -13,10 +15,9 @@ namespace
    constexpr const char* const DISK_STR = "Disk";
 }
 
-EnterpriseWindow::EnterpriseWindow(Settings::SettingsClientInterface* settingsClient,
-                                   QWidget* parent)
+EnterpriseWindow::EnterpriseWindow(QWidget* parent)
    : QWidget(parent)
-   , SettingsModel(new EnterpriseSettingsModel(settingsClient, this))
+   , SettingsModel(new EnterpriseSettingsModel(this))
    , Layout(nullptr)
    , SuspendControlsLayout(nullptr)
    , ResumeBtn(nullptr)
@@ -45,11 +46,14 @@ EnterpriseWindow::EnterpriseWindow(Settings::SettingsClientInterface* settingsCl
            this, &EnterpriseWindow::HandleRetainAndRestoreCheckBoxCheck);
    connect(StartDatabaseBtn, &QPushButton::released,
            this, &EnterpriseWindow::HandleStartDatabaseBtnReleased);
-   connect(this, &EnterpriseWindow::DataAccessThreadStarted,
-           SettingsModel, &EnterpriseSettingsModel::HandleDataAccessThreadStarted);
 
    setWindowTitle("Enterprise");
    show();
+}
+
+void EnterpriseWindow::SetSettingsClient(Settings::SettingsClientInterface* settingsClient)
+{
+   SettingsModel->SetSettingsClient(settingsClient);
 }
 
 void EnterpriseWindow::HandleFrontierStarted()
@@ -105,9 +109,9 @@ void EnterpriseWindow::HandleStartDatabaseBtnReleased()
    DatabaseSourceComboBox->setDisabled(true);
    StartDatabaseBtn->setDisabled(true);
 
-   LogInfo(QString("Emitting UseRAMDatabases(%1)").arg(UseRAMDbs));
+   // I know it's hacky, but it's only for a debug tool so I don't care.
+   Settings::SettingsService::UseRAMDatabases = UseRAMDbs;
    emit RetainAndRestoreStateChanged(RetainAndRestore);
-   emit UseRAMDatabases(UseRAMDbs);
    emit DatabaseStarted();
 
    ResumeBtn->setDisabled(false);

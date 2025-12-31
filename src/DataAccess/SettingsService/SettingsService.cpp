@@ -36,9 +36,10 @@ namespace
       "value STRING)";
 }
 
-SettingsService::SettingsService(bool useRAMDatabases, QObject* parent)
-   : UseRAMDatabases(useRAMDatabases)
-   , SettingsDbPath("")
+bool SettingsService::UseRAMDatabases = false;
+
+SettingsService::SettingsService(QObject* parent)
+   : SettingsDbPath("")
    , DatabaseName("")
 {
    setParent(parent);
@@ -67,7 +68,7 @@ void SettingsService::SetUpSettingsDatabase()
       SettingsDbPath = ":memory:";
 
       const std::string pathStr = SettingsDbPath.generic_string();
-      db = QSqlDatabase::database(CONNECTION_NAME);
+      db = QSqlDatabase::addDatabase("QSQLITE", CONNECTION_NAME);
    }
    else
    {

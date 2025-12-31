@@ -26,13 +26,10 @@ signals:
 
 public slots:
    void HandleUIConnectedToComponents();
-   void HandleUseRAMDatabases(bool useRAM);
 
 private slots:
    void HandleDataAccessThreadStarted();
 
 private:
    Settings::SettingsService* TheSettingsService;
-
-   bool UseRAMDatabases;
 };

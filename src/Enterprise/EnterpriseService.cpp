@@ -5,7 +5,6 @@
 #include <SettingsService/SettingsClient.h>
 
 #include <QThread>
-#include <iostream>
 
 using namespace Enterprise;
 
@@ -16,7 +15,7 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
    , DataAccessThread(nullptr)
    , BackendThread(nullptr)
    , SettingsClient(nullptr)
-   , Window(new EnterpriseWindow(SettingsClient))
+   , Window(new EnterpriseWindow())
    , SuspendTimer()
    , Started(false)
    , Suspended(false)
@@ -38,19 +37,17 @@ EnterpriseService::~EnterpriseService()
 
 void EnterpriseService::SetDataAccessThread(QThread* dataAccessThread)
 {
-   std::cout << "Enterprise - DataAccess thread set" << std::endl;
+   LogInfo("DataAccess thread set");
    DataAccessThread = dataAccessThread;
    connect(DataAccessThread, &QThread::started,
            this, &EnterpriseService::HandleDataAccessThreadStarted);
-   connect(Window, &EnterpriseWindow::UseRAMDatabases,
-           DataAccess, &DataAccessThreadManager::HandleUseRAMDatabases);
    connect(DataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
            Window, &EnterpriseWindow::DataAccessThreadStarted);
 }
 
 void EnterpriseService::SetBackendThread(QThread* backendThread)
 {
-   std::cout << "Enterprise - Backend thread set" << std::endl;
+   LogInfo("Backend thread set");
    BackendThread = backendThread;
 }
 
@@ -58,7 +55,7 @@ void EnterpriseService::HandleSuspend()
 {
    if(Started && !Suspended)
    {
-      std::cout << "Enterprise - Suspending Frontier" << std::endl;
+      LogInfo("Suspending Frontier");
       Suspended = true;
       SuspendTimer = QDeadlineTimer();
       BackendThread->wait(SuspendTimer);
@@ -67,10 +64,10 @@ void EnterpriseService::HandleSuspend()
 
 void EnterpriseService::HandleResume()
 {
-   std::cout << "Enterprise - resume" << std::endl;
+   LogInfo("resume");
    if(!Started)
    {
-      std::cout << "Enterprise - Starting Frontier" << std::endl;
+      LogInfo("Starting Frontier");
       Started = true;
       Suspended = false;
       BackendThread->start();
@@ -78,7 +75,7 @@ void EnterpriseService::HandleResume()
    }
    else if(Suspended)
    {
-      std::cout << "Enterprise - Resuming Frontier" << std::endl;
+      LogInfo("Resuming Frontier");
       Suspended = false;
       SuspendTimer.setRemainingTime(0);
    }
@@ -86,13 +83,14 @@ void EnterpriseService::HandleResume()
 
 void EnterpriseService::HandleDatabaseStarted()
 {
-   std::cout << "Enterprise - Database started" << std::endl;
+   LogInfo("Database started");
    DataAccessThread->start();
 }
 
 void EnterpriseService::HandleDataAccessThreadStarted()
 {
    SettingsClient = new Settings::SettingsClient("Enterprise", this);
+   Window->SetSettingsClient(SettingsClient);
 }
 
 void EnterpriseService::HandleShellWindowClosed()

@@ -18,15 +18,15 @@ namespace Enterprise
       Q_OBJECT
 
    public:
-      EnterpriseWindow(Settings::SettingsClientInterface* settingsClient,
-                       QWidget* parent = nullptr);
+      explicit EnterpriseWindow(QWidget* parent = nullptr);
       ~EnterpriseWindow() = default;
+
+      void SetSettingsClient(Settings::SettingsClientInterface* settingsClient);
 
    signals:
       void Resume();
       void Suspend();
       void RetainAndRestoreStateChanged(bool active);
-      void UseRAMDatabases(bool useRAM);
       void DatabaseStarted();
       void DataAccessThreadStarted();
 

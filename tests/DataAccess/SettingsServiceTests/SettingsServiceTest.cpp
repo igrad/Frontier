@@ -98,7 +98,7 @@ TEST(SettingsServiceTest, FetchAllSettings1)
 
    MuteQtSqlWarnings();
    {
-      SettingsService service(true);
+      SettingsService service;
 
       QSignalSpy spy(&service, &SettingsService::SettingUpdated);
 
@@ -115,7 +115,7 @@ TEST(SettingsServiceTest, FetchAllSettings2)
        "FetchAllSettings is called",
        "Do not emit SettingUpdated signal")
    FakeDbHelper db;
-   SettingsService service(true);
+   SettingsService service;
 
    db.SetupSchema();
 
@@ -132,7 +132,7 @@ TEST(SettingsServiceTest, FetchAllSettings3)
        "FetchAllSettings is called",
        "Emit SettingUpdated once")
    FakeDbHelper db;
-   SettingsService service(true);
+   SettingsService service;
 
    db.SetupSchema();
    const QVariant value("SomeValue");
@@ -154,7 +154,7 @@ TEST(SettingsServiceTest, SetPointerInClientClass1)
        "The SettingsService is destroyed",
        "The SettingsClient::SettingsService pointer becomes null");
    {
-      SettingsService svc(true);
+      SettingsService svc;
       EXPECT_NE(nullptr, SettingsClient::GetSettingsServicePtr());
    }
 
@@ -167,7 +167,7 @@ TEST(SettingsServiceTest, HandleWriteSettingValueTest1)
        "One component writes a new settings value to disk",
        "Other subscribers to that setting are notified");
 
-   SettingsService service(true);
+   SettingsService service;
 
    QSignalSpy spy(&service, &SettingsService::SettingUpdated);
 
