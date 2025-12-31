@@ -42,33 +42,33 @@ WallpaperView::~WallpaperView()
    // Layout->deleteLater();
 }
 
-void WallpaperView::HandleWallpaperDataChanged(const WallpaperData& data)
+void WallpaperView::HandleWallpaperDataChanged(const ViewData& data)
 {
    CurrentData = data;
 
    if(MediaPlayer->isPlaying() &&
-       (ImageType::Video != data.ImageType))
+       (Style::Video != data.Style))
    {
       MediaPlayer->stop();
       MediaPlayer->setSource(QUrl());
    }
 
-   switch(data.ImageType)
+   switch(data.Style)
    {
-   case ImageType::StaticColor:
+   case Style::StaticColor:
       HandleStaticColor(data);
       break;
-   case ImageType::DynamicColor:
+   case Style::DynamicColor:
       HandleDynamicColor(data);
       break;
-   case ImageType::Image:
+   case Style::Image:
       HandleImage(data);
       break;
-   case ImageType::Video:
+   case Style::Video:
       HandleVideo(data);
       break;
    default:
-      LogWarn(QString("Unhandled ImageType: %1. Ignoring.").arg(ToString(data.ImageType)));
+      LogWarn(QString("Unhandled Style: %1. Ignoring.").arg(ToString(data.Style)));
    }
 }
 
@@ -88,12 +88,12 @@ void WallpaperView::CreateUI()
    Layout->setGeometry({0, 0, 1920, 1080});
    setGeometry({0, 0, 1920, 1080});
 
-   WallpaperData data;
+   ViewData data;
    data.AssignedMonitor = 0;
-   data.Colors = {Qt::blue};
+   data.Color = Qt::blue;
    data.ImagePath = "";
-   data.ImageType = ImageType::StaticColor;
-   data.Mode = DisplayMode::Fill;
+   data.Style = Style::StaticColor;
+   data.Fit = Fit::Fill;
    HandleWallpaperDataChanged(data);
    show();
 }
@@ -113,26 +113,26 @@ void WallpaperView::ConnectToServiceSignals(WallpaperService* service)
    }
 }
 
-void WallpaperView::HandleStaticColor(const WallpaperData& data)
+void WallpaperView::HandleStaticColor(const ViewData& data)
 {
    Layout->setCurrentWidget(Widget);
-   const QString color = (0 < data.Colors.count()) ? data.Colors[0].name() : "#000000";
+   const QString color = (data.Color != QColor()) ? data.Color.name() : "#000000";
    Widget->setStyleSheet(QString("background-color: %1")
                                .arg(color));
    Widget->show();
 }
 
-void WallpaperView::HandleDynamicColor(const WallpaperData& data)
+void WallpaperView::HandleDynamicColor(const ViewData& data)
 {
    Layout->setCurrentWidget(Widget);
 }
 
-void WallpaperView::HandleImage(const WallpaperData& data)
+void WallpaperView::HandleImage(const ViewData& data)
 {
    Layout->setCurrentWidget(Widget);
 }
 
-void WallpaperView::HandleVideo(const WallpaperData& data)
+void WallpaperView::HandleVideo(const ViewData& data)
 {
 
 }

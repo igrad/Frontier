@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QIterable>
+#include <QList>
 
 #include <random>
 
@@ -10,16 +10,27 @@ public:
    Rando();
    Rando(int lowerBound, int upperBound);
 
-   template <typename T>
-   explicit Rando(const QIterable<T>& container);
-
    int Value();
    int Value(int lowerBound, int upperBound);
 
    template <typename T>
-   int Index(const QList<T>& container,
-             int lowerBound = 0,
-             int upperBound = 0);
+   int Index(const QList<T>& container, int lowerBound = 0, int upperBound = 0)
+   {
+      if((lowerBound == upperBound) && (0 == upperBound))
+      {
+         upperBound = container.size();
+      }
+
+      if((lowerBound != LowerBound) || (upperBound != UpperBound))
+      {
+         LowerBound = lowerBound;
+         UpperBound = upperBound;
+
+         Dist = std::uniform_int_distribution<>(LowerBound, UpperBound);
+      }
+
+      return Dist(Engine);
+   }
 
 private:
    std::random_device Device;

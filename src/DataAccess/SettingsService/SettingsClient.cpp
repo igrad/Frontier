@@ -142,7 +142,6 @@ bool SettingsClient::WriteSettingValue(Setting setting, const QVariant& value)
 
    if(Setting::None != setting)
    {
-      std::cout << "Caching setting value!" << std::endl;
       emit CacheSettingValue(setting, value);
       retVal = true;
    }

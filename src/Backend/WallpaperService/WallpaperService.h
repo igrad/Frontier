@@ -1,13 +1,10 @@
 #pragma once
 
 #include "WallpaperTypes.h"
+#include "WallpaperSettingsProxy.h"
 
-#include <SettingsService/SettingsClient.h>
 #include <Utilities/Rando.h>
 
-#include <QColor>
-#include <QObject>
-#include <QStringList>
 #include <QTimer>
 
 namespace Wallpaper
@@ -25,32 +22,21 @@ namespace Wallpaper
    signals:
       void WallpaperDataChanged(const Wallpaper::ViewData& data);
 
-   public slots:
-      void HandleSettingWallpaperColorsChanged(const QVariant& value);
-      void HandleSettingWallpaperDurationChanged(const QVariant& value);
-      void HandleSettingWallpaperFitChanged(const QVariant& value);
-      void HandleSettingWallpaperImagePathsChanged(const QVariant& value);
-      void HandleSettingWallpaperScheduleChanged(const QVariant& value);
-      void HandleSettingWallpaperStyleChanged(const QVariant& value);
-
    private slots:
       void HandleRotationTimeout();
+      void HandleSettingsChanged();
 
    private:
-      void SubscribeToSettings();
       void CalculateCurrentWallpaperData(bool triggeredByRotationTimer = false);
       void CalculateNextColor(bool shuffled);
+      void CalculateNextImage(bool shuffled);
+      void CalculateSequenceOrShuffleViewData(ViewData& data, bool triggeredByTimer);
+      void CalculateStaticViewData(ViewData& data);
 
-      Settings::SettingsClient Settings;
-
-      QList<QColor> CurrentColors;
-      int CurrentDuration;
-      Fit CurrentFit;
-      QStringList CurrentImagePaths;
-      Schedule CurrentSchedule;
-      Style CurrentStyle;
+      WallpaperSettingsProxy SettingsProxy;
 
       int CurrentColorsIndex;
+      int CurrentImageIndex;
       QTimer RotationTimer;
       Rando ShuffleRando;
    };

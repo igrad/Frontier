@@ -35,22 +35,3 @@ int Rando::Value(int lowerBound, int upperBound)
 
    return Dist(Engine);
 };
-
-template <typename T>
-int Rando::Index(const QList<T>& container, int lowerBound, int upperBound)
-{
-   if((lowerBound == upperBound) && (0 == upperBound))
-   {
-      upperBound = container.size();
-   }
-
-   if((lowerBound != LowerBound) || (upperBound != UpperBound))
-   {
-      LowerBound = lowerBound;
-      UpperBound = upperBound;
-
-      Dist = std::uniform_int_distribution<>(LowerBound, UpperBound);
-   }
-
-   return Dist(Engine);
-}

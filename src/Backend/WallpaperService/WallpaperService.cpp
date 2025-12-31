@@ -11,25 +11,18 @@ using namespace Wallpaper;
 
 namespace
 {
-   constexpr Style DEFAULT_WALLPAPER_STYLE = Style::StaticColor;
-   constexpr Fit DEFAULT_WALLPAPER_FIT = Fit::Fill;
    constexpr int DEFAULT_ROTATION_DURATION_MS = 30000;
 }
 
 WallpaperService::WallpaperService(QObject* parent)
    : QObject(parent)
-   , Settings("WallpaperService")
-   , CurrentSchedule(Schedule::None)
-   , CurrentImagePaths()
-   , CurrentColors{QColor("blue")}
+   , SettingsProxy()
    , CurrentColorsIndex(0)
-   , CurrentDuration(DEFAULT_ROTATION_DURATION_MS)
-   , CurrentStyle(DEFAULT_WALLPAPER_STYLE)
+   , CurrentImageIndex(0)
    , RotationTimer(this)
    , ShuffleRando()
 {
    RegisterMetaTypes();
-   SubscribeToSettings();
 
    RotationTimer.setTimerType(Qt::TimerType::CoarseTimer);
    RotationTimer.setInterval(DEFAULT_ROTATION_DURATION_MS);
@@ -40,187 +33,215 @@ void WallpaperService::RegisterMetaTypes() const
    qRegisterMetaType<ViewData>("Wallpaper::ViewData");
 }
 
-void WallpaperService::HandleSettingWallpaperColorsChanged(const QVariant& value)
-{
-   CurrentColors.clear();
-
-   if(value.canConvert<QStringList>())
-   {
-      const QStringList strList = value.toStringList();
-      for(const QString& str : strList)
-      {
-         CurrentColors.push_back(QColor(str));
-      }
-   }
-   else
-   {
-      CurrentColors.push_back(QColor(value.toString()));
-   }
-
-   QStringList strList;
-   for(const QColor& color : std::as_const(CurrentColors))
-   {
-      strList.push_back(color.name());
-   }
-
-   LogInfo(QString("Wallpaper CurrentColors changed to \"%1\"").arg(strList.join(",")));
-
-   CalculateCurrentWallpaperData();
-}
-
-void WallpaperService::HandleSettingWallpaperDurationChanged(const QVariant& value)
-{
-   if(value.canConvert<int>())
-   {
-      CurrentDuration = value.toInt();
-      RotationTimer.setInterval(CurrentDuration);
-      LogInfo(QString("Wallpaper rotation duration changed to %1msec").arg(CurrentDuration));
-
-      CalculateCurrentWallpaperData();
-   }
-}
-
-void WallpaperService::HandleSettingWallpaperFitChanged(const QVariant& value)
-{
-   if(value.canConvert<Fit>())
-   {
-      Fit fit = value.value<Fit>();
-
-      if(fit != CurrentFit)
-      {
-         if(Fit::None == fit)
-         {
-            fit = DEFAULT_WALLPAPER_FIT;
-            LogWarn("Invalid wallpaper fit was parsed. Defaulting.");
-         }
-
-         CurrentFit = fit;
-
-         LogInfo(QString("Wallpaper CurrentFit changed to %1").arg(ToString(CurrentFit)));
-         CalculateCurrentWallpaperData();
-      }
-   }
-}
-
-void WallpaperService::HandleSettingWallpaperImagePathsChanged(const QVariant& value)
-{
-   CurrentImagePaths.clear();
-
-   if(value.canConvert<QStringList>())
-   {
-      CurrentImagePaths = value.toStringList();
-   }
-   else
-   {
-      CurrentImagePaths.push_back(value.toString());
-   }
-
-   LogInfo(QString("Wallpaper CurrentImagePaths changed to \"%1\"")
-              .arg(CurrentImagePaths.join(",")));
-
-   CalculateCurrentWallpaperData();
-}
-
-void WallpaperService::HandleSettingWallpaperScheduleChanged(const QVariant& value)
-{
-   const Schedule newSchedule = value.value<Schedule>();
-
-   if(newSchedule != CurrentSchedule)
-   {
-      CurrentSchedule = newSchedule;
-      LogInfo(QString("Wallpaper schedule changed to: %1").arg(ToString(CurrentSchedule)));
-
-      CalculateCurrentWallpaperData();
-   }
-}
-
-// TODO: Future support for different image styles in the rotation
-void WallpaperService::HandleSettingWallpaperStyleChanged(const QVariant& value)
-{
-   if(value.canConvert<Style>())
-   {
-      const Style style = value.value<Style>();
-
-      if(style != CurrentStyle)
-      {
-         CurrentStyle = style;
-
-         LogInfo(QString("Wallpaper style changed to %1").arg(ToString(style)));
-         CalculateCurrentWallpaperData();
-      }
-   }
-}
-
 void WallpaperService::HandleRotationTimeout()
 {
    LogInfo("Wallpaper rotation timer is triggering a wallpaper change");
    CalculateCurrentWallpaperData(true);
 }
 
-void WallpaperService::SubscribeToSettings()
+void WallpaperService::HandleSettingsChanged()
 {
-   Settings.SubscribeToSetting(Setting::WallpaperColors, this);
-   Settings.SubscribeToSetting(Setting::WallpaperDuration, this);
-   Settings.SubscribeToSetting(Setting::WallpaperFit, this);
-   Settings.SubscribeToSetting(Setting::WallpaperImagePaths, this);
-   Settings.SubscribeToSetting(Setting::WallpaperSchedule, this);
-   Settings.SubscribeToSetting(Setting::WallpaperStyle, this);
+   const QList<QColor>& colors = SettingsProxy.GetColors();
+   if(colors.count() <= CurrentColorsIndex)
+   {
+      CurrentColorsIndex = 0;
+   }
+
+   const QStringList& imagePaths = SettingsProxy.GetPaths();
+   if(imagePaths.count() <= CurrentImageIndex)
+   {
+      CurrentImageIndex = 0;
+   }
+
+   if(Schedule::Static == SettingsProxy.GetSchedule())
+   {
+      RotationTimer.stop();
+   }
+
+   CalculateCurrentWallpaperData();
 }
 
 void WallpaperService::CalculateCurrentWallpaperData(bool triggeredByRotationTimer)
 {
    ViewData data;
-   data.Fit = Fit::Fill;
 
-   switch(CurrentSchedule)
+   const Schedule schedule = SettingsProxy.GetSchedule();
+   switch(schedule)
    {
-   case Schedule::Sequence:
-   {
-      RotationTimer.start(CurrentDuration);
-      CalculateNextColor(false);
-      break;
-   }
-   case Schedule::Shuffle:
-   {
-      RotationTimer.start(CurrentDuration);
-      if((Style::StaticColor == CurrentStyle) ||
-          (Style::DynamicColor == CurrentStyle))
+      case Schedule::Sequence:
+      case Schedule::Shuffle:
       {
-         CalculateNextColor(true);
+         CalculateSequenceOrShuffleViewData(data, triggeredByRotationTimer);
+         break;
       }
-      break;
+      case Schedule::Static:
+      {
+         CalculateStaticViewData(data);
+         break;
+      }
+      default:
+      {
+         LogError(QString("Wallpaper schedule type %1 not handled!")
+           .arg(ToString(schedule)));
+         break;
+      }
    }
-   default:
-   {
-      break;
-   }
-   }
+
+   emit WallpaperDataChanged(data);
 }
 
 void WallpaperService::CalculateNextColor(bool shuffled)
 {
    int index = CurrentColorsIndex;
+   const QList<QColor>& colors = SettingsProxy.GetColors();
 
    if(shuffled)
    {
       int tries = 5;
       do
       {
-         index = ShuffleRando.Index(CurrentColors);
+         index = ShuffleRando.Index<QColor>(colors);
          --tries;
       }
       while((tries > 0) &&
                (index == CurrentColorsIndex) &&
-               (CurrentColors.size() > 1));
+               (colors.size() > 1));
    }
    else
    {
       ++index;
-      if(index >= CurrentColors.count())
+      if(index >= colors.count())
       {
          index = 0;
       }
    }
 
    CurrentColorsIndex = index;
+}
+
+void WallpaperService::CalculateNextImage(bool shuffled)
+{
+   int index = CurrentImageIndex;
+   const QStringList& paths = SettingsProxy.GetPaths();
+
+   if(shuffled)
+   {
+      int tries = 5;
+      do
+      {
+         index = ShuffleRando.Index<QString>(paths);
+         --tries;
+      }
+      while((tries > 0) &&
+               (index == CurrentImageIndex) &&
+               (paths.size() > 1));
+   }
+   else
+   {
+      ++index;
+      if(index >= paths.count())
+      {
+         index = 0;
+      }
+   }
+
+   CurrentImageIndex = index;
+}
+
+void WallpaperService::CalculateSequenceOrShuffleViewData(ViewData& data, bool triggeredByTimer)
+{
+   const Style style = SettingsProxy.GetStyle();
+   const int duration = SettingsProxy.GetDuration();
+   const QList<QColor>& colors = SettingsProxy.GetColors();
+   const bool shuffle = (Schedule::Shuffle == SettingsProxy.GetSchedule());
+   const QStringList& imagePaths = SettingsProxy.GetPaths();
+   const QList<Fit>& fits = SettingsProxy.GetFits();
+
+   // TODO: Multi-monitor
+   data.AssignedMonitor = 0;
+
+   RotationTimer.start(duration);
+   if((Style::DynamicColor == style) ||
+       (Style::StaticColor == style))
+   {
+      data.Fit = Fit::Fill;
+
+      if(triggeredByTimer)
+      {
+         CalculateNextColor(shuffle);
+      }
+
+      if(colors.count() > 0)
+      {
+         if(CurrentColorsIndex > colors.count())
+         {
+            LogWarn(QString("Wallpaper CurrentColorsIndex is too high: %1 on range of %2")
+                       .arg(CurrentColorsIndex, colors.count()));
+            CurrentColorsIndex = 0;
+         }
+
+         data.Color = colors[CurrentColorsIndex];
+      }
+      else
+      {
+         LogWarn(QString("Style is %1 but no colors are loaded! If this is at bootup, disregard")
+                    .arg(ToString(style)));
+      }
+   }
+   else if((Style::Image == style) ||
+              (Style::Video == style))
+   {
+      if(triggeredByTimer)
+      {
+         CalculateNextImage(shuffle);
+      }
+
+      const int numImages = imagePaths.count();
+      if(numImages > 0)
+      {
+         if(CurrentImageIndex > numImages)
+         {
+            LogWarn(QString("Wallpaper CurrentImageIndex is too high: %1 on range of %2")
+                       .arg(CurrentImageIndex, imagePaths.count()));
+            CurrentImageIndex = 0;
+         }
+
+         data.ImagePath = imagePaths[CurrentImageIndex];
+         data.Fit = fits[CurrentImageIndex];
+      }
+      else
+      {
+         LogWarn(QString("Style is %1 but no images are loaded! If this is at bootup, disregard.")
+                    .arg(ToString(style)));
+      }
+   }
+}
+
+void WallpaperService::CalculateStaticViewData(ViewData& data)
+{
+   const Style style = SettingsProxy.GetStyle();
+   const QList<QColor>& colors = SettingsProxy.GetColors();
+   const QStringList& imagePaths = SettingsProxy.GetPaths();
+   const QList<Fit>& fits = SettingsProxy.GetFits();
+
+   // TODO: Multi-monitor
+   data.AssignedMonitor = 0;
+   if((Style::DynamicColor == style) ||
+       (Style::StaticColor == style))
+   {
+      data.Fit = Fit::Fill;
+
+      const int numColors = colors.count();
+      if(numColors > 0)
+      {
+         data.Color = colors[0];
+      }
+      else
+      {
+         LogError(QString("Static Schedule selected with %1 style, but no colors are loaded! "
+                          "If this is at bootup, disregard.")
+                     .arg(ToString(style)));
+         data.Color = Qt::black;
+      }
+   }
 }

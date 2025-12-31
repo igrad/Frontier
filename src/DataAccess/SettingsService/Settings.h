@@ -15,7 +15,7 @@ namespace Settings
       TaskBarDirectionality,
       WallpaperColors,
       WallpaperDuration,
-      WallpaperFit,
+      WallpaperFits,
       WallpaperImagePaths,
       WallpaperSchedule,
       WallpaperStyle,

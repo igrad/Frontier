@@ -2,6 +2,7 @@
 
 #include <Utilities/EnumHelpers.h>
 
+#include <QColor>
 #include <QString>
 
 namespace Wallpaper
@@ -59,7 +60,7 @@ namespace Wallpaper
       quint8 AssignedMonitor;
       Fit Fit;
       Style Style;
-      QList<QColor> Colors;
+      QColor Color;
       QString ImagePath;
    };
 }

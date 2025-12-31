@@ -23,17 +23,17 @@ namespace Wallpaper
       ~WallpaperView();
 
    public slots:
-      void HandleWallpaperDataChanged(const Wallpaper::WallpaperData& data);
+      void HandleWallpaperDataChanged(const Wallpaper::ViewData& data);
 
    private:
       void CreateUI();
       void ConnectToServiceSignals(WallpaperService* service);
-      void HandleStaticColor(const WallpaperData& data);
-      void HandleDynamicColor(const WallpaperData& data);
-      void HandleImage(const WallpaperData& data);
-      void HandleVideo(const WallpaperData& data);
+      void HandleStaticColor(const ViewData& data);
+      void HandleDynamicColor(const ViewData& data);
+      void HandleImage(const ViewData& data);
+      void HandleVideo(const ViewData& data);
 
-      WallpaperData CurrentData;
+      ViewData CurrentData;
       QStackedLayout* Layout;
       QWidget* Widget;
       QMediaPlayer* MediaPlayer;
