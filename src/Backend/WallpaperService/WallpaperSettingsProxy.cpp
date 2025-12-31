@@ -5,8 +5,6 @@
 #include <QColor>
 #include <QVariant>
 
-#include <iostream>
-
 using namespace Settings;
 using namespace Wallpaper;
 
@@ -63,7 +61,6 @@ const Style WallpaperSettingsProxy::GetStyle() const
 
 void WallpaperSettingsProxy::HandleSettingWallpaperColorsChanged(const QVariant& value)
 {
-   std::cout << "colors changed" << std::endl;
    CurrentColors.clear();
 
    if(value.canConvert<QStringList>())
@@ -92,7 +89,6 @@ void WallpaperSettingsProxy::HandleSettingWallpaperColorsChanged(const QVariant&
 
 void WallpaperSettingsProxy::HandleSettingWallpaperDurationChanged(const QVariant& value)
 {
-   std::cout << "Duration changed" << std::endl;
    if(value.canConvert<int>())
    {
       CurrentDuration = value.toInt();
@@ -104,7 +100,6 @@ void WallpaperSettingsProxy::HandleSettingWallpaperDurationChanged(const QVarian
 
 void WallpaperSettingsProxy::HandleSettingWallpaperFitsChanged(const QVariant& value)
 {
-   std::cout << "fits changed" << std::endl;
    const QVariantList list = value.toList();
 
    bool canConvert = true;
@@ -138,7 +133,6 @@ void WallpaperSettingsProxy::HandleSettingWallpaperFitsChanged(const QVariant& v
 
 void WallpaperSettingsProxy::HandleSettingWallpaperImagePathsChanged(const QVariant& value)
 {
-   std::cout << "imagePaths changed" << std::endl;
    CurrentImagePaths.clear();
 
    // NOTE: Is this necessary?
@@ -158,7 +152,6 @@ void WallpaperSettingsProxy::HandleSettingWallpaperImagePathsChanged(const QVari
 
 void WallpaperSettingsProxy::HandleSettingWallpaperScheduleChanged(const QVariant& value)
 {
-   std::cout << "schedule changed" << std::endl;
    const Schedule newSchedule = value.value<Schedule>();
 
    if(newSchedule != CurrentSchedule)
@@ -173,7 +166,6 @@ void WallpaperSettingsProxy::HandleSettingWallpaperScheduleChanged(const QVarian
 // TODO: Future support for different image styles in the rotation
 void WallpaperSettingsProxy::HandleSettingWallpaperStyleChanged(const QVariant& value)
 {
-   std::cout << "style changed" << std::endl;
    if(value.canConvert<Style>())
    {
       const Style style = value.value<Style>();

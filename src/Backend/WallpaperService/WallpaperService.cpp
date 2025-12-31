@@ -26,6 +26,9 @@ WallpaperService::WallpaperService(QObject* parent)
 
    RotationTimer.setTimerType(Qt::TimerType::CoarseTimer);
    RotationTimer.setInterval(DEFAULT_ROTATION_DURATION_MS);
+
+   connect(&SettingsProxy, &WallpaperSettingsProxy::SettingsChanged,
+           this, &WallpaperService::HandleSettingsChanged);
 }
 
 void WallpaperService::RegisterMetaTypes() const
@@ -87,6 +90,7 @@ void WallpaperService::CalculateCurrentWallpaperData(bool triggeredByRotationTim
       }
    }
 
+   LogInfo(QString("WallpaperDataChanged"));
    emit WallpaperDataChanged(data);
 }
 
