@@ -20,7 +20,6 @@ namespace TaskBar
       virtual void HandleSettingTaskBarOrientationChanged(const QVariant& value) = 0;
 
    signals:
-      void ViewDataChanged(Alignment value);
-      void TaskBarOrientationChanged(Orientation value);
+      void ViewDataChanged(const TaskBar::ViewData& data);
    };
 }

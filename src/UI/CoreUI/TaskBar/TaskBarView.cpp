@@ -5,7 +5,7 @@
 
 using namespace TaskBar;
 
-TaskBarView::TaskBarView(TaskBarServiceInterface* service,
+TaskBarView::TaskBarView(XThread<TaskBarServiceInterface> service,
                          ShellWindow* window)
    : QWidget(window)
    , CurrentData()
@@ -19,7 +19,7 @@ TaskBarView::TaskBarView(TaskBarServiceInterface* service,
    ConnectToServiceSignals(service);
 }
 
-void TaskBarView::HandleViewDataChanged(const ViewData& data)
+void TaskBarView::HandleViewDataChanged(const TaskBar::ViewData& data)
 {
 
 }
@@ -29,19 +29,14 @@ void CreateUI()
 
 }
 
-void TaskBarView::ConnectToServiceSignals(TaskBarServiceInterface* service)
+void TaskBarView::ConnectToServiceSignals(XThread<TaskBarServiceInterface> service)
 {
-   if(nullptr == service)
+   if(!service.isNull())
    {
       LogError("TaskBarService should have been created first!");
       return;
    }
 
-   // Prevents a clang warning about bitwise OR (|) op on these connection types
-   // NOLINTNEXTLINE
-   const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
-                                                     Qt::QueuedConnection);
-   connect(service, &TaskBarServiceInterface::ViewDataChanged,
-           this, &TaskBarView::HandleViewDataChanged,
-           Qt::UniqueConnection);
+   service.connect(&TaskBarServiceInterface::ViewDataChanged,
+                   this, &TaskBarView::HandleViewDataChanged);
 }

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <TaskBarService/TaskBarTypes.h>
+#include <TaskBarServiceInterface.h>
+
+#include <Utilities/XThreadConnect.h>
 
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -12,23 +15,21 @@ class ShellWindow;
 
 namespace TaskBar
 {
-   class TaskBarServiceInterface;
-
    class TaskBarView: public QWidget
    {
       Q_OBJECT
 
    public:
-      TaskBarView(TaskBarServiceInterface* service,
+      TaskBarView(XThread<TaskBarServiceInterface> service,
                   ShellWindow* window);
       ~TaskBarView() = default;
 
    public:
-      void HandleViewDataChanged(const ViewData& data);
+      void HandleViewDataChanged(const TaskBar::ViewData& data);
 
    private:
       void CreateUI();
-      void ConnectToServiceSignals(TaskBarServiceInterface* service);
+      void ConnectToServiceSignals(XThread<TaskBarServiceInterface> service);
 
       ViewData CurrentData;
       QBoxLayout* MainLayout;

@@ -7,7 +7,7 @@ using namespace TaskBar;
 TaskBarService::TaskBarService(QObject* parent)
    : SettingsClient("TaskBarService")
    , CurrentAlignment(Alignment::Bottom)
-   , CurrentOrientation(Orientation::Left)
+   , CurrentOrientation(Orientation::LeftToRight)
 {
    setParent(parent);
 
@@ -28,7 +28,7 @@ void TaskBarService::HandleSettingTaskBarAlignmentChanged(const QVariant& value)
       if(val != CurrentAlignment)
       {
          CurrentAlignment = val;
-         emit TaskBarAlignmentChanged(val);
+         // Calc new ViewData
       }
    }
 }
@@ -42,7 +42,7 @@ void TaskBarService::HandleSettingTaskBarOrientationChanged(const QVariant& valu
       if(val != CurrentOrientation)
       {
          CurrentOrientation = val;
-         emit TaskBarOrientationChanged(val);
+         // Calc new ViewData
       }
    }
 }
