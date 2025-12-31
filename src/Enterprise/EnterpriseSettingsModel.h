@@ -42,5 +42,6 @@ namespace Enterprise
 
       Settings::SettingsClientInterface* SettingsClient;
       QList<RowData> Data;
+      bool DatabaseStarted;
    };
 }

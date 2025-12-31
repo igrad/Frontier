@@ -13,6 +13,7 @@ namespace
 EnterpriseSettingsModel::EnterpriseSettingsModel(QObject* parent)
    : SettingsClient(nullptr)
    , Data()
+   , DatabaseStarted(false)
 {
    setParent(parent);
    PopulateSettings();
@@ -22,6 +23,7 @@ void EnterpriseSettingsModel::SetSettingsClient(Settings::SettingsClientInterfac
 {
    SettingsClient = settingsClient;
    SettingsClient->SubscribeToAllSettings(this);
+   DatabaseStarted = true;
 }
 
 int EnterpriseSettingsModel::rowCount(const QModelIndex& parent) const
@@ -99,7 +101,7 @@ Qt::ItemFlags EnterpriseSettingsModel::flags(const QModelIndex& index) const
    {
       flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 
-      if(index.column() > 0)
+      if(DatabaseStarted && (index.column() > 0))
       {
          flags |= Qt::ItemIsEditable;
       }
