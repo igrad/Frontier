@@ -3,6 +3,7 @@
 #include "SettingsServiceInterface.h"
 
 #include <QtSql/QSqlDatabase>
+#include <Sql/SqlQuery.h>
 
 #include <filesystem>
 
@@ -31,7 +32,7 @@ namespace Settings
 
       inline QSqlDatabase GetDb();
       bool OpenDb(QSqlDatabase& db);
-      bool RunQuery(QSqlQuery& query);
+      bool RunQuery(SqlQuery& query);
       void WriteSettingToDatabase(const Setting setting, const QVariant val);
 
       std::filesystem::path SettingsDbPath;

@@ -10,6 +10,8 @@ set(SharedSources
    Utilities/EnumHelpers.h
    Utilities/Rando.cpp
    Utilities/Rando.h
+
+   Sql/SqlQuery.h
 )
 
 add_library(Shared ${SharedSources})
@@ -19,4 +21,5 @@ target_include_directories(Shared PUBLIC
 
 target_link_libraries(Shared PRIVATE
    Qt6::Core
+   Qt6::Sql
 )

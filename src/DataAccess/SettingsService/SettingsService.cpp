@@ -7,7 +7,6 @@
 
 #include <QDir>
 #include <QtSql/QSqlError>
-#include <QtSql/QSqlQuery>
 #include <QStandardPaths>
 #include <cassert>
 
@@ -18,7 +17,7 @@ namespace
    constexpr const char* SETTINGS_DB_NAME = "FrontierSettings.db";
 
    constexpr const char* QUERY_WRITE_SYSTEM_SETTING =
-      "INSERT INTO system_settings (setting, value) "
+      "INSERT OR REPLACE INTO system_settings (setting, value) "
       "VALUES (:setting, :value);";
    constexpr const char* QUERY_READ_SYSTEM_SETTING =
       "SELECT value FROM system_settings "
@@ -105,20 +104,20 @@ void SettingsService::SetUpSettingsDatabase()
    DatabaseName = QString::fromStdString(SettingsDbPath.generic_string());
    db.setDatabaseName(DatabaseName);
    db.open();
-   if(OpenDb(db))
-   {
-      ValidateSystemSettingsTableExists();
-   }
+
+   ValidateSystemSettingsTableExists();
 }
 
 void SettingsService::ValidateSystemSettingsTableExists()
 {
+   LogInfo("Validating SystemSettingsTable exists");
+
    QSqlDatabase db = GetDb();
    if(OpenDb(db))
    {
       // Insert any tables necessary after building
       // Only need to do this until python build files are up and running
-      QSqlQuery query(db);
+      SqlQuery query(db);
       LogInfo(QUERY_CHECK_IF_SYSTEM_SETTINGS_EXISTS)
       query.prepare(QString(QUERY_CHECK_IF_SYSTEM_SETTINGS_EXISTS));
       query.setForwardOnly(true);
@@ -153,13 +152,21 @@ bool SettingsService::OpenDb(QSqlDatabase& db)
    return open;
 }
 
-bool SettingsService::RunQuery(QSqlQuery& query)
+bool SettingsService::RunQuery(SqlQuery& query)
 {
    if(!query.exec())
    {
-      LogWarn("Unable to run query against settings database at \"" +
-              QString::fromStdString(SettingsDbPath.generic_string()) +
-              "\" because of error: " + query.lastError().text());
+      const QSqlError err = query.lastError();
+      LogError(QString("Unable to run query against settings database at \"%1"
+                      "\" because of error: %2")
+                 .arg(QString::fromStdString(SettingsDbPath.generic_string()),
+                      err.text()));
+
+      if(QSqlError::ConnectionError == err.type())
+      {
+         LogError("Connection error. Check that the database has been set in your query!");
+      }
+
       return false;
    }
 
@@ -169,12 +176,13 @@ bool SettingsService::RunQuery(QSqlQuery& query)
 void SettingsService::FetchAllSettings()
 {
    // TODO: This could probably be optimized
+   // Check out QSqlQuery::BatchExecutionMode enum
    QMap<Setting, QVariant> fetchedValues;
 
    QSqlDatabase db = GetDb();
    if(OpenDb(db))
    {
-      QSqlQuery query(db);
+      SqlQuery query(db);
       query.prepare(QUERY_READ_ALL_SYSTEM_SETTINGS);
       query.setForwardOnly(true);
 
@@ -207,7 +215,7 @@ void SettingsService::HandleCacheSettingValue(const Setting setting, const QVari
    QSqlDatabase db = GetDb();
    if(OpenDb(db))
    {
-      QSqlQuery query;
+      SqlQuery query(db);
       query.prepare(QUERY_WRITE_SYSTEM_SETTING);
       query.bindValue(":setting", ToString(setting));
       query.bindValue(":value", ToSettingString(val).c_str());
