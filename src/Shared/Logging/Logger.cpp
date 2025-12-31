@@ -16,6 +16,7 @@ namespace
 
 // TODO: Log rotation strategy
 Logger::Logger(QObject* parent)
+   : LogToStdOut(ArgParser::CheckToLogToStandardOut())
 {
    setParent(parent);
 
@@ -175,11 +176,13 @@ void Logger::WriteToLogFile(const char* level, const char* scope,
 
 void Logger::WriteToLogFile(const std::string& str)
 {
-   if(ArgParser::RunningUnitTests())
+   const bool unitTesting = ArgParser::RunningUnitTests();
+   if(LogToStdOut || unitTesting)
    {
-      std::cout << str.c_str() << std::flush;
+      std::cout << str << std::flush;
    }
-   else
+
+   if(!unitTesting)
    {
       LogFile.open(QIODevice::Append);
       if(LogFile.isOpen())

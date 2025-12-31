@@ -163,4 +163,11 @@ void ArgParser::ParseArgs(const QCoreApplication& app)
    }
 
    ArgParser::Enterprise = ArgParser::GetArgAsBool(Arg::Enterprise, false);
+
+   CheckToLogToStandardOut();
+}
+
+bool ArgParser::CheckToLogToStandardOut()
+{
+   return ArgParser::Enterprise | ArgParser::GetArgAsBool(Arg::Dev, false);
 }

@@ -30,6 +30,7 @@ EnterpriseWindow::EnterpriseWindow(Settings::SettingsClientInterface* settingsCl
    , DatabaseUploadTextEdit(nullptr)
    , DatabaseUploadBtn(nullptr)
    , SettingsView(nullptr)
+   , UseRAMDbs(true)
    , RetainAndRestore(false)
 {
    BuildUI();
@@ -104,6 +105,7 @@ void EnterpriseWindow::HandleStartDatabaseBtnReleased()
    DatabaseSourceComboBox->setDisabled(true);
    StartDatabaseBtn->setDisabled(true);
 
+   LogInfo(QString("Emitting UseRAMDatabases(%1)").arg(UseRAMDbs));
    emit RetainAndRestoreStateChanged(RetainAndRestore);
    emit UseRAMDatabases(UseRAMDbs);
    emit DatabaseStarted();
@@ -129,7 +131,6 @@ void EnterpriseWindow::BuildUI()
    DatabaseSourceComboBox = new QComboBox(this);
    DatabaseSourceComboBox->addItem(MEMORY_STR);
    DatabaseSourceComboBox->addItem(DISK_STR);
-   DatabaseSourceComboBox->setCurrentText("");
    RetainAndRestoreCheckBox = new QCheckBox("Retain+Restore", this);
    RetainAndRestoreCheckBox->setDisabled(true);
    StartDatabaseBtn = new QPushButton("Start database", this);

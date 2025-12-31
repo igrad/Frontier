@@ -15,7 +15,7 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
    , DataAccess(dataAccess)
    , DataAccessThread(nullptr)
    , BackendThread(nullptr)
-   , SettingsClient(new Settings::SettingsClient("Enterprise", this))
+   , SettingsClient(nullptr)
    , Window(new EnterpriseWindow(SettingsClient))
    , SuspendTimer()
    , Started(false)
@@ -27,12 +27,8 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
            this, &EnterpriseService::HandleSuspend);
    connect(this, &EnterpriseService::FrontierStarted,
            Window, &EnterpriseWindow::HandleFrontierStarted);
-   connect(Window, &EnterpriseWindow::UseRAMDatabases,
-           DataAccess, &DataAccessThreadManager::HandleUseRAMDatabases);
    connect(Window, &EnterpriseWindow::DatabaseStarted,
            this, &EnterpriseService::HandleDatabaseStarted);
-   connect(DataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
-           Window, &EnterpriseWindow::DataAccessThreadStarted);
 }
 
 EnterpriseService::~EnterpriseService()
@@ -44,6 +40,12 @@ void EnterpriseService::SetDataAccessThread(QThread* dataAccessThread)
 {
    std::cout << "Enterprise - DataAccess thread set" << std::endl;
    DataAccessThread = dataAccessThread;
+   connect(DataAccessThread, &QThread::started,
+           this, &EnterpriseService::HandleDataAccessThreadStarted);
+   connect(Window, &EnterpriseWindow::UseRAMDatabases,
+           DataAccess, &DataAccessThreadManager::HandleUseRAMDatabases);
+   connect(DataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
+           Window, &EnterpriseWindow::DataAccessThreadStarted);
 }
 
 void EnterpriseService::SetBackendThread(QThread* backendThread)
@@ -86,6 +88,11 @@ void EnterpriseService::HandleDatabaseStarted()
 {
    std::cout << "Enterprise - Database started" << std::endl;
    DataAccessThread->start();
+}
+
+void EnterpriseService::HandleDataAccessThreadStarted()
+{
+   SettingsClient = new Settings::SettingsClient("Enterprise", this);
 }
 
 void EnterpriseService::HandleShellWindowClosed()

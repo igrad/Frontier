@@ -81,7 +81,9 @@ void SettingsClient::ConnectToService()
    }
    else
    {
-      LogError("SettingsClient::SettingsService is null at time of client instantiation");
+      LogError(QString("SettingsClient::SettingsService for client \"%1\" is null at "
+                       "time of client instantiation")
+                  .arg(Owner));
    }
 }
 

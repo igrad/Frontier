@@ -39,12 +39,12 @@ namespace Enterprise
 
    signals:
       void FrontierStarted();
-      void UseRAMDatabases(bool useRAM);
 
    public slots:
       void HandleSuspend();
       void HandleResume();
       void HandleDatabaseStarted();
+      void HandleDataAccessThreadStarted();
       void HandleShellWindowClosed();
 
    private:

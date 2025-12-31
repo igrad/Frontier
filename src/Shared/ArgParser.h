@@ -31,6 +31,7 @@ public:
    static int GetArgAsInt(const Arg arg, const int defaultValue = 0);
    static bool GetArgAsBool(const Arg arg, const bool defaultValue = false);
    static QString GetArgAsString(const Arg arg, const QString defaultValue = "");
+   static bool CheckToLogToStandardOut();
 
 private:
    void SetUpArgs();

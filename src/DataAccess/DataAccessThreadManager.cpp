@@ -4,8 +4,6 @@
 
 #include <QThread>
 
-#include <iostream>
-
 DataAccessThreadManager::DataAccessThreadManager()
    : TheSettingsService(nullptr)
    , UseRAMDatabases(false)
@@ -36,12 +34,14 @@ void DataAccessThreadManager::HandleUIConnectedToComponents()
 
 void DataAccessThreadManager::HandleUseRAMDatabases(bool useRAM)
 {
+   LogInfo(QString("Will %1use RAM database, :memory:").arg(useRAM ? "" : "not"));
    UseRAMDatabases = useRAM;
 }
 
 void DataAccessThreadManager::HandleDataAccessThreadStarted()
 {
-   std::cout << "DataAccessThread started" << std::endl;
+   LogInfo(QString("Starting DataAccessThread. Using RAM databases: %1")
+              .arg(UseRAMDatabases ? "true" : "false"));
    TheSettingsService = new Settings::SettingsService(UseRAMDatabases, this);
 
    emit DataAccessThreadStarted();
