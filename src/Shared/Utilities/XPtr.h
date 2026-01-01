@@ -12,12 +12,8 @@
 template <typename T>
 struct XPtr
 {
-   XPtr(T* object)
+   explicit XPtr(T* object = nullptr)
       : Object(object)
-   {}
-
-   XPtr(const T& object)
-      : Object(&object)
    {}
 
    inline bool isNull() const
@@ -36,5 +32,5 @@ struct XPtr
       return Object;
    }
 
-   T* Object;
+   T* Object = nullptr;
 };
