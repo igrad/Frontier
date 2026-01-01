@@ -17,8 +17,9 @@ namespace
    constexpr const char* const SETTINGS_CLIENT_NAME = "WallpaperService";
 }
 
-WallpaperSettingsProxy::WallpaperSettingsProxy()
-   : SettingsClient(SETTINGS_CLIENT_NAME)
+WallpaperSettingsProxy::WallpaperSettingsProxy(QObject* parent)
+   : QObject(parent)
+   , SettingsClient(SETTINGS_CLIENT_NAME)
    , CurrentColors{Qt::blue}
    , CurrentDuration(DEFAULT_ROTATION_DURATION_MS)
    , CurrentFits{DEFAULT_WALLPAPER_FIT}

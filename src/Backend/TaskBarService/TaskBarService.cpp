@@ -1,17 +1,11 @@
 #include "TaskBarService.h"
 
-#include <SettingsService/Settings.h>
-
 using namespace TaskBar;
 
 TaskBarService::TaskBarService(QObject* parent)
-   : SettingsClient("TaskBarService")
-   , CurrentAlignment(Alignment::Bottom)
-   , CurrentOrientation(Orientation::LeftToRight)
+   : SettingsProxy(this)
 {
    setParent(parent);
-
-   SubscribeToSettings();
 }
 
 void TaskBarService::RegisterMetaTypes() const
@@ -19,36 +13,15 @@ void TaskBarService::RegisterMetaTypes() const
    qRegisterMetaType<TaskBar::ViewData>("TaskBar::ViewData");
 }
 
-void TaskBarService::HandleSettingTaskBarAlignmentChanged(const QVariant& value)
+void TaskBarService::HandleSettingsChanged()
 {
-   if(value.canConvert<Alignment>())
-   {
-      const Alignment val = value.value<Alignment>();
+   ViewData data;
+   data.Alignment = SettingsProxy.GetAlignment();
+   data.AssignedMonitor = 0; // TODO: Multiple monitors
+   data.AutoHide = SettingsProxy.GetAutoHide();
+   data.AutoHideDelayMs = SettingsProxy.GetHideDuration();
+   data.Opacity = 100.0;
+   data.Orientation = SettingsProxy.GetOrientation();
 
-      if(val != CurrentAlignment)
-      {
-         CurrentAlignment = val;
-         // Calc new ViewData
-      }
-   }
-}
-
-void TaskBarService::HandleSettingTaskBarOrientationChanged(const QVariant& value)
-{
-   if(value.canConvert<Orientation>())
-   {
-      const Orientation val = value.value<Orientation>();
-
-      if(val != CurrentOrientation)
-      {
-         CurrentOrientation = val;
-         // Calc new ViewData
-      }
-   }
-}
-
-void TaskBarService::SubscribeToSettings()
-{
-   SettingsClient.SubscribeToSetting(Settings::Setting::TaskBarAlignment, this);
-   SettingsClient.SubscribeToSetting(Settings::Setting::TaskBarOrientation, this);
+   emit ViewDataChanged(data);
 }

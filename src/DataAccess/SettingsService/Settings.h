@@ -12,7 +12,10 @@ namespace Settings
    {
       None = 0,
       TaskBarAlignment,
+      TaskBarAutoHide,
+      TaskBarHideDuration,
       TaskBarOrientation,
+      TaskBarShown,
       WallpaperColors,
       WallpaperDuration,
       WallpaperFits,

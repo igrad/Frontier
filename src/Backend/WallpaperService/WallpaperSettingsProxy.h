@@ -13,7 +13,7 @@ namespace Wallpaper
       Q_OBJECT
 
    public:
-      WallpaperSettingsProxy();
+      explicit WallpaperSettingsProxy(QObject* parent = nullptr);
       ~WallpaperSettingsProxy() = default;
 
       const QList<QColor>& GetColors() const;

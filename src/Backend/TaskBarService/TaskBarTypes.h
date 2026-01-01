@@ -42,12 +42,12 @@ namespace TaskBar
    // Necessary data to display a task bar on-screen
    struct ViewData
    {
-      quint8 AssignedMonitor;
       Alignment Alignment;
-      Orientation Orientation;
-      double Opacity;
+      quint8 AssignedMonitor;
       bool AutoHide;
       int AutoHideDelayMs;
+      Orientation Orientation;
+      double Opacity;
    };
 }
 

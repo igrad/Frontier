@@ -2,6 +2,8 @@ set(TaskBarServiceSources
    TaskBarService.cpp
    TaskBarService.h
    TaskBarServiceInterface.h
+   TaskBarSettingsProxy.cpp
+   TaskBarSettingsProxy.h
    TaskBarTypes.h
 )
 

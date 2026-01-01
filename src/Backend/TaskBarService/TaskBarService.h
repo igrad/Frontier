@@ -1,9 +1,9 @@
 #pragma once
 
-#include "TaskBarTypes.h"
 #include "TaskBarServiceInterface.h"
+#include "TaskBarSettingsProxy.h"
 
-#include <SettingsService/SettingsClient.h>
+#include <QTimer>
 
 namespace TaskBar
 {
@@ -17,15 +17,11 @@ namespace TaskBar
 
       void RegisterMetaTypes() const override;
 
-   public slots:
-      void HandleSettingTaskBarAlignmentChanged(const QVariant& value) override;
-      void HandleSettingTaskBarOrientationChanged(const QVariant& value) override;
+   private slots:
+      void HandleSettingsChanged();
 
    private:
-      void SubscribeToSettings();
-
-      Settings::SettingsClient SettingsClient;
-      Alignment CurrentAlignment;
-      Orientation CurrentOrientation;
+      TaskBarSettingsProxy SettingsProxy;
+      QTimer AutoHideTimer;
    };
 }
