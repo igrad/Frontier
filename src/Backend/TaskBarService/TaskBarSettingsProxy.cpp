@@ -29,6 +29,11 @@ const int TaskBarSettingsProxy::GetHideDuration() const
    return CurrentHideDurationMsec;
 }
 
+const int TaskBarSettingsProxy::GetOpacity() const
+{
+   return CurrentOpacity;
+}
+
 const Orientation TaskBarSettingsProxy::GetOrientation() const
 {
    return CurrentOrientation;
@@ -78,6 +83,21 @@ void TaskBarSettingsProxy::HandleSettingTaskBarHideDurationChanged(const QVarian
       {
          CurrentHideDurationMsec = val;
          LogInfo(QString("TaskBar Hide Duration changed to %1msec").arg(val));
+
+         emit SettingsChanged();
+      }
+   }
+}
+
+void TaskBarSettingsProxy::HandleSettingTaskBarOpacityChanged(const QVariant& value)
+{
+   if(value.canConvert<int>())
+   {
+      const bool val = value.toInt();
+      if(val != CurrentOpacity)
+      {
+         CurrentOpacity = val;
+         LogInfo(QString("TaskBar opacity changed to %1per cent").arg(val));
 
          emit SettingsChanged();
       }

@@ -14,6 +14,7 @@ namespace Settings
       TaskBarAlignment,
       TaskBarAutoHide,
       TaskBarHideDuration,
+      TaskBarOpacity,
       TaskBarOrientation,
       TaskBarShown,
       WallpaperColors,

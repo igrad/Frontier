@@ -24,9 +24,13 @@ void TaskBarView::HandleViewDataChanged(const TaskBar::ViewData& data)
 
 }
 
-void CreateUI()
+void TaskBarView::CreateUI()
 {
+   MainLayout = new QBoxLayout(QBoxLayout::Direction::LeftToRight, this);
 
+   StartButton = new QPushButton(this);
+   // const QIcon defaultIcon();
+   // StartButton->setIcon()
 }
 
 void TaskBarView::ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service)

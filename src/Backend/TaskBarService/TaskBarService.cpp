@@ -20,7 +20,7 @@ void TaskBarService::HandleSettingsChanged()
    data.AssignedMonitor = 0; // TODO: Multiple monitors
    data.AutoHide = SettingsProxy.GetAutoHide();
    data.AutoHideDelayMs = SettingsProxy.GetHideDuration();
-   data.Opacity = 100.0;
+   data.Opacity = SettingsProxy.GetOpacity();
    data.Orientation = SettingsProxy.GetOrientation();
 
    emit ViewDataChanged(data);

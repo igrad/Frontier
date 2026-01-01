@@ -18,6 +18,7 @@ namespace TaskBar
       const Alignment GetAlignment() const;
       const bool GetAutoHide() const;
       const int GetHideDuration() const;
+      const int GetOpacity() const;
       const Orientation GetOrientation() const;
       const bool GetShown() const;
 
@@ -28,6 +29,7 @@ namespace TaskBar
       void HandleSettingTaskBarAlignmentChanged(const QVariant& value);
       void HandleSettingTaskBarAutoHideChanged(const QVariant& value);
       void HandleSettingTaskBarHideDurationChanged(const QVariant& value);
+      void HandleSettingTaskBarOpacityChanged(const QVariant& value);
       void HandleSettingTaskBarOrientationChanged(const QVariant& value);
       void HandleSettingTaskBarShownChanged(const QVariant& value);
 
@@ -39,6 +41,7 @@ namespace TaskBar
       Alignment CurrentAlignment;
       bool CurrentAutoHide;
       int CurrentHideDurationMsec;
+      int CurrentOpacity;
       Orientation CurrentOrientation;
       bool CurrentShown;
    };

@@ -7,6 +7,7 @@
 
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QPushButton>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -33,7 +34,7 @@ namespace TaskBar
 
       ViewData CurrentData;
       QBoxLayout* MainLayout;
-      QWidget* StartButton;
+      QPushButton* StartButton;
       QBoxLayout* AppIconsLayout;
       QBoxLayout* MiscIconsLayout;
       QVBoxLayout* DateTimeLayout;
