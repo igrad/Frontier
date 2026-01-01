@@ -15,14 +15,15 @@ namespace
 }
 
 WallpaperService::WallpaperService(QObject* parent)
-   : QObject(parent)
-   , SettingsProxy()
+   : SettingsProxy()
    , CurrentData()
    , CurrentColorsIndex(0)
    , CurrentImageIndex(0)
    , RotationTimer(this)
    , ShuffleRando()
 {
+   setParent(parent);
+
    RotationTimer.setTimerType(Qt::TimerType::CoarseTimer);
    RotationTimer.setInterval(DEFAULT_ROTATION_DURATION_MS);
 

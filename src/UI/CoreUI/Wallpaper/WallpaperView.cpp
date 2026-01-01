@@ -1,11 +1,12 @@
 #include "WallpaperView.h"
 
-#include <ShellWindow.h>
 #include <WallpaperService.h>
+
+#include <ShellWindow.h>
 
 using namespace Wallpaper;
 
-WallpaperView::WallpaperView(XThread<WallpaperService> service,
+WallpaperView::WallpaperView(XThread<WallpaperServiceInterface> service,
                              ShellWindow* window)
    : QWidget(window)
    , CurrentData()
@@ -99,7 +100,7 @@ void WallpaperView::CreateUI()
    show();
 }
 
-void WallpaperView::ConnectToServiceSignals(XThread<WallpaperService> service)
+void WallpaperView::ConnectToServiceSignals(XThread<WallpaperServiceInterface> service)
 {
    if(service.isNull())
    {
@@ -107,7 +108,7 @@ void WallpaperView::ConnectToServiceSignals(XThread<WallpaperService> service)
       return;
    }
 
-   connect(service.get(), &WallpaperService::WallpaperDataChanged,
+   connect(service.get(), &WallpaperServiceInterface::WallpaperDataChanged,
            this, &WallpaperView::HandleWallpaperDataChanged);
 }
 

@@ -25,7 +25,7 @@ TaskBar::TaskBarServiceInterface* BackendThreadManager::GetTheTaskBarService() c
    return TheTaskBarService;
 }
 
-Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService() const
+Wallpaper::WallpaperServiceInterface* BackendThreadManager::GetTheWallpaperService() const
 {
    return TheWallpaperService;
 }

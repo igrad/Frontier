@@ -49,7 +49,7 @@ void UIManager::HandlePassTaskBarService(XThread<TaskBar::TaskBarServiceInterfac
    BuildUIComponents();
 }
 
-void UIManager::HandlePassWallpaperService(XThread<Wallpaper::WallpaperService> service)
+void UIManager::HandlePassWallpaperService(XThread<Wallpaper::WallpaperServiceInterface> service)
 {
    WallpaperService = service;
    BuildUIComponents();

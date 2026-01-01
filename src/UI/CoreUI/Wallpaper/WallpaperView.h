@@ -13,14 +13,14 @@ class ShellWindow;
 
 namespace Wallpaper
 {
-   class WallpaperService;
+   class WallpaperServiceInterface;
 
    class WallpaperView: public QWidget
    {
       Q_OBJECT
 
    public:
-      WallpaperView(XThread<WallpaperService> service,
+      WallpaperView(XThread<WallpaperServiceInterface> service,
                     ShellWindow* window);
       ~WallpaperView();
 
@@ -29,7 +29,7 @@ namespace Wallpaper
 
    private:
       void CreateUI();
-      void ConnectToServiceSignals(XThread<WallpaperService> service);
+      void ConnectToServiceSignals(XThread<WallpaperServiceInterface> service);
       void HandleStaticColor(const ViewData& data);
       void HandleDynamicColor(const ViewData& data);
       void HandleImage(const ViewData& data);

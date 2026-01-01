@@ -1,6 +1,7 @@
 set(WallpaperServiceSources
    WallpaperService.cpp
    WallpaperService.h
+   WallpaperServiceInterface.h
    WallpaperSettingsProxy.cpp
    WallpaperSettingsProxy.h
 

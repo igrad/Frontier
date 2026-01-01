@@ -10,7 +10,7 @@ class TaskBarServiceInterface;
 }
 namespace Wallpaper
 {
-class WallpaperService;
+class WallpaperServiceInterface;
 }
 
 class BackendThreadManager: public QObject
@@ -24,7 +24,7 @@ public:
    void AssignToThread(QThread* thread);
 
    TaskBar::TaskBarServiceInterface* GetTheTaskBarService() const;
-   Wallpaper::WallpaperService* GetTheWallpaperService() const;
+   Wallpaper::WallpaperServiceInterface* GetTheWallpaperService() const;
 
 public slots:
    void HandleRequestWallpaperService();
@@ -32,13 +32,13 @@ public slots:
 
 signals:
    void ServiceThreadStarted();
-   void PassWallpaperService(XThread<Wallpaper::WallpaperService> service);
+   void PassWallpaperService(XThread<Wallpaper::WallpaperServiceInterface> service);
    void PassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service);
 
 private slots:
    void HandleServiceThreadStarted();
 
 private:
-   Wallpaper::WallpaperService* TheWallpaperService;
+   Wallpaper::WallpaperServiceInterface* TheWallpaperService;
    TaskBar::TaskBarServiceInterface* TheTaskBarService;
 };

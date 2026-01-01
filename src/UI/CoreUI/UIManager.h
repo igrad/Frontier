@@ -2,6 +2,7 @@
 
 #include <BackendThreadManager/BackendThreadManager.h>
 #include <DataAccessThreadManager.h>
+
 #include <Utilities/XThread.h>
 
 class ShellWindow;
@@ -29,7 +30,7 @@ signals:
 private slots:
    void HandleServiceThreadStarted();
    void HandlePassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service);
-   void HandlePassWallpaperService(XThread<Wallpaper::WallpaperService> service);
+   void HandlePassWallpaperService(XThread<Wallpaper::WallpaperServiceInterface> service);
 
 private:
    void Start();
@@ -44,6 +45,6 @@ private:
 
    XThread<TaskBar::TaskBarServiceInterface> TaskBarService;
 
-   XThread<Wallpaper::WallpaperService> WallpaperService;
+   XThread<Wallpaper::WallpaperServiceInterface> WallpaperService;
    Wallpaper::WallpaperView* TheWallpaperView;
 };

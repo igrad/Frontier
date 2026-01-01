@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WallpaperTypes.h"
+#include "WallpaperServiceInterface.h"
 #include "WallpaperSettingsProxy.h"
 
 #include <Utilities/Rando.h>
@@ -9,7 +9,7 @@
 
 namespace Wallpaper
 {
-   class WallpaperService: public QObject
+   class WallpaperService: public WallpaperServiceInterface
    {
       Q_OBJECT
 
@@ -17,10 +17,7 @@ namespace Wallpaper
       explicit WallpaperService(QObject* parent = nullptr);
       ~WallpaperService() = default;
 
-      void RegisterMetaTypes() const;
-
-   signals:
-      void WallpaperDataChanged(const Wallpaper::ViewData& data);
+      void RegisterMetaTypes() const override;
 
    private slots:
       void HandleRotationTimeout();
