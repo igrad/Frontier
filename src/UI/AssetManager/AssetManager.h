@@ -36,6 +36,6 @@ private:
    bool IsInFlight(const AssetId& id) const;
 
    XPtr<AssetLoaderInterface> Loader;
-   QHash<AssetId, QPixmap> PixmapCache;
-   QSet<AssetId> InFlight;
+   QHash<AssetId, QPair<QString, QPixmap>> PixmapCache;
+   QHash<AssetId, QString> InFlight;
 };

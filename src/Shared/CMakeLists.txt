@@ -8,6 +8,7 @@ set(SharedSources
    Logging/Logger.h
 
    Utilities/EnumHelpers.h
+   Utilities/MethodLookupHelpers.h
    Utilities/Rando.cpp
    Utilities/Rando.h
    Utilities/XPtr.h

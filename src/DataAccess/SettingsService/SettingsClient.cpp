@@ -2,6 +2,7 @@
 #include "SettingsServiceInterface.h"
 
 #include <Log.h>
+#include <Utilities/MethodLookupHelpers.h>
 
 using namespace Settings;
 
@@ -49,7 +50,7 @@ const std::string SettingsClient::GetSettingHandlerMethodStr(Setting setting, bo
       QString rawStr;
       if(allSetting)
       {
-         rawStr = QString("HAndleSettingChanged");
+         rawStr = QString("HandleSettingChanged");
       }
       else
       {
@@ -91,7 +92,7 @@ bool SettingsClient::SubscribeToSetting(Setting setting, QObject* subscriber)
    const std::string methodStr = GetSettingHandlerMethodStr(setting, true);
    if(nullptr != subscriber)
    {
-      if((0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str())))
+      if(QObjectHasMethodDeclared(subscriber, methodStr))
       {
          Subscriptions.insert(setting, subscriber);
          retVal = true;
