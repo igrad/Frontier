@@ -3,8 +3,8 @@
 
 #include <Wallpaper/WallpaperView.h>
 
-UIManager::UIManager(XThread<DataAccessThreadManager> dataAccess,
-                     XThread<BackendThreadManager> backend)
+UIManager::UIManager(DataAccessThreadManager* dataAccess,
+                     BackendThreadManager* backend)
    : DataAccess(dataAccess)
    , Backend(backend)
    , TheShellWindow(nullptr)
@@ -43,13 +43,13 @@ void UIManager::HandleServiceThreadStarted()
    emit RequestPassTaskBarService();
 }
 
-void UIManager::HandlePassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service)
+void UIManager::HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service)
 {
    TaskBarService = service;
    BuildUIComponents();
 }
 
-void UIManager::HandlePassWallpaperService(XThread<Wallpaper::WallpaperServiceInterface> service)
+void UIManager::HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service)
 {
    WallpaperService = service;
    BuildUIComponents();

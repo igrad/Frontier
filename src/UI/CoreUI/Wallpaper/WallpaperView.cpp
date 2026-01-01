@@ -6,7 +6,7 @@
 
 using namespace Wallpaper;
 
-WallpaperView::WallpaperView(XThread<WallpaperServiceInterface> service,
+WallpaperView::WallpaperView(XPtr<WallpaperServiceInterface> service,
                              ShellWindow* window)
    : QWidget(window)
    , CurrentData()
@@ -100,7 +100,7 @@ void WallpaperView::CreateUI()
    show();
 }
 
-void WallpaperView::ConnectToServiceSignals(XThread<WallpaperServiceInterface> service)
+void WallpaperView::ConnectToServiceSignals(XPtr<WallpaperServiceInterface> service)
 {
    if(service.isNull())
    {

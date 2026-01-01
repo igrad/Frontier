@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Utilities/XThread.h>
-
 #include <QObject>
 
 namespace TaskBar
@@ -32,8 +30,8 @@ public slots:
 
 signals:
    void ServiceThreadStarted();
-   void PassWallpaperService(XThread<Wallpaper::WallpaperServiceInterface> service);
-   void PassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service);
+   void PassWallpaperService(Wallpaper::WallpaperServiceInterface* service);
+   void PassTaskBarService(TaskBar::TaskBarServiceInterface* service);
 
 private slots:
    void HandleServiceThreadStarted();

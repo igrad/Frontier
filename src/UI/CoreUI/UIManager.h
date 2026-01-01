@@ -3,7 +3,7 @@
 #include <BackendThreadManager/BackendThreadManager.h>
 #include <DataAccessThreadManager.h>
 
-#include <Utilities/XThread.h>
+#include <Utilities/XPtr.h>
 
 class ShellWindow;
 
@@ -17,8 +17,8 @@ class UIManager: public QObject
    Q_OBJECT
 
 public:
-   explicit UIManager(XThread<DataAccessThreadManager> dataAccess,
-                      XThread<BackendThreadManager> backend);
+   explicit UIManager(DataAccessThreadManager* dataAccess,
+                      BackendThreadManager* backend);
    ~UIManager();
 
 signals:
@@ -29,8 +29,8 @@ signals:
 
 private slots:
    void HandleServiceThreadStarted();
-   void HandlePassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service);
-   void HandlePassWallpaperService(XThread<Wallpaper::WallpaperServiceInterface> service);
+   void HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service);
+   void HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service);
 
 private:
    void Start();
@@ -39,12 +39,12 @@ private:
    void BuildTheShellWindow();
    void BuildTheWallpaperView();
 
-   XThread<DataAccessThreadManager> DataAccess;
-   XThread<BackendThreadManager> Backend;
+   XPtr<DataAccessThreadManager> DataAccess;
+   XPtr<BackendThreadManager> Backend;
    ShellWindow* TheShellWindow;
 
-   XThread<TaskBar::TaskBarServiceInterface> TaskBarService;
+   XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
 
-   XThread<Wallpaper::WallpaperServiceInterface> WallpaperService;
+   XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
    Wallpaper::WallpaperView* TheWallpaperView;
 };

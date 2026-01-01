@@ -5,7 +5,7 @@
 
 using namespace TaskBar;
 
-TaskBarView::TaskBarView(XThread<TaskBarServiceInterface> service,
+TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
                          ShellWindow* window)
    : QWidget(window)
    , CurrentData()
@@ -29,7 +29,7 @@ void CreateUI()
 
 }
 
-void TaskBarView::ConnectToServiceSignals(XThread<TaskBarServiceInterface> service)
+void TaskBarView::ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service)
 {
    if(!service.isNull())
    {

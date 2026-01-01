@@ -3,7 +3,7 @@
 #include <TaskBarService/TaskBarTypes.h>
 #include <TaskBarServiceInterface.h>
 
-#include <Utilities/XThread.h>
+#include <Utilities/XPtr.h>
 
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -20,7 +20,7 @@ namespace TaskBar
       Q_OBJECT
 
    public:
-      TaskBarView(XThread<TaskBarServiceInterface> service,
+      TaskBarView(XPtr<TaskBarServiceInterface> service,
                   ShellWindow* window);
       ~TaskBarView() = default;
 
@@ -29,7 +29,7 @@ namespace TaskBar
 
    private:
       void CreateUI();
-      void ConnectToServiceSignals(XThread<TaskBarServiceInterface> service);
+      void ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service);
 
       ViewData CurrentData;
       QBoxLayout* MainLayout;
