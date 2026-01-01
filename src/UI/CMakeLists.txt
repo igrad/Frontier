@@ -1,3 +1,4 @@
+add_subdirectory(AssetManager)
 add_subdirectory(CoreUI)
 add_subdirectory(DesktopWidgets)
 add_subdirectory(Overlays)
