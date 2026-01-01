@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AssetId.h"
+
 #include <QObject>
 
 class AssetLoaderInterface: public QObject
@@ -10,10 +12,10 @@ public:
    ~AssetLoaderInterface() = default;
 
 public slots:
-   virtual void LoadImageAsset(const QString& path) = 0;
-   virtual void LoadFontAsset(const QString& path) = 0;
+   virtual void LoadImageAsset(const AssetId& id, const QString& path) = 0;
+   virtual void LoadFontAsset(const AssetId& id, const QString& path) = 0;
 
 signals:
-   void ImageAssetLoaded(const QString& path, const QImage& image);
-   void FontAssetLoaded(const QString& path, const QFont& font);
+   void ImageAssetLoaded(const AssetId& id, const QImage& image);
+   void FontAssetLoaded(const AssetId& id, const QFont& font);
 };

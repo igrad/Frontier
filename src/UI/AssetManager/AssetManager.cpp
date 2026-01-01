@@ -27,19 +27,58 @@ AssetManager::~AssetManager()
 
 }
 
-void AssetManager::RequestFont(const QString& path, QObject* requester)
+AssetId AssetManager::RequestFont(const QString& path, QObject* requester)
 {
+   const AssetId id(path);
+   if(IsInFlight(id))
+   {
+      return id;
+   }
+
    QMetaObject::invokeMethod(Loader.Object,
                              "LoadFontAsset",
+                             Q_ARG(AssetId, id),
                              Q_ARG(QString, path));
+
+   return id;
 }
 
-void AssetManager::HandleFontAssetLoaded(const QString& path, const QFont& font)
+AssetId AssetManager::RequestImage(const QString& path, QObject* requester)
+{
+   const AssetId id(path);
+   if(IsInImageCache(id))
+   {
+      return id;
+   }
+   else if(IsInFlight(id))
+   {
+      return id;
+   }
+
+   QMetaObject::invokeMethod(Loader.Object,
+                             "LoadImageAsset",
+                             Q_ARG(AssetId, id),
+                             Q_ARG(QString, path));
+
+   return id;
+}
+
+void AssetManager::HandleFontAssetLoaded(const AssetId& id, const QFont& font)
 {
 
 }
 
-void AssetManager::HandleImageAssetLoaded(const QString& path, const QImage& image)
+void AssetManager::HandleImageAssetLoaded(const AssetId& id, const QImage& image)
 {
 
+}
+
+bool AssetManager::IsInImageCache(const AssetId& id) const
+{
+   return PixmapCache.contains(id);
+}
+
+bool AssetManager::IsInFlight(const AssetId& id) const
+{
+   return InFlight.contains(id);
 }

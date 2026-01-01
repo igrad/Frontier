@@ -18,21 +18,24 @@ public:
                 QObject* parent = nullptr);
    ~AssetManager();
 
-   void RequestFont(const QString& path, QObject* requester);
-   void RequestImage(const QString& path, QObject* requester);
+   AssetId RequestFont(const QString& path, QObject* requester);
+   AssetId RequestImage(const QString& path, QObject* requester);
 
 signals:
-   void FontLoaded(const QString& path, const QFont& font);
-   void ImageLoaded(const QString& path, const QPixmap& pixmap);
+   void FontLoaded(const AssetId& id, const QFont& font);
+   void ImageLoaded(const AssetId& id, const QPixmap& pixmap);
 
 private slots:
-   void HandleFontAssetLoaded(const QString& path, const QFont& font);
-   void HandleImageAssetLoaded(const QString& path, const QImage& image);
+   void HandleFontAssetLoaded(const AssetId& id, const QFont& font);
+   void HandleImageAssetLoaded(const AssetId& id, const QImage& image);
 
 private:
    static AssetManager* Instance;
 
+   bool IsInImageCache(const AssetId& id) const;
+   bool IsInFlight(const AssetId& id) const;
+
    XPtr<AssetLoaderInterface> Loader;
-   QHash<QString, QPixmap> PixmapCache;
-   QSet<QString> InFlight;
+   QHash<AssetId, QPixmap> PixmapCache;
+   QSet<AssetId> InFlight;
 };

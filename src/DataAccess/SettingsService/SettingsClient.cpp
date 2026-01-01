@@ -3,8 +3,6 @@
 
 #include <Log.h>
 
-#include <iostream>
-
 using namespace Settings;
 
 SettingsServiceInterface* SettingsClient::Service = nullptr;
