@@ -6,7 +6,8 @@
 #include <QThread>
 
 BackendThreadManager::BackendThreadManager()
-   : TheWallpaperService(nullptr)
+   : TheTaskBarService(nullptr)
+   , TheWallpaperService(nullptr)
 {
 }
 
@@ -19,9 +20,24 @@ void BackendThreadManager::AssignToThread(QThread* thread)
            Qt::UniqueConnection);
 }
 
-Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService()
+TaskBar::TaskBarServiceInterface* BackendThreadManager::GetTheTaskBarService() const
+{
+   return TheTaskBarService;
+}
+
+Wallpaper::WallpaperService* BackendThreadManager::GetTheWallpaperService() const
 {
    return TheWallpaperService;
+}
+
+void BackendThreadManager::HandleRequestTaskBarService()
+{
+   emit PassTaskBarService(TheTaskBarService);
+}
+
+void BackendThreadManager::HandleRequestWallpaperService()
+{
+   emit PassWallpaperService(TheWallpaperService);
 }
 
 void BackendThreadManager::HandleServiceThreadStarted()

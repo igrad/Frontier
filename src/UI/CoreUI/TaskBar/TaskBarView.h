@@ -3,7 +3,7 @@
 #include <TaskBarService/TaskBarTypes.h>
 #include <TaskBarServiceInterface.h>
 
-#include <Utilities/XThreadConnect.h>
+#include <Utilities/XThread.h>
 
 #include <QGridLayout>
 #include <QHBoxLayout>

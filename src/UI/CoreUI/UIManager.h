@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QObject>
+#include <BackendThreadManager/BackendThreadManager.h>
+#include <DataAccessThreadManager.h>
+#include <Utilities/XThread.h>
 
-class BackendThreadManager;
-class DataAccessThreadManager;
 class ShellWindow;
 
 namespace Wallpaper
@@ -16,16 +16,20 @@ class UIManager: public QObject
    Q_OBJECT
 
 public:
-   explicit UIManager(DataAccessThreadManager* dataAccess,
-                      BackendThreadManager* backend);
+   explicit UIManager(XThread<DataAccessThreadManager> dataAccess,
+                      XThread<BackendThreadManager> backend);
    ~UIManager();
 
 signals:
    void UIConnectedToServiceComponents();
    void ShellWindowClosed();
+   void RequestPassWallpaperService();
+   void RequestPassTaskBarService();
 
 private slots:
    void HandleServiceThreadStarted();
+   void HandlePassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service);
+   void HandlePassWallpaperService(XThread<Wallpaper::WallpaperService> service);
 
 private:
    void Start();
@@ -34,8 +38,12 @@ private:
    void BuildTheShellWindow();
    void BuildTheWallpaperView();
 
-   DataAccessThreadManager* DataAccess;
-   BackendThreadManager* Backend;
+   XThread<DataAccessThreadManager> DataAccess;
+   XThread<BackendThreadManager> Backend;
    ShellWindow* TheShellWindow;
+
+   XThread<TaskBar::TaskBarServiceInterface> TaskBarService;
+
+   XThread<Wallpaper::WallpaperService> WallpaperService;
    Wallpaper::WallpaperView* TheWallpaperView;
 };

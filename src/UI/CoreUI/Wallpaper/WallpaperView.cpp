@@ -5,7 +5,7 @@
 
 using namespace Wallpaper;
 
-WallpaperView::WallpaperView(WallpaperService* service,
+WallpaperView::WallpaperView(XThread<WallpaperService> service,
                              ShellWindow* window)
    : QWidget(window)
    , CurrentData()
@@ -99,22 +99,16 @@ void WallpaperView::CreateUI()
    show();
 }
 
-void WallpaperView::ConnectToServiceSignals(WallpaperService* service)
+void WallpaperView::ConnectToServiceSignals(XThread<WallpaperService> service)
 {
-   if(nullptr == service)
+   if(service.isNull())
    {
       LogError("WallpaperService should have been created first!");
       return;
    }
 
-   // Prevents a clang warning about bitwise OR (|) op on these connection types
-   // NOLINTNEXTLINE
-   const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
-                                                     Qt::QueuedConnection);
-
-   connect(service, &WallpaperService::WallpaperDataChanged,
-           this, &WallpaperView::HandleWallpaperDataChanged,
-           conn);
+   connect(service.get(), &WallpaperService::WallpaperDataChanged,
+           this, &WallpaperView::HandleWallpaperDataChanged);
 }
 
 void WallpaperView::HandleStaticColor(const ViewData& data)

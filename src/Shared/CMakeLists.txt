@@ -10,7 +10,7 @@ set(SharedSources
    Utilities/EnumHelpers.h
    Utilities/Rando.cpp
    Utilities/Rando.h
-   Utilities/XThreadConnect.h
+   Utilities/XThread.h
 
    Sql/SqlQuery.h
 )

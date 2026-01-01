@@ -2,23 +2,18 @@
 #include "UIManager.h"
 
 #include <Wallpaper/WallpaperView.h>
-#include <BackendThreadManager/BackendThreadManager.h>
-#include <DataAccess/DataAccessThreadManager.h>
 
-#include <iostream>
-
-UIManager::UIManager(DataAccessThreadManager* dataAccess,
-                     BackendThreadManager* backend)
+UIManager::UIManager(XThread<DataAccessThreadManager> dataAccess,
+                     XThread<BackendThreadManager> backend)
    : DataAccess(dataAccess)
    , Backend(backend)
    , TheShellWindow(nullptr)
+   , TaskBarService(nullptr)
+   , WallpaperService(nullptr)
    , TheWallpaperView(nullptr)
 {
    connect(this, &UIManager::UIConnectedToServiceComponents,
-           DataAccess, &DataAccessThreadManager::HandleUIConnectedToComponents,
-           Qt::UniqueConnection);
-   connect(Backend, &BackendThreadManager::ServiceThreadStarted,
-           this, &UIManager::HandleServiceThreadStarted);
+           DataAccess.get(), &DataAccessThreadManager::HandleUIConnectedToComponents);
 }
 
 UIManager::~UIManager()
@@ -39,15 +34,40 @@ void UIManager::Start()
 
 void UIManager::HandleServiceThreadStarted()
 {
-   std::cout << "HandleServiceThreadStarted" <<  std::endl;
+   connect(this, &UIManager::RequestPassTaskBarService,
+           Backend.get(), &BackendThreadManager::HandleRequestTaskBarService);
+   connect(this, &UIManager::RequestPassWallpaperService,
+           Backend.get(), &BackendThreadManager::HandleRequestWallpaperService);
+
+   emit RequestPassWallpaperService();
+   emit RequestPassTaskBarService();
+}
+
+void UIManager::HandlePassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service)
+{
+   TaskBarService = service;
    BuildUIComponents();
-   Start();
+}
+
+void UIManager::HandlePassWallpaperService(XThread<Wallpaper::WallpaperService> service)
+{
+   WallpaperService = service;
+   BuildUIComponents();
 }
 
 void UIManager::BuildUIComponents()
 {
-   BuildTheShellWindow();
-   BuildTheWallpaperView();
+   if(!TaskBarService.isNull()&&
+       !WallpaperService.isNull())
+   {
+      BuildTheShellWindow();
+
+      // Build in z-index order
+      BuildTheWallpaperView();
+      // BuildTheTaskBarView();
+
+      Start();
+   }
 }
 
 void UIManager::BuildTheShellWindow()
@@ -59,6 +79,6 @@ void UIManager::BuildTheShellWindow()
 
 void UIManager::BuildTheWallpaperView()
 {
-   TheWallpaperView = new Wallpaper::WallpaperView(Backend->GetTheWallpaperService(),
+   TheWallpaperView = new Wallpaper::WallpaperView(WallpaperService,
                                                    TheShellWindow);
 }

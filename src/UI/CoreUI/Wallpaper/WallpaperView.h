@@ -2,6 +2,8 @@
 
 #include <WallpaperService/WallpaperTypes.h>
 
+#include <Utilities/XThread.h>
+
 #include <QMediaPlayer>
 #include <QStackedLayout>
 #include <QVideoWidget>
@@ -18,7 +20,7 @@ namespace Wallpaper
       Q_OBJECT
 
    public:
-      WallpaperView(WallpaperService* service,
+      WallpaperView(XThread<WallpaperService> service,
                     ShellWindow* window);
       ~WallpaperView();
 
@@ -27,7 +29,7 @@ namespace Wallpaper
 
    private:
       void CreateUI();
-      void ConnectToServiceSignals(WallpaperService* service);
+      void ConnectToServiceSignals(XThread<WallpaperService> service);
       void HandleStaticColor(const ViewData& data);
       void HandleDynamicColor(const ViewData& data);
       void HandleImage(const ViewData& data);

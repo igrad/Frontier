@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Utilities/XThread.h>
+
 #include <QObject>
 
 namespace TaskBar
@@ -21,11 +23,17 @@ public:
 
    void AssignToThread(QThread* thread);
 
-   Wallpaper::WallpaperService* GetTheWallpaperService();
-   TaskBar::TaskBarServiceInterface* GetTheTaskBarService();
+   TaskBar::TaskBarServiceInterface* GetTheTaskBarService() const;
+   Wallpaper::WallpaperService* GetTheWallpaperService() const;
+
+public slots:
+   void HandleRequestWallpaperService();
+   void HandleRequestTaskBarService();
 
 signals:
    void ServiceThreadStarted();
+   void PassWallpaperService(XThread<Wallpaper::WallpaperService> service);
+   void PassTaskBarService(XThread<TaskBar::TaskBarServiceInterface> service);
 
 private slots:
    void HandleServiceThreadStarted();

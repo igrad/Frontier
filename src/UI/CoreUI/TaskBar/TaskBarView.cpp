@@ -37,6 +37,6 @@ void TaskBarView::ConnectToServiceSignals(XThread<TaskBarServiceInterface> servi
       return;
    }
 
-   service.connect(&TaskBarServiceInterface::ViewDataChanged,
-                   this, &TaskBarView::HandleViewDataChanged);
+   connect(service.get(), &TaskBarServiceInterface::ViewDataChanged,
+           this, &TaskBarView::HandleViewDataChanged);
 }
