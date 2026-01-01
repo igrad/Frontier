@@ -30,11 +30,14 @@ namespace Wallpaper
       void CalculateCurrentWallpaperData(bool triggeredByRotationTimer = false);
       void CalculateNextColor(bool shuffled);
       void CalculateNextImage(bool shuffled);
-      void CalculateSequenceOrShuffleViewData(ViewData& data, bool triggeredByTimer);
-      void CalculateStaticViewData(ViewData& data);
+      void CalculateSequenceOrShuffleViewData(bool triggeredByTimer);
+      void CalculateStaticViewData();
+      void ProcessColorStyle(bool triggeredByTimer);
+      void ProcessImageStyle(bool triggeredByTimer);
 
       WallpaperSettingsProxy SettingsProxy;
 
+      ViewData CurrentData;
       int CurrentColorsIndex;
       int CurrentImageIndex;
       QTimer RotationTimer;

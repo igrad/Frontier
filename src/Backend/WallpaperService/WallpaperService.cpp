@@ -17,6 +17,7 @@ namespace
 WallpaperService::WallpaperService(QObject* parent)
    : QObject(parent)
    , SettingsProxy()
+   , CurrentData()
    , CurrentColorsIndex(0)
    , CurrentImageIndex(0)
    , RotationTimer(this)
@@ -65,8 +66,9 @@ void WallpaperService::HandleSettingsChanged()
 void WallpaperService::CalculateCurrentWallpaperData(bool triggeredByRotationTimer)
 {
    ViewData data;
+   CurrentData = data;
 
-   data.Style = SettingsProxy.GetStyle();
+   CurrentData.Style = SettingsProxy.GetStyle();
 
    const Schedule schedule = SettingsProxy.GetSchedule();
    switch(schedule)
@@ -74,12 +76,12 @@ void WallpaperService::CalculateCurrentWallpaperData(bool triggeredByRotationTim
       case Schedule::Sequence:
       case Schedule::Shuffle:
       {
-         CalculateSequenceOrShuffleViewData(data, triggeredByRotationTimer);
+         CalculateSequenceOrShuffleViewData(triggeredByRotationTimer);
          break;
       }
       case Schedule::Static:
       {
-         CalculateStaticViewData(data);
+         CalculateStaticViewData();
          break;
       }
       default:
@@ -152,76 +154,28 @@ void WallpaperService::CalculateNextImage(bool shuffled)
    CurrentImageIndex = index;
 }
 
-void WallpaperService::CalculateSequenceOrShuffleViewData(ViewData& data, bool triggeredByTimer)
+void WallpaperService::CalculateSequenceOrShuffleViewData(bool triggeredByTimer)
 {
    const Style style = SettingsProxy.GetStyle();
    const int duration = SettingsProxy.GetDuration();
-   const QList<QColor>& colors = SettingsProxy.GetColors();
-   const bool shuffle = (Schedule::Shuffle == SettingsProxy.GetSchedule());
-   const QStringList& imagePaths = SettingsProxy.GetPaths();
-   const QList<Fit>& fits = SettingsProxy.GetFits();
 
    // TODO: Multi-monitor
-   data.AssignedMonitor = 0;
+   CurrentData.AssignedMonitor = 0;
 
    RotationTimer.start(duration);
    if((Style::DynamicColor == style) ||
        (Style::StaticColor == style))
    {
-      data.Fit = Fit::Fill;
-
-      if(triggeredByTimer)
-      {
-         CalculateNextColor(shuffle);
-      }
-
-      if(colors.count() > 0)
-      {
-         if(CurrentColorsIndex > colors.count())
-         {
-            LogWarn(QString("Wallpaper CurrentColorsIndex is too high: %1 on range of %2")
-                       .arg(CurrentColorsIndex, colors.count()));
-            CurrentColorsIndex = 0;
-         }
-
-         data.Color = colors[CurrentColorsIndex];
-      }
-      else
-      {
-         LogWarn(QString("Style is %1 but no colors are loaded! If this is at bootup, disregard")
-                    .arg(ToString(style)));
-      }
+      ProcessColorStyle(triggeredByTimer);
    }
    else if((Style::Image == style) ||
               (Style::Video == style))
    {
-      if(triggeredByTimer)
-      {
-         CalculateNextImage(shuffle);
-      }
-
-      const int numImages = imagePaths.count();
-      if(numImages > 0)
-      {
-         if(CurrentImageIndex > numImages)
-         {
-            LogWarn(QString("Wallpaper CurrentImageIndex is too high: %1 on range of %2")
-                       .arg(CurrentImageIndex, imagePaths.count()));
-            CurrentImageIndex = 0;
-         }
-
-         data.ImagePath = imagePaths[CurrentImageIndex];
-         data.Fit = fits[CurrentImageIndex];
-      }
-      else
-      {
-         LogWarn(QString("Style is %1 but no images are loaded! If this is at bootup, disregard.")
-                    .arg(ToString(style)));
-      }
+      ProcessImageStyle(triggeredByTimer);
    }
 }
 
-void WallpaperService::CalculateStaticViewData(ViewData& data)
+void WallpaperService::CalculateStaticViewData()
 {
    const Style style = SettingsProxy.GetStyle();
    const QList<QColor>& colors = SettingsProxy.GetColors();
@@ -229,23 +183,90 @@ void WallpaperService::CalculateStaticViewData(ViewData& data)
    const QList<Fit>& fits = SettingsProxy.GetFits();
 
    // TODO: Multi-monitor
-   data.AssignedMonitor = 0;
+   CurrentData.AssignedMonitor = 0;
    if((Style::DynamicColor == style) ||
        (Style::StaticColor == style))
    {
-      data.Fit = Fit::Fill;
+      CurrentData.Fit = Fit::Fill;
 
       const int numColors = colors.count();
       if(numColors > 0)
       {
-         data.Color = colors[0];
+         CurrentData.Color = colors[0];
       }
       else
       {
          LogError(QString("Static Schedule selected with %1 style, but no colors are loaded! "
                           "If this is at bootup, disregard.")
                      .arg(ToString(style)));
-         data.Color = Qt::black;
+         CurrentData.Color = Qt::black;
       }
+   }
+}
+
+void WallpaperService::ProcessColorStyle(bool triggeredByTimer)
+{
+   const Style style = SettingsProxy.GetStyle();
+   // const int duration = SettingsProxy.GetDuration();
+   const QList<QColor>& colors = SettingsProxy.GetColors();
+   const bool shuffle = (Schedule::Shuffle == SettingsProxy.GetSchedule());
+   // const QList<Fit>& fits = SettingsProxy.GetFits();
+
+   CurrentData.Fit = Fit::Fill;
+
+   if(triggeredByTimer)
+   {
+      CalculateNextColor(shuffle);
+   }
+
+   if(colors.count() > 0)
+   {
+      if(CurrentColorsIndex > colors.count())
+      {
+         LogWarn(QString("Wallpaper CurrentColorsIndex is too high: %1 on range of %2")
+                    .arg(CurrentColorsIndex, colors.count()));
+         CurrentColorsIndex = 0;
+      }
+
+      CurrentData.Color = colors[CurrentColorsIndex];
+   }
+   else
+   {
+      LogWarn(QString("Style is %1 but no colors are loaded! If this is at bootup, disregard")
+                 .arg(ToString(style)));
+   }
+}
+
+void WallpaperService::ProcessImageStyle(bool triggeredByTimer)
+{
+   const Style style = SettingsProxy.GetStyle();
+   // const int duration = SettingsProxy.GetDuration();
+   const QList<QColor>& colors = SettingsProxy.GetColors();
+   const bool shuffle = (Schedule::Shuffle == SettingsProxy.GetSchedule());
+   const QStringList& imagePaths = SettingsProxy.GetPaths();
+   const QList<Fit>& fits = SettingsProxy.GetFits();
+
+   if(triggeredByTimer)
+   {
+      CalculateNextImage(shuffle);
+   }
+
+   const int numImages = imagePaths.count();
+   if(numImages > 0)
+   {
+      if(CurrentImageIndex > numImages)
+      {
+         LogWarn(QString("Wallpaper CurrentImageIndex is too high: %1 on range of %2")
+                    .arg(CurrentImageIndex, imagePaths.count()));
+         CurrentImageIndex = 0;
+      }
+
+      CurrentData.ImagePath = imagePaths[CurrentImageIndex];
+      CurrentData.Fit = fits[CurrentImageIndex];
+   }
+   else
+   {
+      LogWarn(QString("Style is %1 but no images are loaded! If this is at bootup, disregard.")
+                 .arg(ToString(style)));
    }
 }
