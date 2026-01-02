@@ -3,6 +3,7 @@
 #include <TaskBarService/TaskBarTypes.h>
 #include <TaskBarServiceInterface.h>
 
+#include <AssetClient.h>
 #include <Utilities/XPtr.h>
 
 #include <QGridLayout>
@@ -28,10 +29,15 @@ namespace TaskBar
    public:
       void HandleViewDataChanged(const TaskBar::ViewData& data);
 
+   private slots:
+      void HandleImageReady(Assets::ImageName name, const QPixmap& image);
+
    private:
       void CreateUI();
       void ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service);
+      void ConnectToAssetClientSignals();
 
+      Assets::AssetClient AssetClient;
       ViewData CurrentData;
       QBoxLayout* MainLayout;
       QPushButton* StartButton;

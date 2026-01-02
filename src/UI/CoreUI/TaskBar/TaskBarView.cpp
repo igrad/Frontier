@@ -8,6 +8,7 @@ using namespace TaskBar;
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
                          ShellWindow* window)
    : QWidget(window)
+   , AssetClient("TaskBarView", this)
    , CurrentData()
    , MainLayout(nullptr)
    , StartButton(nullptr)
@@ -22,6 +23,15 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
 void TaskBarView::HandleViewDataChanged(const TaskBar::ViewData& data)
 {
 
+}
+
+void TaskBarView::HandleImageReady(Assets::ImageName name, const QPixmap& image)
+{
+   switch(name)
+   {
+   default:
+      break;
+   }
 }
 
 void TaskBarView::CreateUI()
@@ -43,4 +53,10 @@ void TaskBarView::ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service)
 
    connect(service.get(), &TaskBarServiceInterface::ViewDataChanged,
            this, &TaskBarView::HandleViewDataChanged);
+}
+
+void TaskBarView::ConnectToAssetClientSignals()
+{
+   connect(&AssetClient, &Assets::AssetClient::ImageReady,
+           this, &TaskBarView::HandleImageReady);
 }
