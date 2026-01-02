@@ -7,7 +7,9 @@
 #include <QHash>
 #include <QSet>
 
-class AssetManager: public QObject
+class AssetClient;
+
+class AssetManager final: public QObject
 {
    Q_OBJECT
 
@@ -18,24 +20,32 @@ public:
                 QObject* parent = nullptr);
    ~AssetManager();
 
-   AssetId RequestFont(const QString& path, QObject* requester);
-   AssetId RequestImage(const QString& path, QObject* requester);
+   bool IsAssetAvailable(const Assets::AssetId& id) const;
+
+   QFont GetFont(const Assets::AssetId& id) const;
+   QPixmap GetImage(const Assets::AssetId& id) const;
+
+   Assets::AssetId RequestFont(const QString& path, AssetClient* requester);
+   Assets::AssetId RequestImage(const QString& path, AssetClient* requester);
 
 signals:
-   void FontLoaded(const AssetId& id, const QFont& font);
-   void ImageLoaded(const AssetId& id, const QPixmap& pixmap);
+   void FontLoaded(const Assets::AssetId& id, const QFont& font);
+   void ImageLoaded(const Assets::AssetId& id, const QPixmap& pixmap);
 
 private slots:
-   void HandleFontAssetLoaded(const AssetId& id, const QFont& font);
-   void HandleImageAssetLoaded(const AssetId& id, const QImage& image);
+   void HandleFontAssetLoaded(const Assets::AssetId& id, const QFont& font);
+   void HandleImageAssetLoaded(const Assets::AssetId& id, const QImage& image);
 
 private:
    static AssetManager* Instance;
 
-   bool IsInImageCache(const AssetId& id) const;
-   bool IsInFlight(const AssetId& id) const;
+   bool IsInFontCache(const Assets::AssetId& id) const;
+   bool IsInImageCache(const Assets::AssetId& id) const;
+   bool IsInFlight(const Assets::AssetId& id) const;
+   bool IsFontLoaded(const QString& name) const;
 
    XPtr<AssetLoaderInterface> Loader;
-   QHash<AssetId, QPair<QString, QPixmap>> PixmapCache;
-   QHash<AssetId, QString> InFlight;
+   QHash<Assets::AssetId, QPair<QString, QPixmap>> PixmapCache;
+   QHash<Assets::AssetId, QString> FontCache; 	// Id, font family
+   QHash<Assets::AssetId, QString> InFlight; 	// Id, path
 };

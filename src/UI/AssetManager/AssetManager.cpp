@@ -1,10 +1,14 @@
 #include "AssetManager.h"
+#include "AssetClient.h"
 
 #include <Utilities/MethodLookupHelpers.h>
 #include <Log.h>
 
 #include <QFont>
+#include <QFontDatabase>
 #include <QPixmap>
+
+using namespace Assets;
 
 namespace
 {
@@ -24,6 +28,7 @@ AssetManager::AssetManager(XPtr<AssetLoaderInterface> loader,
    : QObject(parent)
    , Loader(loader)
    , PixmapCache()
+   , FontCache()
    , InFlight()
 {
    Instance = this;
@@ -39,23 +44,60 @@ AssetManager::~AssetManager()
 
 }
 
-AssetId AssetManager::RequestFont(const QString& path, QObject* requester)
+bool AssetManager::IsAssetAvailable(const AssetId& id) const
 {
-   const AssetId id(path);
-   if(IsInFlight(id))
+   return PixmapCache.contains(id) || FontCache.contains(id);
+}
+
+QFont AssetManager::GetFont(const AssetId& id) const
+{
+   if(IsInFontCache(id))
    {
-      return id;
+      return QFont(FontCache[id]);
    }
 
-   QMetaObject::invokeMethod(Loader.Object,
-                             "LoadFontAsset",
-                             Q_ARG(AssetId, id),
-                             Q_ARG(QString, path));
+   LogWarn("GetFont used before the font was loaded!");
+   return QFont();
+}
+
+QPixmap AssetManager::GetImage(const AssetId& id) const
+{
+   if(IsInImageCache(id))
+   {
+      return PixmapCache[id].second;
+   }
+
+   LogWarn("GetImage used before the image was loaded!");
+
+   return QPixmap();
+}
+
+AssetId AssetManager::RequestFont(const QString& path, AssetClient* requester)
+{
+   const AssetId id(path);
+
+   bool invoke = true;
+   if(FontCache.contains(id))
+   {
+      invoke = false;
+   }
+   else if(IsInFlight(id))
+   {
+      invoke = false;
+   }
+
+   if(invoke)
+   {
+      QMetaObject::invokeMethod(Loader.Object,
+                                "LoadFontAsset",
+                                Q_ARG(AssetId, id),
+                                Q_ARG(QString, path));
+   }
 
    return id;
 }
 
-AssetId AssetManager::RequestImage(const QString& path, QObject* requester)
+AssetId AssetManager::RequestImage(const QString& path, AssetClient* requester)
 {
    const AssetId id(path);
 
@@ -63,12 +105,6 @@ AssetId AssetManager::RequestImage(const QString& path, QObject* requester)
    if(nullptr == requester)
    {
       LogError("A nullptr cannot request an image");
-      invoke = false;
-   }
-   else if(!QObjectHasMethodDeclared(requester, IMAGE_HANDLER_FUNCTION_SIG))
-   {
-      LogError(QString("Image requester \"%1\" does not have \"%2\" method!")
-                  .arg(requester->objectName(), IMAGE_HANDLER_FUNCTION_SIG));
       invoke = false;
    }
    else if(IsInImageCache(id))
@@ -99,6 +135,8 @@ void AssetManager::HandleFontAssetLoaded(const AssetId& id, const QFont& font)
 
    LogInfo(QString("Loaded font \"%1\"").arg(str));
 
+   FontCache[id] = font.family();
+
    emit FontLoaded(id, font);
 }
 
@@ -115,6 +153,11 @@ void AssetManager::HandleImageAssetLoaded(const AssetId& id, const QImage& image
    emit ImageLoaded(id, pix);
 }
 
+bool AssetManager::IsInFontCache(const AssetId& id) const
+{
+   return FontCache.contains(id);
+}
+
 bool AssetManager::IsInImageCache(const AssetId& id) const
 {
    return PixmapCache.contains(id);
@@ -123,4 +166,10 @@ bool AssetManager::IsInImageCache(const AssetId& id) const
 bool AssetManager::IsInFlight(const AssetId& id) const
 {
    return InFlight.contains(id);
+}
+
+bool AssetManager::IsFontLoaded(const QString& path) const
+{
+   const QStringList families = QFontDatabase::families();
+   return !families.isEmpty();
 }

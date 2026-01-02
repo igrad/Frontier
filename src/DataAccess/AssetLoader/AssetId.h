@@ -2,13 +2,17 @@
 
 #include <QUuid>
 
-// Creates an AssetId (QUuid) by hashing the str value.
-class AssetId: public QUuid
+namespace Assets
 {
-public:
-   explicit AssetId(const QString& str);
-   AssetId() = delete;
+   // Creates an AssetId (QUuid) by hashing the str value.
+   class AssetId: public QUuid
+   {
+   public:
+      explicit AssetId(const QString& str);
+      AssetId() = delete;
 
-private:
-   static const QUuid NamespaceId;
-};
+   private:
+      static const QUuid NamespaceId;
+   };
+
+}

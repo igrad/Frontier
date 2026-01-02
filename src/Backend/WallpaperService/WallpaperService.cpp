@@ -71,6 +71,12 @@ void WallpaperService::CalculateCurrentWallpaperData(bool triggeredByRotationTim
 
    CurrentData.Style = SettingsProxy.GetStyle();
 
+   // Temporary workaround, I don't like it for prod
+   if(Style::None == CurrentData.Style)
+   {
+      CurrentData.Style = Style::StaticColor;
+   }
+
    const Schedule schedule = SettingsProxy.GetSchedule();
    switch(schedule)
    {
@@ -94,7 +100,7 @@ void WallpaperService::CalculateCurrentWallpaperData(bool triggeredByRotationTim
    }
 
    LogInfo(QString("WallpaperDataChanged"));
-   emit WallpaperDataChanged(data);
+   emit WallpaperDataChanged(CurrentData);
 }
 
 void WallpaperService::CalculateNextColor(bool shuffled)

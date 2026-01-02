@@ -30,12 +30,12 @@ Wallpaper::WallpaperServiceInterface* BackendThreadManager::GetTheWallpaperServi
    return TheWallpaperService;
 }
 
-void BackendThreadManager::HandleRequestTaskBarService()
+void BackendThreadManager::HandleRequestPassTaskBarService()
 {
    emit PassTaskBarService(TheTaskBarService);
 }
 
-void BackendThreadManager::HandleRequestWallpaperService()
+void BackendThreadManager::HandleRequestPassWallpaperService()
 {
    emit PassWallpaperService(TheWallpaperService);
 }

@@ -38,3 +38,5 @@ namespace Settings
       return StringToEnum<Setting>(str);
    }
 }
+
+Q_DECLARE_METATYPE(Settings::Setting)

@@ -3,6 +3,8 @@ set(AssetManagerSources
    AssetClient.h
    AssetManager.cpp
    AssetManager.h
+   Assets.cpp
+   Assets.h
 )
 
 add_library(AssetManager STATIC

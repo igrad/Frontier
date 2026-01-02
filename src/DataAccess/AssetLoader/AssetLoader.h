@@ -11,6 +11,6 @@ public:
    ~AssetLoader() = default;
 
 public slots:
-   void LoadImageAsset(const AssetId& id, const QString& path) override;
-   void LoadFontAsset(const AssetId& id, const QString& path) override;
+   void LoadImageAsset(const Assets::AssetId& id, const QString& path) override;
+   void LoadFontAsset(const Assets::AssetId& id, const QString& path) override;
 };

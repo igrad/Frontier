@@ -12,10 +12,10 @@ public:
    ~AssetLoaderInterface() = default;
 
 public slots:
-   virtual void LoadImageAsset(const AssetId& id, const QString& path) = 0;
-   virtual void LoadFontAsset(const AssetId& id, const QString& path) = 0;
+   virtual void LoadImageAsset(const Assets::AssetId& id, const QString& path) = 0;
+   virtual void LoadFontAsset(const Assets::AssetId& id, const QString& path) = 0;
 
 signals:
-   void ImageAssetLoaded(const AssetId& id, const QImage& image);
-   void FontAssetLoaded(const AssetId& id, const QFont& font);
+   void ImageAssetLoaded(const Assets::AssetId& id, const QImage& image);
+   void FontAssetLoaded(const Assets::AssetId& id, const QFont& font);
 };

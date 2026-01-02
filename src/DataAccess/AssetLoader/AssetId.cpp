@@ -2,6 +2,8 @@
 
 #include <Log.h>
 
+using namespace Assets;
+
 const QUuid AssetId::NamespaceId = QUuid::createUuid();
 
 AssetId::AssetId(const QString& str)

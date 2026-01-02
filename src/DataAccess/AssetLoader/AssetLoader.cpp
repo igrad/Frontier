@@ -12,7 +12,7 @@ AssetLoader::AssetLoader(QObject* parent)
    setParent(parent);
 }
 
-void AssetLoader::LoadImageAsset(const AssetId& id, const QString& path)
+void AssetLoader::LoadImageAsset(const Assets::AssetId& id, const QString& path)
 {
    QFile f(path);
 
@@ -26,7 +26,7 @@ void AssetLoader::LoadImageAsset(const AssetId& id, const QString& path)
    emit ImageAssetLoaded(id, QImage(f.readAll()));
 }
 
-void AssetLoader::LoadFontAsset(const AssetId& id, const QString& path)
+void AssetLoader::LoadFontAsset(const Assets::AssetId& id, const QString& path)
 {
    const int fontId = QFontDatabase::addApplicationFont(path);
    if(-1 == fontId)
