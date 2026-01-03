@@ -1,5 +1,26 @@
-add_subdirectory(SettingsService)
+set(DataAccessSupportSources
+   AssetLoader/AssetLoaderMock.h
 
-target_include_directories(FrontierUnitTests PRIVATE
+   SettingsService/SettingsClientMock.h
+   SettingsService/SettingsServiceMock.cpp
+   SettingsService/SettingsServiceMock.h
+)
+
+add_library(DataAccessSupport
+   ${DataAccessSupportSources}
+)
+add_library(TestSupport::DataAccessSupport ALIAS DataAccessSupport)
+
+target_include_directories(DataAccessSupport
+   PUBLIC
    ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_SOURCE_DIR}/DataAccess/SettingsService
+)
+
+target_link_libraries(DataAccessSupport
+   PUBLIC
+   DataAccess
+   Qt6::Core
+   Qt6::Sql
+   GTest::gmock
 )

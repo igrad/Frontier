@@ -3,7 +3,7 @@
 #include <SettingsService.h>
 
 #include <SettingsService/SettingsClientMock.h>
-#include <_Utilities/TestMacros.h>
+#include <TestMacros.h>
 
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
