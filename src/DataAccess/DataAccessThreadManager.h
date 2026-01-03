@@ -2,7 +2,10 @@
 
 #include <QThread>
 
-class AssetLoaderInterface;
+namespace Assets
+{
+   class AssetLoaderInterface;
+}
 
 namespace Settings
 {
@@ -21,12 +24,12 @@ public:
 
    void Start();
 
-   AssetLoaderInterface* GetTheAssetLoader() const;
+   Assets::AssetLoaderInterface* GetTheAssetLoader() const;
    Settings::SettingsService* GetTheSettingsService() const;
 
 signals:
    void DataAccessThreadStarted();
-   void PassAssetLoader(AssetLoaderInterface* TheAssetLoader);
+   void PassAssetLoader(Assets::AssetLoaderInterface* TheAssetLoader);
 
 public slots:
    void HandleUIConnectedToComponents();
@@ -36,6 +39,6 @@ private slots:
    void HandleDataAccessThreadStarted();
 
 private:
-   AssetLoaderInterface* TheAssetLoader;
+   Assets::AssetLoaderInterface* TheAssetLoader;
    Settings::SettingsService* TheSettingsService;
 };

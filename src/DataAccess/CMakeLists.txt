@@ -2,8 +2,6 @@ set(AssetLoaderSources
    AssetLoader/AssetLoader.cpp
    AssetLoader/AssetLoader.h
    AssetLoader/AssetLoaderInterface.h
-   AssetLoader/AssetId.cpp
-   AssetLoader/AssetId.h
 )
 
 set(DataAccessSources

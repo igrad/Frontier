@@ -7,12 +7,14 @@
 #include <QFontDatabase>
 #include <QImage>
 
+using namespace Assets;
+
 AssetLoader::AssetLoader(QObject* parent)
 {
    setParent(parent);
 }
 
-void AssetLoader::LoadImageAsset(const Assets::AssetId& id, const QString& path)
+void AssetLoader::LoadImageAsset(const QString& path)
 {
    QFile f(path);
 
@@ -23,10 +25,10 @@ void AssetLoader::LoadImageAsset(const Assets::AssetId& id, const QString& path)
       return;
    }
 
-   emit ImageAssetLoaded(id, QImage(f.readAll()));
+   emit ImageAssetLoaded(path, QImage(f.readAll()));
 }
 
-void AssetLoader::LoadFontAsset(const Assets::AssetId& id, const QString& path)
+void AssetLoader::LoadFontAsset(const QString& path)
 {
    const int fontId = QFontDatabase::addApplicationFont(path);
    if(-1 == fontId)
@@ -46,5 +48,5 @@ void AssetLoader::LoadFontAsset(const Assets::AssetId& id, const QString& path)
       return;
    }
 
-   emit FontAssetLoaded(id, QFont(families.first()));
+   emit FontAssetLoaded(path, QFont(families.first()));
 }

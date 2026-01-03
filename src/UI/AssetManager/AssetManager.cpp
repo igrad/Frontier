@@ -44,27 +44,27 @@ AssetManager::~AssetManager()
 
 }
 
-bool AssetManager::IsAssetAvailable(const AssetId& id) const
+bool AssetManager::IsAssetAvailable(const QString& path) const
 {
-   return PixmapCache.contains(id) || FontCache.contains(id);
+   return PixmapCache.contains(path) || FontCache.contains(path);
 }
 
-QFont AssetManager::GetFont(const AssetId& id) const
+QFont AssetManager::GetFont(const QString& path) const
 {
-   if(IsInFontCache(id))
+   if(IsInFontCache(path))
    {
-      return QFont(FontCache[id]);
+      return QFont(FontCache[path]);
    }
 
    LogWarn("GetFont used before the font was loaded!");
    return QFont();
 }
 
-QPixmap AssetManager::GetImage(const AssetId& id) const
+QPixmap AssetManager::GetImage(const QString& path) const
 {
-   if(IsInImageCache(id))
+   if(IsInImageCache(path))
    {
-      return PixmapCache[id].second;
+      return PixmapCache[path].second;
    }
 
    LogWarn("GetImage used before the image was loaded!");
@@ -72,16 +72,14 @@ QPixmap AssetManager::GetImage(const AssetId& id) const
    return QPixmap();
 }
 
-AssetId AssetManager::RequestFont(const QString& path, AssetClient* requester)
+void AssetManager::RequestFont(const QString& path, AssetClient* requester)
 {
-   const AssetId id(path);
-
    bool invoke = true;
-   if(FontCache.contains(id))
+   if(FontCache.contains(path))
    {
       invoke = false;
    }
-   else if(IsInFlight(id))
+   else if(IsInFlight(path))
    {
       invoke = false;
    }
@@ -90,28 +88,23 @@ AssetId AssetManager::RequestFont(const QString& path, AssetClient* requester)
    {
       QMetaObject::invokeMethod(Loader.Object,
                                 "LoadFontAsset",
-                                Q_ARG(AssetId, id),
                                 Q_ARG(QString, path));
    }
-
-   return id;
 }
 
-AssetId AssetManager::RequestImage(const QString& path, AssetClient* requester)
+void AssetManager::RequestImage(const QString& path, AssetClient* requester)
 {
-   const AssetId id(path);
-
    bool invoke = true;
    if(nullptr == requester)
    {
       LogError("A nullptr cannot request an image");
       invoke = false;
    }
-   else if(IsInImageCache(id))
+   else if(IsInImageCache(path))
    {
       invoke = false;
    }
-   else if(IsInFlight(id))
+   else if(IsInFlight(path))
    {
       invoke = false;
    }
@@ -120,52 +113,49 @@ AssetId AssetManager::RequestImage(const QString& path, AssetClient* requester)
    {
       QMetaObject::invokeMethod(Loader.Object,
                                 "LoadImageAsset",
-                                Q_ARG(AssetId, id),
                                 Q_ARG(QString, path));
-      InFlight[id] = path;
+      InFlight[path] = path;
    }
-
-   return id;
 }
 
-void AssetManager::HandleFontAssetLoaded(const AssetId& id, const QFont& font)
+void AssetManager::HandleFontAssetLoaded(const QString& path, const QFont& font)
 {
-   const QString str = InFlight[id];
-   InFlight.remove(id);
+   const QString str = InFlight[path];
+   InFlight.remove(path);
 
    LogInfo(QString("Loaded font \"%1\"").arg(str));
 
-   FontCache[id] = font.family();
+   FontCache[path] = font.family();
 
-   emit FontLoaded(id, font);
+   emit FontLoaded(path, font);
 }
 
-void AssetManager::HandleImageAssetLoaded(const AssetId& id, const QImage& image)
+void AssetManager::HandleImageAssetLoaded(const QString& path, const QImage& image)
 {
-   const QString str = InFlight[id];
-   InFlight.remove(id);
+   const QString str = InFlight[path];
+   InFlight.remove(path);
 
    const QPixmap pix = QPixmap::fromImage(image);
-   PixmapCache[id] = QPair<QString, QPixmap>(str, pix);
+   PixmapCache[path] = QPair<QString, QPixmap>(str, pix);
 
-   LogInfo(QString("Loaded image \"%1\"").arg(id.toString()));
+   LogInfo(QString("Loaded image \"%1\"").arg(path));
 
-   emit ImageLoaded(id, pix);
+   emit ImageLoaded(path, pix);
 }
 
-bool AssetManager::IsInFontCache(const AssetId& id) const
+bool AssetManager::IsInFontCache(const QString& path) const
 {
-   return FontCache.contains(id);
+   return FontCache.contains(path);
 }
 
-bool AssetManager::IsInImageCache(const AssetId& id) const
+bool AssetManager::IsInImageCache(const QString& path) const
 {
-   return PixmapCache.contains(id);
+   return PixmapCache.contains(path);
 }
 
-bool AssetManager::IsInFlight(const AssetId& id) const
+bool AssetManager::IsInFlight(const QString& path) const
 {
-   return InFlight.contains(id);
+   return InFlight.contains(path);
 }
 
 bool AssetManager::IsFontLoaded(const QString& path) const

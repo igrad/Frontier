@@ -67,10 +67,10 @@ void UIManager::HandleServiceThreadStarted()
                              "HandleRequestPassWallpaperService");
 }
 
-void UIManager::HandlePassAssetLoader(AssetLoaderInterface* loader)
+void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 {
    TheAssetLoader = XPtr(loader);
-   TheAssetManager = new AssetManager(TheAssetLoader, this);
+   TheAssetManager = new Assets::AssetManager(TheAssetLoader, this);
    // Don't bother trying to build UI components until service thread components are built
 }
 

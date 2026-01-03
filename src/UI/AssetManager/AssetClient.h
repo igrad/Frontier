@@ -33,8 +33,8 @@ namespace Assets
       void FontReady(const Assets::FontName name, const QFont& font);
 
    private slots:
-      void HandleFontLoaded(const Assets::AssetId& id, const QFont& font);
-      void HandleImageLoaded(const Assets::AssetId& id, const QPixmap& pixmap);
+      void HandleFontLoaded(const QString& path, const QFont& font);
+      void HandleImageLoaded(const QString& path, const QPixmap& pixmap);
 
    private:
       void PrivateLoadImage(Assets::ImageName name, bool batch);
@@ -44,8 +44,8 @@ namespace Assets
       AssetManager* Manager;
       QString Owner;
       QSet<Assets::ImageName> BatchLoadNames;
-      QHash<Assets::AssetId, Assets::ImageName> LoadingImages;
+      QHash<QString, Assets::ImageName> LoadingImages;
       QHash<Assets::ImageName, QPixmap> BatchLoadInProgress;
-      QHash<Assets::AssetId, Assets::FontName> LoadingFonts;
+      QHash<QString, Assets::FontName> LoadingFonts;
    };
 }

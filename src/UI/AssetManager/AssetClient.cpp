@@ -39,8 +39,9 @@ void AssetClient::LoadFont(FontName name)
       return;
    }
 
-   const AssetId id = Manager->RequestFont(ToAssetPath(name), this);
-   LoadingFonts[id] = name;
+   const QString path = ToAssetPath(name);
+   Manager->RequestFont(path, this);
+   LoadingFonts[path] = name;
 }
 
 void AssetClient::LoadImage(ImageName name)
@@ -50,36 +51,36 @@ void AssetClient::LoadImage(ImageName name)
 
 bool AssetClient::IsAssetAvailable(FontName name) const
 {
-   return Manager->IsAssetAvailable(AssetId(ToAssetPath(name)));
+   return Manager->IsAssetAvailable(ToAssetPath(name));
 }
 
 bool AssetClient::IsAssetAvailable(ImageName name) const
 {
-   return Manager->IsAssetAvailable(AssetId(ToAssetPath(name)));
+   return Manager->IsAssetAvailable(ToAssetPath(name));
 }
 
 QFont AssetClient::GetFont(FontName name) const
 {
-   return Manager->GetFont(AssetId(ToAssetPath(name)));
+   return Manager->GetFont(ToAssetPath(name));
 }
 
 QPixmap AssetClient::GetImage(ImageName name) const
 {
-   return Manager->GetImage(AssetId(ToAssetPath(name)));
+   return Manager->GetImage(ToAssetPath(name));
 }
 
-void AssetClient::HandleFontLoaded(const AssetId& id, const QFont& font)
+void AssetClient::HandleFontLoaded(const QString& path, const QFont& font)
 {
-   const FontName name = LoadingFonts[id];
+   const FontName name = LoadingFonts[path];
 
-   LoadingFonts.remove(id);
+   LoadingFonts.remove(path);
 
    emit FontReady(name, font);
 }
 
-void AssetClient::HandleImageLoaded(const AssetId& id, const QPixmap& pixmap)
+void AssetClient::HandleImageLoaded(const QString& path, const QPixmap& pixmap)
 {
-   const ImageName name = LoadingImages[id];
+   const ImageName name = LoadingImages[path];
    if(BatchLoadNames.contains(name))
    {
       BatchLoadInProgress[name] = pixmap;
@@ -87,7 +88,7 @@ void AssetClient::HandleImageLoaded(const AssetId& id, const QPixmap& pixmap)
    }
    else
    {
-      LoadingImages.remove(id);
+      LoadingImages.remove(path);
 
       emit ImageReady(name, pixmap);
    }
@@ -95,12 +96,13 @@ void AssetClient::HandleImageLoaded(const AssetId& id, const QPixmap& pixmap)
 
 void AssetClient::PrivateLoadImage(ImageName name, bool batch)
 {
+   const QString path = ToAssetPath(name);
+
    if(IsAssetAvailable(name))
    {
-      const AssetId id(ToAssetPath(name));
-      BatchLoadInProgress[name] = Manager->GetImage(id);
+      BatchLoadInProgress[name] = Manager->GetImage(path);
       BatchLoadNames.remove(name);
-      LoadingImages.remove(id);
+      LoadingImages.remove(path);
 
       if(batch)
       {
@@ -110,8 +112,8 @@ void AssetClient::PrivateLoadImage(ImageName name, bool batch)
    else
    {
       BatchLoadNames.insert(name);
-      const AssetId id = Manager->RequestImage(ToAssetPath(name), this);
-      LoadingImages[id] = name;
+      Manager->RequestImage(ToAssetPath(name), this);
+      LoadingImages[path] = name;
    }
 }
 

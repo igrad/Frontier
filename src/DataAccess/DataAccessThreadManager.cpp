@@ -20,7 +20,7 @@ void DataAccessThreadManager::AssignToThread(QThread* thread)
            Qt::UniqueConnection);
 }
 
-AssetLoaderInterface* DataAccessThreadManager::GetTheAssetLoader() const
+Assets::AssetLoaderInterface* DataAccessThreadManager::GetTheAssetLoader() const
 {
    return TheAssetLoader;
 }
@@ -44,7 +44,7 @@ void DataAccessThreadManager::HandleDataAccessThreadStarted()
 {
    LogInfo("Handling DataAccessThread started");
 
-   TheAssetLoader = new AssetLoader(this);
+   TheAssetLoader = new Assets::AssetLoader(this);
    TheSettingsService = new Settings::SettingsService(this);
 
    emit DataAccessThreadStarted();
