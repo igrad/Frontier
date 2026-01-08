@@ -64,10 +64,20 @@ void SettingsService::SetUpSettingsDatabase()
    QSqlDatabase db;
    if(UseRAMDatabases || ArgParser::RunningUnitTests())
    {
+      // This chunk is for unit testing and Enterprise purposes
+      // :memory: specifies that the database will simply be held in RAM
+      // instead of in a file on-disk.
       SettingsDbPath = ":memory:";
 
       const std::string pathStr = SettingsDbPath.generic_string();
-      db = QSqlDatabase::addDatabase("QSQLITE", CONNECTION_NAME);
+      if(QSqlDatabase::contains(CONNECTION_NAME))
+      {
+         db = QSqlDatabase::database(CONNECTION_NAME);
+      }
+      else
+      {
+         db = QSqlDatabase::addDatabase("QSQLITE", CONNECTION_NAME);
+      }
    }
    else
    {
