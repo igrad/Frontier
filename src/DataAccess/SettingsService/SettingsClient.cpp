@@ -122,14 +122,13 @@ bool SettingsClient::SubscribeToAllSettings(QObject* subscriber)
    {
       if(0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str()))
       {
-         Subscriptions.insert(Setting::_All, subscriber);
+         ObjectsSubscribedToAllSignals.push_back(subscriber);
          retVal = true;
       }
       else
       {
-         LogError(QString("Could not find method %1 to handle setting %2 in object %3")
+         LogError(QString("Could not find method %1 to handle all settings in object %3")
                      .arg(methodStr.c_str(),
-                          ToString(Setting::_All),
                           subscriber->metaObject()->className()));
       }
    }

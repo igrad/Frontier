@@ -75,7 +75,50 @@ TEST_F(SettingsClientTest, SubscribeToSetting3)
    EXPECT_EQ(value, spy.at(0).at(0).value<QVariant>());
 }
 
-TEST_F(SettingsClientTest, WriteSettingValue1)
+TEST_F(SettingsClientTest, SubscribeToAllSettings1)
+{
+   GWT("Service and client are created",
+       "Trying to subscribe to all settings without an appropriate handler slot",
+       "Subscription fails");
+
+   FakeSettingSubscriber sub;
+
+   EXPECT_FALSE(Client.SubscribeToAllSettings(&sub));
+}
+
+TEST_F(SettingsClientTest, SubscribeToAllSettings2)
+{
+   GWT("Service and client are created AND subscribed to all settings",
+       "Several settings are updated by service",
+       "Client receives signals for each setting updated");
+
+   FakeAllSettingsSubscriber sub;
+
+   Client.SubscribeToAllSettings(&sub);
+
+   QSignalSpy spy(&sub, &FakeAllSettingsSubscriber::SettingChangeReceived);
+
+   const QVariant value = QString("SomeValue");
+   ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);
+
+   ASSERT_TRUE(spy.wait());
+
+   ASSERT_EQ(1, spy.count());
+   ASSERT_EQ(2, spy.at(0).count());
+   EXPECT_EQ(Setting::_TestSetting, spy.at(0).at(0).value<Settings::Setting>());
+   EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
+
+   ServiceMock.EmitSettingUpdated(Setting::TaskBarAlignment, value);
+
+   ASSERT_TRUE(spy.wait());
+
+   ASSERT_EQ(2, spy.count());
+   ASSERT_EQ(2, spy.at(1).count());
+   EXPECT_EQ(Setting::TaskBarAlignment, spy.at(1).at(0).value<Settings::Setting>());
+   EXPECT_EQ(value, spy.at(1).at(1).value<QVariant>());
+}
+
+TEST_F(SettingsClientTest, HandleSettingUpdated1)
 {
    GWT("Service and client are created AND setting is not None",
        "WriteSettingValue is called",

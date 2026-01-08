@@ -16,4 +16,5 @@ target_include_directories(TestUtilities
 target_link_libraries(TestUtilities
    PUBLIC
    Qt6::Core
+   DataAccess
 )
