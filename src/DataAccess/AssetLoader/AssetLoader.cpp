@@ -16,20 +16,23 @@ AssetLoader::AssetLoader(QObject* parent)
 
 void AssetLoader::LoadImageAsset(const QString& path)
 {
-   QFile f(path);
+   QFile file(path);
 
-   if(!f.open(QIODevice::ReadOnly))
+   if(FileExists(path, file) && FileIsReadable(path, file))
    {
-      LogWarn(QString("Failed to load image asset at path: \"%1\"")
-                 .arg(path));
-      return;
+      emit ImageAssetLoaded(path, QImage(file.readAll()));
    }
-
-   emit ImageAssetLoaded(path, QImage(f.readAll()));
 }
 
 void AssetLoader::LoadFontAsset(const QString& path)
 {
+   QFile file(path);
+
+   if(!FileExists(path, file) || !FileIsReadable(path, file))
+   {
+      return;
+   }
+
    const int fontId = QFontDatabase::addApplicationFont(path);
    if(-1 == fontId)
    {
@@ -49,4 +52,32 @@ void AssetLoader::LoadFontAsset(const QString& path)
    }
 
    emit FontAssetLoaded(path, QFont(families.first()));
+}
+
+bool AssetLoader::FileExists(const QString& path, const QFile& file)
+{
+   if(!file.exists())
+   {
+      LogWarn(QString("Could not locate file at path: \"%1\"\nError string: \"%2\"")
+                 .arg(path,
+                      file.errorString()));
+      emit FileNotFound(path);
+      return false;
+   }
+
+   return true;
+}
+
+bool AssetLoader::FileIsReadable(const QString& path, QFile& file)
+{
+   if(!file.open(QIODevice::ReadOnly)) {
+      LogWarn(QString("Failed to load image asset at path: \"%1\"\nError string: \"%2\"")
+                 .arg(path,
+                      file.errorString()));
+      emit FailedToLoadAsset(path);
+
+      return false;
+   }
+
+   return true;
 }

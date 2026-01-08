@@ -1,12 +1,11 @@
 target_sources(FrontierUnitTests
    PRIVATE
-   SettingsClientTests.cpp
-   SettingsServiceTests.cpp
+   AssetLoaderTests.cpp
 )
 
 target_include_directories(FrontierUnitTests
    PRIVATE
-   ${CMAKE_SOURCE_DIR}/DataAccess/SettingsService
+   ${CMAKE_SOURCE_DIR}/DataAccess/AssetLoader
 )
 
 target_link_libraries(FrontierUnitTests

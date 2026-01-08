@@ -4,6 +4,11 @@ add_subdirectory(Enterprise)
 add_subdirectory(Shared)
 add_subdirectory(UI)
 
+qt_add_resources(assets
+   ${CMAKE_SOURCE_DIR}/../assets/fonts.qrc
+   ${CMAKE_SOURCE_DIR}/../assets/images.qrc
+)
+
 set(PROJECT_SOURCES
    main.cpp
 )
