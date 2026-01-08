@@ -1,24 +1,17 @@
-set(SettingsServiceTestSources
+target_sources(FrontierUnitTests
+   PRIVATE
    SettingsClientTest.cpp
    SettingsServiceTest.cpp
 )
 
-add_library(SettingsServiceTests
-   ${SettingsServiceTestSources}
-)
-
-target_include_directories(SettingsServiceTests
-   PUBLIC
+target_include_directories(FrontierUnitTests
+   PRIVATE
    ${CMAKE_SOURCE_DIR}/DataAccess/SettingsService
 )
 
-target_link_libraries(SettingsServiceTests PRIVATE
-   Shared
-   TestSupport::TestMain
+target_link_libraries(FrontierUnitTests
+   PUBLIC
+   DataAccess
    TestSupport::DataAccessSupport
    TestSupport::TestUtilities
-   Qt6::Core
-   Qt6::Gui
-   Qt6::Sql
-   Qt6::Test
 )

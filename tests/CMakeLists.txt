@@ -7,8 +7,19 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-# Main
-add_subdirectory(TestMain)
+enable_testing()
+
+add_executable(FrontierUnitTests
+   main.cpp
+)
+
+target_link_libraries(FrontierUnitTests
+   PRIVATE
+   Qt6::Core
+   Qt6::Test
+   GTest::gtest
+   GTest::gmock
+)
 
 # mocks, fakes, etc
 add_subdirectory(support)
@@ -16,3 +27,7 @@ add_subdirectory(support)
 # Test subdirs
 add_subdirectory(Backend)
 add_subdirectory(DataAccess)
+# add_subdirectory(UI)
+
+include(GoogleTest)
+gtest_discover_tests(FrontierUnitTests)
