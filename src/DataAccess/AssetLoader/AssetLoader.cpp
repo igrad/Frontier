@@ -20,8 +20,10 @@ void AssetLoader::LoadImageAsset(const QString& path)
 
    if(FileExists(path, file) && FileIsReadable(path, file))
    {
-      emit ImageAssetLoaded(path, QImage(file.readAll()));
+      emit ImageAssetLoaded(path, QImage::fromData(file.readAll()));
    }
+
+   file.close();
 }
 
 void AssetLoader::LoadFontAsset(const QString& path)
@@ -52,6 +54,8 @@ void AssetLoader::LoadFontAsset(const QString& path)
    }
 
    emit FontAssetLoaded(path, QFont(families.first()));
+
+   file.close();
 }
 
 bool AssetLoader::FileExists(const QString& path, const QFile& file)

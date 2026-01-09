@@ -1,1 +1,2 @@
+add_subdirectory(AssetLoaderTests)
 add_subdirectory(SettingsServiceTests)

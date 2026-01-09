@@ -1,22 +1,14 @@
+qt_add_executable(Frontier
+   MANUAL_FINALIZATION
+   ${CMAKE_SOURCE_DIR}/assets/images.qrc
+   main.cpp
+)
+
 add_subdirectory(Backend)
 add_subdirectory(DataAccess)
 add_subdirectory(Enterprise)
 add_subdirectory(Shared)
 add_subdirectory(UI)
-
-qt_add_resources(assets
-   ${CMAKE_SOURCE_DIR}/../assets/fonts.qrc
-   ${CMAKE_SOURCE_DIR}/../assets/images.qrc
-)
-
-set(PROJECT_SOURCES
-   main.cpp
-)
-
-qt_add_executable(Frontier
-   MANUAL_FINALIZATION
-   ${PROJECT_SOURCES}
-)
 
 find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
 
@@ -49,6 +41,4 @@ install(TARGETS Frontier
    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-if(Qt6_VERSION_MAJOR EQUAL 6)
-   qt_finalize_executable(Frontier)
-endif()
+qt_finalize_executable(Frontier)

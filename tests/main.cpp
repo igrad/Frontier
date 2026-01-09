@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <QCoreApplication>
 #include <QtSql/QSqlQuery>
+#include <QDir>
+#include <QFile>
 
 int main(int argc, char *argv[])
 {

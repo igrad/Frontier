@@ -20,5 +20,4 @@ include_directories(src/Shared)
 add_subdirectory(src)
 
 # 2. tests defines FrontierUnitTests and links to the libs created in src
-enable_testing()
 add_subdirectory(tests)

@@ -9,7 +9,9 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(FrontierUnitTests
+qt_add_executable(FrontierUnitTests
+   MANUAL_FINALIZATION
+   ${CMAKE_SOURCE_DIR}/assets/images.qrc
    main.cpp
 )
 
@@ -17,6 +19,7 @@ target_link_libraries(FrontierUnitTests
    PRIVATE
    Qt6::Core
    Qt6::Test
+   Qt6::Widgets
    GTest::gtest
    GTest::gmock
 )
@@ -31,3 +34,5 @@ add_subdirectory(DataAccess)
 
 include(GoogleTest)
 gtest_discover_tests(FrontierUnitTests)
+
+qt_finalize_executable(FrontierUnitTests)
