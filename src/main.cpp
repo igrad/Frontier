@@ -8,6 +8,7 @@
 #include <Enterprise/EnterpriseService.h>
 
 #include <QApplication>
+#include <QAbstractEventDispatcher>
 #include <QThread>
 
 namespace

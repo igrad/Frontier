@@ -1,5 +1,7 @@
 #include "ArgParser.h"
 
+#include <Time/Timer.h>
+
 #include <QVariant>
 
 namespace
@@ -165,6 +167,11 @@ void ArgParser::ParseArgs(const QCoreApplication& app)
    ArgParser::Enterprise = ArgParser::GetArgAsBool(Arg::Enterprise, false);
 
    CheckToLogToStandardOut();
+
+   if(!RunningUnitTests())
+   {
+      Timer::UseQTimer();
+   }
 }
 
 bool ArgParser::CheckToLogToStandardOut()
