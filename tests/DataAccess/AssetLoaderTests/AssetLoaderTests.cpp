@@ -2,6 +2,7 @@
 
 #include <TestMacros.h>
 
+#include <QFont>
 #include <QImage>
 #include <QSignalSpy>
 
@@ -13,7 +14,7 @@ using namespace testing;
 namespace
 {
    constexpr const char* const TEST_IMAGE_FILE = "://images/_TestImage.png";
-   constexpr const char* const TEST_FONT_FILE = ":/fonts/_TestFont.ttf";
+   constexpr const char* const TEST_FONT_FILE = "://fonts/_TestFont.ttf";
 }
 
 class AssetLoaderTest: public Test
@@ -83,4 +84,35 @@ TEST_F(AssetLoaderTest, LoadImageAsset3)
    EXPECT_EQ(2, ImageAssetLoaded.at(0).count());
    EXPECT_EQ(TEST_IMAGE_FILE, ImageAssetLoaded.at(0).at(0).value<QString>());
    EXPECT_FALSE(ImageAssetLoaded.at(0).at(1).value<QImage>().isNull());
+}
+
+TEST_F(AssetLoaderTest, LoadFontAsset1)
+{
+   GWT("AssetLoader initialized",
+       "LoadFontAsset is called on a nonexistant file",
+       "FileNotFound signal is sent and AssetLoaded signal is not emit");
+
+   const QString fname(":/fonts/FileDoesNotExist.png");
+   Loader.LoadFontAsset(fname);
+
+   ASSERT_EQ(1, FileNotFound.count());
+   EXPECT_EQ(1, FileNotFound.at(0).count());
+   EXPECT_EQ(fname, FileNotFound.at(0).at(0).value<QString>());
+
+   EXPECT_EQ(0, FontAssetLoaded.count());
+}
+
+TEST_F(AssetLoaderTest, LoadFontAsset2)
+{
+   GWT("AssetLoader initialized",
+       "LoadFontAsset is called on a real file that can be read",
+       "AssetLoaded signal is emit");
+
+   Loader.LoadFontAsset(TEST_FONT_FILE);
+
+   // ASSERT_TRUE(ImageAssetLoaded.wait());
+   ASSERT_EQ(1, FontAssetLoaded.count());
+   EXPECT_EQ(2, FontAssetLoaded.at(0).count());
+   EXPECT_EQ(TEST_FONT_FILE, FontAssetLoaded.at(0).at(0).value<QString>());
+   EXPECT_NE(QFont(), FontAssetLoaded.at(0).at(1).value<QFont>());
 }

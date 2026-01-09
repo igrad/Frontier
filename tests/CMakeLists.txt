@@ -11,6 +11,7 @@ enable_testing()
 
 qt_add_executable(FrontierUnitTests
    MANUAL_FINALIZATION
+   ${CMAKE_SOURCE_DIR}/assets/fonts.qrc
    ${CMAKE_SOURCE_DIR}/assets/images.qrc
    main.cpp
 )

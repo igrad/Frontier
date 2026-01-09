@@ -1,5 +1,6 @@
 qt_add_executable(Frontier
    MANUAL_FINALIZATION
+   ${CMAKE_SOURCE_DIR}/assets/fonts.qrc
    ${CMAKE_SOURCE_DIR}/assets/images.qrc
    main.cpp
 )

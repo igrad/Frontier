@@ -32,8 +32,10 @@ void AssetLoader::LoadFontAsset(const QString& path)
 
    if(!FileExists(path, file) || !FileIsReadable(path, file))
    {
+      file.close();
       return;
    }
+   file.close();
 
    const int fontId = QFontDatabase::addApplicationFont(path);
    if(-1 == fontId)
