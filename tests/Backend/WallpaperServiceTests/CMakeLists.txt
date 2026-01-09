@@ -14,6 +14,7 @@ target_include_directories(WallpaperServiceTests
 
 target_link_libraries(WallpaperServiceTests PRIVATE
    Shared
+   WallpaperService
    TestSupport::BackendSupport
    TestSupport::DataAccessSupport
    TestSupport::TestUtilities

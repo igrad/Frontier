@@ -1,4 +1,6 @@
 set(TestUtilitiesSources
+   FakeDbHelper.cpp
+   FakeDbHelper.h
    FakeSettingSubscriber.h
    TestMacros.h
 )
@@ -16,5 +18,6 @@ target_include_directories(TestUtilities
 target_link_libraries(TestUtilities
    PUBLIC
    Qt6::Core
+   Qt6::Sql
    DataAccess
 )
