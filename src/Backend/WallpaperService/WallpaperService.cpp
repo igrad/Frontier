@@ -28,6 +28,8 @@ WallpaperService::WallpaperService(QObject* parent)
 
    connect(&SettingsProxy, &WallpaperSettingsProxy::SettingsChanged,
            this, &WallpaperService::HandleSettingsChanged);
+   connect(&RotationTimer, &Timer::timeout,
+           this, &WallpaperService::HandleRotationTimeout);
 }
 
 void WallpaperService::RegisterMetaTypes() const
@@ -58,6 +60,10 @@ void WallpaperService::HandleSettingsChanged()
    if(Schedule::Static == SettingsProxy.GetSchedule())
    {
       RotationTimer.Stop();
+   }
+   else
+   {
+      RotationTimer.Start(SettingsProxy.GetDuration());
    }
 
    CalculateCurrentWallpaperData();

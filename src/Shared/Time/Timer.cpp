@@ -2,7 +2,10 @@
 
 #include <Log.h>
 
+#include <QCoreApplication>
 #include <QSet>
+
+#include <iostream>
 
 namespace
 {
@@ -12,6 +15,8 @@ namespace
 
 QSet<Timer*> Timer::AllTimers;
 bool Timer::UsingQTimer = false;
+std::chrono::time_point<std::chrono::steady_clock> Timer::Now;
+bool Timer::InitTimeSet = false;
 
 void Timer::AdvanceTime(int msec)
 {
@@ -20,12 +25,12 @@ void Timer::AdvanceTime(int msec)
       LogError("Timer::AdvanceTimer must only be used in testing!");
       return;
    }
-   const auto now = std::chrono::steady_clock::now();
+   Now += std::chrono::milliseconds(msec);
 
    for(Timer* timer : std::as_const(AllTimers))
    {
       if(timer->Started &&
-          (timer->StartTime + std::chrono::milliseconds(timer->Interval) < now))
+          (timer->StartTime + std::chrono::milliseconds(timer->Interval) < Now))
       {
          emit timer->timeout();
 
@@ -35,6 +40,8 @@ void Timer::AdvanceTime(int msec)
          }
       }
    }
+
+   QCoreApplication::processEvents();
 }
 
 void Timer::UseQTimer()
@@ -48,6 +55,12 @@ Timer::Timer(QObject* parent)
    , SingleShot(DEFAULT_SINGLESHOT)
    , Started(false)
 {
+   if(!InitTimeSet)
+   {
+      Timer::Now = std::chrono::steady_clock::now();
+      InitTimeSet = true;
+   }
+
    SetUpQTimer();
    AllTimers.insert(this);
 }
@@ -58,6 +71,12 @@ Timer::Timer(int interval, bool singleShot, QObject* parent)
    , SingleShot(singleShot)
    , Started(false)
 {
+   if(!InitTimeSet)
+   {
+      Timer::Now = std::chrono::steady_clock::now();
+      InitTimeSet = true;
+   }
+
    SetUpQTimer();
    AllTimers.insert(this);
 }
@@ -112,6 +131,7 @@ void Timer::Stop()
 
 void Timer::SetUpQTimer()
 {
+   std::cout << "using QTimer " << UsingQTimer << std::endl;
    if(UsingQTimer)
    {
       T.reset(new QTimer(this));

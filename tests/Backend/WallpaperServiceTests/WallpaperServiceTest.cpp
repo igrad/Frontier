@@ -18,39 +18,39 @@ public:
    WallpaperServiceTest()
       : SettingsSvcMock()
       , SettingsSvcHelper(&SettingsSvcMock)
-      , Service(nullptr)
+      , Service()
    {
-
-   }
-
-   void SetUpService()
-   {
-      Service.reset(new WallpaperService());
    }
 
    NiceMock<SettingsServiceMock> SettingsSvcMock;
    SettingsServicePointerHelper SettingsSvcHelper;
-   std::unique_ptr<WallpaperService> Service;
+   WallpaperService Service;
 };
 
 
-TEST_F(WallpaperServiceTest, DISABLED_timerTest)
+TEST_F(WallpaperServiceTest, timerTest)
 {
-   SetUpService();
-
-   QSignalSpy spy(Service.get(), &WallpaperService::WallpaperDataChanged);
-
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperDuration,
-                                      1000);
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperColors,
-                                      QStringList{"white", "blue", "green"});
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperSchedule,
-                                      QVariant::fromValue(Schedule::Sequence));
-
-   spy.clear();
+   QSignalSpy spy(&Service, &WallpaperService::WallpaperDataChanged);
 
    SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperStyle,
                                       QVariant::fromValue(Style::StaticColor));
+   const int duration = 1000;
+   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperDuration,
+                                      1000);
+   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperSchedule,
+                                      QVariant::fromValue(Schedule::Sequence));
 
+   ASSERT_TRUE(spy.wait());
+   spy.clear();
+
+   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperColors,
+                                      QStringList{"white", "blue", "green"});
+
+   ASSERT_TRUE(spy.wait());
    EXPECT_EQ(1, spy.count());
+
+   Timer::AdvanceTime(duration + 1);
+
+   EXPECT_EQ(2, spy.count());
+
 }

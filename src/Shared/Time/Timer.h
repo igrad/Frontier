@@ -28,6 +28,8 @@ signals:
 private:
    static QSet<Timer*> AllTimers;
    static bool UsingQTimer;
+   static std::chrono::time_point<std::chrono::steady_clock> Now;
+   static bool InitTimeSet;
 
    void SetUpQTimer();
 

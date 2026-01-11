@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMetaObject>
+#include <QMetaMethod>
 #include <QObject>
 
 // Returns true if the provided QObject contains a declaration for the (fuzzily) normalized
@@ -13,8 +14,10 @@ inline bool QObjectHasMethodDeclared(const QObject* obj,
       return false;
    }
 
-   const char* const normalizedSig = QMetaObject::normalizedSignature(functionSignature.toUtf8());
-   return (0 <= obj->metaObject()->indexOfMethod(normalizedSig));
+   const QByteArray normalizedSig =
+      QMetaObject::normalizedSignature(functionSignature.toStdString().c_str());
+   const QString s(normalizedSig);
+   return (0 <= obj->metaObject()->indexOfSlot(normalizedSig));
 }
 
 inline bool QObjectHasMethodDeclared(const QObject* obj,
