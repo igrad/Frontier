@@ -176,5 +176,5 @@ void ArgParser::ParseArgs(const QCoreApplication& app)
 
 bool ArgParser::CheckToLogToStandardOut()
 {
-   return ArgParser::Enterprise | ArgParser::GetArgAsBool(Arg::Dev, false);
+   return ArgParser::RunningUnitTests() || ArgParser::Enterprise || ArgParser::GetArgAsBool(Arg::Dev, false);
 }
