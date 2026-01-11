@@ -99,7 +99,7 @@ bool SettingsClient::SubscribeToSetting(Setting setting, QObject* subscriber)
       }
       else
       {
-         LogError(QString("Could not find method %1 to handle setting %2 in object %3")
+         LogError(QString("Could not find slot \"%1\" to handle setting %2 in object of class %3")
                      .arg(methodStr.c_str(),
                           ToString(setting),
                           subscriber->metaObject()->className()));

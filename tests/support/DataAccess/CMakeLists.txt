@@ -4,6 +4,7 @@ set(DataAccessSupportSources
    SettingsService/SettingsClientMock.h
    SettingsService/SettingsServiceMock.cpp
    SettingsService/SettingsServiceMock.h
+   SettingsService/SettingsServicePointerHelper.h
 )
 
 add_library(DataAccessSupport

@@ -7,6 +7,9 @@ set(SharedSources
    Logging/Logger.cpp
    Logging/Logger.h
 
+   Time/Timer.cpp
+   Time/Timer.h
+
    Utilities/EnumHelpers.h
    Utilities/MethodLookupHelpers.h
    Utilities/Rando.cpp

@@ -24,11 +24,12 @@ WallpaperService::WallpaperService(QObject* parent)
 {
    setParent(parent);
 
-   RotationTimer.setTimerType(Qt::TimerType::CoarseTimer);
-   RotationTimer.setInterval(DEFAULT_ROTATION_DURATION_MS);
+   RotationTimer.SetInterval(DEFAULT_ROTATION_DURATION_MS);
 
    connect(&SettingsProxy, &WallpaperSettingsProxy::SettingsChanged,
            this, &WallpaperService::HandleSettingsChanged);
+   connect(&RotationTimer, &Timer::timeout,
+           this, &WallpaperService::HandleRotationTimeout);
 }
 
 void WallpaperService::RegisterMetaTypes() const
@@ -58,7 +59,11 @@ void WallpaperService::HandleSettingsChanged()
 
    if(Schedule::Static == SettingsProxy.GetSchedule())
    {
-      RotationTimer.stop();
+      RotationTimer.Stop();
+   }
+   else
+   {
+      RotationTimer.Start(SettingsProxy.GetDuration());
    }
 
    CalculateCurrentWallpaperData();
@@ -169,7 +174,7 @@ void WallpaperService::CalculateSequenceOrShuffleViewData(bool triggeredByTimer)
    // TODO: Multi-monitor
    CurrentData.AssignedMonitor = 0;
 
-   RotationTimer.start(duration);
+   RotationTimer.Start(duration);
    if((Style::DynamicColor == style) ||
        (Style::StaticColor == style))
    {

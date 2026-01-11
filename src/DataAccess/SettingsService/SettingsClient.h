@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QMultiHash>
 
-class ServicePointerHelper;
+class SettingsServicePointerHelper;
 
 namespace Settings
 {
@@ -31,7 +31,7 @@ namespace Settings
 
    private:
       friend class SettingsService;
-      friend class ::ServicePointerHelper;
+      friend class ::SettingsServicePointerHelper;
       static SettingsServiceInterface* Service;
 
       const std::string GetSettingHandlerMethodStr(Setting setting, bool normalized = false) const;

@@ -14,6 +14,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Sql Test Widgets)
 
 # Global Includes (So tests and app can find Shared headers)
 include_directories(src/Shared)
+include_directories(src/Shared/Time)
 
 # Process Subdirectories
 # 1. src defines CoreUI, Shared, and the Frontier executable

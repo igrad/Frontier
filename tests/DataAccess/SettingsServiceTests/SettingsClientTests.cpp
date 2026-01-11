@@ -1,5 +1,6 @@
 #include <SettingsClient.h>
 #include <SettingsService/SettingsServiceMock.h>
+#include <SettingsService/SettingsServicePointerHelper.h>
 
 #include <FakeSettingSubscriber.h>
 #include <TestMacros.h>
@@ -9,14 +10,6 @@
 
 using namespace Settings;
 using namespace testing;
-
-struct ServicePointerHelper
-{
-   ServicePointerHelper(NiceMock<SettingsServiceMock>* service)
-   {
-      SettingsClient::Service = service;
-   }
-};
 
 class SettingsClientTest: public Test
 {
@@ -29,7 +22,7 @@ public:
    }
 
    NiceMock<SettingsServiceMock> ServiceMock;
-   ServicePointerHelper PtrHelper;
+   SettingsServicePointerHelper PtrHelper;
    SettingsClient Client;
 };
 

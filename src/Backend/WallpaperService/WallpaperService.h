@@ -6,6 +6,7 @@
 #include <Utilities/Rando.h>
 
 #include <QTimer>
+#include <Timer.h>
 
 namespace Wallpaper
 {
@@ -37,7 +38,7 @@ namespace Wallpaper
       ViewData CurrentData;
       int CurrentColorsIndex;
       int CurrentImageIndex;
-      QTimer RotationTimer;
+      Timer RotationTimer;
       Rando ShuffleRando;
    };
 }

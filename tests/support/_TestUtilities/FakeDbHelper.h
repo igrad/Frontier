@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Settings.h>
+#include <SettingsDbHelpers.h>
 #include <QSqlDatabase>
 
 class FakeDbHelper {
