@@ -3,6 +3,7 @@
 #include <AssetLoader/AssetLoaderMock.h>
 
 #include <TestMacros.h>
+#include <Log.h>
 
 #include <QFont>
 #include <QFontDatabase>
@@ -27,6 +28,16 @@ public:
       , Manager(XPtr<AssetLoaderInterface>(&Loader))
    {
 
+   }
+
+   void SetUp() override
+   {
+      Log::LogToStandardOut();
+   }
+
+   void TearDown() override
+   {
+      Log::LogToStandardOut(false);
    }
 
    NiceMock<AssetLoaderMock> Loader;

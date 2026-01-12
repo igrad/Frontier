@@ -30,12 +30,16 @@ public:
    static void Warn(const QString& scope, const QString& string);
    static void Error(const QString& scope, const QString& string);
 
+   // Used for unit tests to enable logging within a test
+   static void LogToStandardOut(bool log = true);
+
 signals:
    void WriteDebug(const QString& scope,
                    const QString& string);
    void WriteLog(const QString& priority,
                  const QString& scope,
                  const QString& string);
+   void LogToStdOut(bool log);
 
 protected:
    Log();

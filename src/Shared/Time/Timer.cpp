@@ -5,8 +5,6 @@
 #include <QCoreApplication>
 #include <QSet>
 
-#include <iostream>
-
 namespace
 {
    constexpr int DEFAULT_INTERVAL = 1000;
@@ -131,7 +129,6 @@ void Timer::Stop()
 
 void Timer::SetUpQTimer()
 {
-   std::cout << "using QTimer " << UsingQTimer << std::endl;
    if(UsingQTimer)
    {
       T.reset(new QTimer(this));

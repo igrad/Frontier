@@ -63,6 +63,16 @@ void Log::Error(const QString& scope, const QString& string)
    }
 }
 
+void Log::LogToStandardOut(bool log)
+{
+   if(nullptr != TheLogger)
+   {
+      QMetaObject::invokeMethod(TheLogger,
+                                "LogToStdOut",
+                                Q_ARG(bool, log));
+   }
+}
+
 void Log::Destroy()
 {
    TheLogger->deleteLater();

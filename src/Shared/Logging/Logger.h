@@ -15,13 +15,12 @@ public:
    explicit Logger(QObject* parent = nullptr);
    ~Logger();
 
-   void LogToStandardOut();
-
 public slots:
    void HandleWriteDebug(const QString& scope, const QString& string);
    void HandleWriteLog(const QString& priority,
                        const QString& scope,
                        const QString& string);
+   void HandleLogToStdOut(bool log);
 
 private:
    void ConnectToLog();

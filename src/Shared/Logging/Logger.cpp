@@ -111,6 +111,8 @@ void Logger::ConnectToLog()
    connect(log, &Log::WriteDebug,
            this, &Logger::HandleWriteDebug);
    #endif
+   connect(log, &Log::LogToStdOut,
+           this, &Logger::HandleLogToStdOut);
 }
 
 void Logger::HandleWriteDebug(const QString& scope, const QString& string)
@@ -127,6 +129,11 @@ void Logger::HandleWriteLog(const QString& priority,
           scope.toStdString().c_str(),
           string.toStdString().c_str());
    WriteToLogFile(str);
+}
+
+void Logger::HandleLogToStdOut(bool log)
+{
+   LogToStdOut = log;
 }
 
 void Logger::WriteToHistoryFile(const QString& log)
@@ -177,7 +184,7 @@ void Logger::WriteToLogFile(const char* level, const char* scope,
 void Logger::WriteToLogFile(const std::string& str)
 {
    const bool unitTesting = ArgParser::RunningUnitTests();
-   if(LogToStdOut || unitTesting)
+   if(LogToStdOut)
    {
       std::cout << str << std::flush;
    }
