@@ -1,4 +1,5 @@
 set(BackendSupportSources
+   TaskBarService/TaskBarServiceMock.cpp
    TaskBarService/TaskBarServiceMock.h
 
    WallpaperService/WallpaperServiceMock.cpp

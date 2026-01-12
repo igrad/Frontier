@@ -13,7 +13,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-class ShellWindow;
+class ShellWindowInterface;
 
 namespace TaskBar
 {
@@ -23,7 +23,7 @@ namespace TaskBar
 
    public:
       TaskBarView(XPtr<TaskBarServiceInterface> service,
-                  ShellWindow* window);
+                  ShellWindowInterface* window);
       ~TaskBarView() = default;
 
    public:

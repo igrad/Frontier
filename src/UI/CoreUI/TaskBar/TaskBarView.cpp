@@ -1,12 +1,12 @@
 #include "TaskBarView.h"
 
 #include <TaskBarServiceInterface.h>
-#include <ShellWindow.h>
+#include <ShellWindowInterface.h>
 
 using namespace TaskBar;
 
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
-                         ShellWindow* window)
+                         ShellWindowInterface* window)
    : QWidget(window)
    , AssetClient("TaskBarView", this)
    , CurrentData()
