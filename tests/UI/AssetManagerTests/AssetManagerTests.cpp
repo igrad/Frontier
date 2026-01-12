@@ -15,6 +15,7 @@ using namespace testing;
 
 namespace
 {
+   constexpr const char* const TEST_IMAGE_PATH = "://images/_TestImage.png";
    constexpr const char* const TEST_FONT_PATH = "://fonts/_TestFont.ttf";
 }
 
@@ -83,4 +84,60 @@ TEST_F(AssetManagerTest, GetFont1)
    const QFont font(fontPath);
    Loader.EmitFontAssetLoaded(fontPath, font);
    EXPECT_EQ(font, Manager.GetFont(fontPath));
+}
+
+TEST_F(AssetManagerTest, RequestFont1)
+{
+   const QString fontPath = TEST_FONT_PATH;
+   EXPECT_CALL(Loader, LoadFontAsset(fontPath));
+   Manager.RequestFont(fontPath);
+}
+
+TEST_F(AssetManagerTest, RequestFont2)
+{
+   const QString fontPath = TEST_FONT_PATH;
+
+   Manager.RequestFont(fontPath);
+
+   EXPECT_CALL(Loader, LoadFontAsset(fontPath)).Times(0);
+   Manager.RequestFont(fontPath);
+}
+
+TEST_F(AssetManagerTest, RequestFont3)
+{
+   const QString fontPath = TEST_FONT_PATH;
+   const QFont font(fontPath);
+
+   Loader.EmitFontAssetLoaded(fontPath, font);
+
+   EXPECT_CALL(Loader, LoadFontAsset(fontPath)).Times(0);
+   Manager.RequestFont(fontPath);
+}
+
+TEST_F(AssetManagerTest, RequestImage1)
+{
+   const QString imagePath = TEST_IMAGE_PATH;
+
+   EXPECT_CALL(Loader, LoadImageAsset(imagePath));
+   Manager.RequestImage(imagePath);
+}
+
+TEST_F(AssetManagerTest, RequestImage2)
+{
+   const QString imagePath = TEST_IMAGE_PATH;
+
+   Manager.RequestImage(imagePath);
+
+   EXPECT_CALL(Loader, LoadImageAsset(imagePath)).Times(0);
+   Manager.RequestImage(imagePath);
+}
+
+TEST_F(AssetManagerTest, RequestImage3)
+{
+   const QString imagePath = TEST_IMAGE_PATH;
+
+   Loader.EmitImageAssetLoaded(imagePath, QImage());
+
+   EXPECT_CALL(Loader, LoadImageAsset(imagePath)).Times(0);
+   Manager.RequestImage(imagePath);
 }

@@ -27,8 +27,8 @@ namespace Assets
       QFont GetFont(const QString& id) const;
       QPixmap GetImage(const QString& id) const;
 
-      void RequestFont(const QString& path, AssetClient* requester);
-      void RequestImage(const QString& path, AssetClient* requester);
+      void RequestFont(const QString& path);
+      void RequestImage(const QString& path);
 
    signals:
       void FontLoaded(const QString& id, const QFont& font);
@@ -48,7 +48,7 @@ namespace Assets
 
       XPtr<AssetLoaderInterface> Loader;
       QHash<QString, QPair<QString, QPixmap>> PixmapCache;
-      QHash<QString, QString> FontCache; 	// Id, font family
-      QHash<QString, QString> InFlight; 	// Id, path
+      QHash<QString, QString> FontCache; 	// Path, font family
+      QSet<QString> InFlight;
    };
 }

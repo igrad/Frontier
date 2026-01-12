@@ -72,7 +72,7 @@ QPixmap AssetManager::GetImage(const QString& path) const
    return QPixmap();
 }
 
-void AssetManager::RequestFont(const QString& path, AssetClient* requester)
+void AssetManager::RequestFont(const QString& path)
 {
    bool invoke = true;
    if(FontCache.contains(path))
@@ -89,18 +89,14 @@ void AssetManager::RequestFont(const QString& path, AssetClient* requester)
       QMetaObject::invokeMethod(Loader.Object,
                                 "LoadFontAsset",
                                 Q_ARG(QString, path));
+      InFlight.insert(path);
    }
 }
 
-void AssetManager::RequestImage(const QString& path, AssetClient* requester)
+void AssetManager::RequestImage(const QString& path)
 {
    bool invoke = true;
-   if(nullptr == requester)
-   {
-      LogError("A nullptr cannot request an image");
-      invoke = false;
-   }
-   else if(IsInImageCache(path))
+   if(IsInImageCache(path))
    {
       invoke = false;
    }
@@ -114,16 +110,15 @@ void AssetManager::RequestImage(const QString& path, AssetClient* requester)
       QMetaObject::invokeMethod(Loader.Object,
                                 "LoadImageAsset",
                                 Q_ARG(QString, path));
-      InFlight[path] = path;
+      InFlight.insert(path);
    }
 }
 
 void AssetManager::HandleFontAssetLoaded(const QString& path, const QFont& font)
 {
-   const QString str = InFlight[path];
    InFlight.remove(path);
 
-   LogInfo(QString("Loaded font \"%1\"").arg(str));
+   LogInfo(QString("Loaded font \"%1\"").arg(path));
 
    FontCache[path] = font.family();
 
@@ -132,11 +127,10 @@ void AssetManager::HandleFontAssetLoaded(const QString& path, const QFont& font)
 
 void AssetManager::HandleImageAssetLoaded(const QString& path, const QImage& image)
 {
-   const QString str = InFlight[path];
    InFlight.remove(path);
 
    const QPixmap pix = QPixmap::fromImage(image);
-   PixmapCache[path] = QPair<QString, QPixmap>(str, pix);
+   PixmapCache[path] = QPair<QString, QPixmap>(path, pix);
 
    LogInfo(QString("Loaded image \"%1\"").arg(path));
 

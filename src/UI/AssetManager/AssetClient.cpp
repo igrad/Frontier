@@ -40,7 +40,7 @@ void AssetClient::LoadFont(FontName name)
    }
 
    const QString path = ToAssetPath(name);
-   Manager->RequestFont(path, this);
+   Manager->RequestFont(path);
    LoadingFonts[path] = name;
 }
 
@@ -112,7 +112,7 @@ void AssetClient::PrivateLoadImage(ImageName name, bool batch)
    else
    {
       BatchLoadNames.insert(name);
-      Manager->RequestImage(ToAssetPath(name), this);
+      Manager->RequestImage(ToAssetPath(name));
       LoadingImages[path] = name;
    }
 }
