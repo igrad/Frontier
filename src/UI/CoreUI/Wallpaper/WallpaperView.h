@@ -9,7 +9,7 @@
 #include <QVideoWidget>
 #include <QWidget>
 
-class ShellWindow;
+class ShellWindowInterface;
 
 namespace Wallpaper
 {
@@ -21,7 +21,7 @@ namespace Wallpaper
 
    public:
       WallpaperView(XPtr<WallpaperServiceInterface> service,
-                    ShellWindow* window);
+                    ShellWindowInterface* window);
       ~WallpaperView();
 
    public slots:

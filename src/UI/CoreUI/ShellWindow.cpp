@@ -1,6 +1,6 @@
 #include "ShellWindow.h"
-#include <ArgParser.h>
 
+#include <ArgParser.h>
 #include <Log.h>
 
 namespace
@@ -10,8 +10,8 @@ namespace
 }
 
 ShellWindow::ShellWindow(QWidget* parent)
-   : QWidget(parent)
 {
+   setParent(parent);
    {
       typedef ArgParser::Arg Arg;
       if(ArgParser::GetArgAsBool(Arg::Dev, false))

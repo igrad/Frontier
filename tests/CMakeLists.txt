@@ -7,6 +7,8 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
+find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
+
 enable_testing()
 
 qt_add_executable(FrontierUnitTests
@@ -21,6 +23,8 @@ target_link_libraries(FrontierUnitTests
    Qt6::Core
    Qt6::Test
    Qt6::Widgets
+   Qt6::Multimedia
+   Qt6::MultimediaWidgets
    GTest::gtest
    GTest::gmock
 )
@@ -31,7 +35,7 @@ add_subdirectory(support)
 # Test subdirs
 add_subdirectory(Backend)
 add_subdirectory(DataAccess)
-# add_subdirectory(UI)
+add_subdirectory(UI)
 
 include(GoogleTest)
 gtest_discover_tests(FrontierUnitTests)

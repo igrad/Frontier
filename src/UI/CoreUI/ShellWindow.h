@@ -1,19 +1,14 @@
 #pragma once
 
-#include <Wallpaper/WallpaperView.h>
+#include "ShellWindowInterface.h"
 
-#include <QWidget>
-
-class ShellWindow : public QWidget
+class ShellWindow: public ShellWindowInterface
 {
    Q_OBJECT
 
 public:
    explicit ShellWindow(QWidget* parent = nullptr);
    ~ShellWindow() = default;
-
-signals:
-   void Closed();
 
 private slots:
    void closeEvent(QCloseEvent* event) override;

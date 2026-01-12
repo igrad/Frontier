@@ -27,8 +27,7 @@ public:
    WallpaperService Service;
 };
 
-
-TEST_F(WallpaperServiceTest, timerTest)
+TEST_F(WallpaperServiceTest, HandleRotationTimeout1)
 {
    QSignalSpy spy(&Service, &WallpaperService::WallpaperDataChanged);
 
@@ -49,8 +48,9 @@ TEST_F(WallpaperServiceTest, timerTest)
    ASSERT_TRUE(spy.wait());
    EXPECT_EQ(1, spy.count());
 
-   Timer::AdvanceTime(duration + 1);
+   Timer::AdvanceTime(duration - 1);
+   EXPECT_EQ(1, spy.count());
 
+   Timer::AdvanceTime(2);
    EXPECT_EQ(2, spy.count());
-
 }

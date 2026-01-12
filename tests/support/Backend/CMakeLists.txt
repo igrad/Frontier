@@ -1,5 +1,7 @@
 set(BackendSupportSources
    TaskBarService/TaskBarServiceMock.h
+
+   WallpaperService/WallpaperServiceMock.cpp
    WallpaperService/WallpaperServiceMock.h
 )
 
@@ -15,6 +17,9 @@ target_include_directories(BackendSupport
 
 target_link_libraries(BackendSupport
    PUBLIC
+   TaskBarService
+   WallpaperService
    Qt6::Core
    Qt6::Widgets
+   GTest::gmock
 )

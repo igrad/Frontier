@@ -2,12 +2,12 @@
 
 #include <WallpaperService.h>
 
-#include <ShellWindow.h>
+#include <ShellWindowInterface.h>
 
 using namespace Wallpaper;
 
 WallpaperView::WallpaperView(XPtr<WallpaperServiceInterface> service,
-                             ShellWindow* window)
+                             ShellWindowInterface* window)
    : QWidget(window)
    , CurrentData()
    , Layout(nullptr)
