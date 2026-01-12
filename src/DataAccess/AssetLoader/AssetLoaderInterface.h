@@ -16,9 +16,9 @@ namespace Assets
       virtual void LoadFontAsset(const QString& path) = 0;
 
    signals:
-      void ImageAssetLoaded(const QString& path, const QImage& image);
-      void FontAssetLoaded(const QString& path, const QFont& font);
-      void FileNotFound(const QString& path);
       void FailedToLoadAsset(const QString& path);
+      void FileNotFound(const QString& path);
+      void FontAssetLoaded(const QString& path, const QFont& font);
+      void ImageAssetLoaded(const QString& path, const QImage& image);
    };
 }

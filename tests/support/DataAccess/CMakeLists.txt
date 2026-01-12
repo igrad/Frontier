@@ -1,4 +1,5 @@
 set(DataAccessSupportSources
+   AssetLoader/AssetLoaderMock.cpp
    AssetLoader/AssetLoaderMock.h
 
    SettingsService/SettingsClientMock.h
@@ -15,6 +16,7 @@ add_library(TestSupport::DataAccessSupport ALIAS DataAccessSupport)
 target_include_directories(DataAccessSupport
    PUBLIC
    ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_SOURCE_DIR}/DataAccess/AssetLoader
    ${CMAKE_SOURCE_DIR}/DataAccess/SettingsService
 )
 
