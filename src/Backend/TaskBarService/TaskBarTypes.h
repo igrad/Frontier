@@ -48,7 +48,18 @@ namespace TaskBar
       int AutoHideDelayMs;
       Orientation Orientation;
       double Opacity;
+
+      bool operator==(const ViewData& rhs) const
+      {
+         return Alignment == rhs.Alignment &&
+                AssignedMonitor == rhs.AssignedMonitor &&
+                AutoHide == rhs.AutoHide &&
+                AutoHideDelayMs == rhs.AutoHideDelayMs &&
+                Orientation == rhs.Orientation &&
+                Opacity == rhs.Opacity;
+      }
    };
+
 }
 
 Q_DECLARE_METATYPE(TaskBar::ViewData);

@@ -87,7 +87,6 @@ void WallpaperView::CreateUI()
    Layout->addWidget(VideoWidget);
 
    setLayout(Layout);
-   Layout->setGeometry({0, 0, 1920, 1080});
    setGeometry({0, 0, 1920, 1080});
 
    ViewData data;

@@ -22,7 +22,42 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
 
 void TaskBarView::HandleViewDataChanged(const TaskBar::ViewData& data)
 {
+   if(data == CurrentData)
+   {
+      return;
+   }
 
+   if(data.Alignment != CurrentData.Alignment)
+   {
+
+   }
+
+   if(data.AssignedMonitor != CurrentData.AssignedMonitor)
+   {
+      // TODO: Make sure we're processing the settings update for the correct monitor!
+   }
+
+   if(data.AutoHide != CurrentData.AutoHide)
+   {
+
+   }
+
+   if(data.AutoHideDelayMs != CurrentData.AutoHideDelayMs)
+   {
+
+   }
+
+   if(data.Orientation != CurrentData.Orientation)
+   {
+
+   }
+
+   if(data.Opacity != CurrentData.Opacity)
+   {
+
+   }
+
+   CurrentData = data;
 }
 
 void TaskBarView::HandleImageReady(Assets::ImageName name, const QPixmap& image)
@@ -41,6 +76,20 @@ void TaskBarView::CreateUI()
    StartButton = new QPushButton(this);
    // const QIcon defaultIcon();
    // StartButton->setIcon()
+
+   setLayout(MainLayout);
+   setGeometry({0, 100, 1920, 100});
+
+   AppIconsLayout = new QGridLayout(this);
+   MainLayout->addLayout(AppIconsLayout);
+
+   MiscIconsLayout = new QGridLayout(this);
+   MainLayout->addLayout(MiscIconsLayout);
+
+   DateTimeLayout = new QVBoxLayout(this);
+   MainLayout->addLayout(DateTimeLayout);
+
+   show();
 }
 
 void TaskBarView::ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service)

@@ -4,6 +4,7 @@
 #include <TaskBarServiceInterface.h>
 
 #include <AssetClient.h>
+#include <SettingsClient.h>
 #include <Utilities/XPtr.h>
 
 #include <QGridLayout>
@@ -38,11 +39,11 @@ namespace TaskBar
       void ConnectToAssetClientSignals();
 
       Assets::AssetClient AssetClient;
-      ViewData CurrentData;
+      TaskBar::ViewData CurrentData;
       QBoxLayout* MainLayout;
       QPushButton* StartButton;
-      QBoxLayout* AppIconsLayout;
-      QBoxLayout* MiscIconsLayout;
+      QGridLayout* AppIconsLayout;
+      QGridLayout* MiscIconsLayout;
       QVBoxLayout* DateTimeLayout;
 
       QTimer AutoHideTimer;
