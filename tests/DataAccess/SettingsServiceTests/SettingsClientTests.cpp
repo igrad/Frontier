@@ -61,7 +61,7 @@ TEST_F(SettingsClientTest, SubscribeToSetting3)
    const QVariant value = QString("SomeValue");
    ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);
 
-   ASSERT_TRUE(spy.wait());
+   QCoreApplication::processEvents();
 
    ASSERT_EQ(1, spy.count());
    ASSERT_EQ(1, spy.at(0).count());

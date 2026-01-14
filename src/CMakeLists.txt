@@ -10,6 +10,7 @@ add_subdirectory(DataAccess)
 add_subdirectory(Enterprise)
 add_subdirectory(Shared)
 add_subdirectory(UI)
+add_subdirectory(WindowsAPI)
 
 find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
 
@@ -19,11 +20,13 @@ target_link_libraries(Frontier
    BackendThreadManager
    Enterprise
    DataAccess
+   WindowsAPI
    Qt6::Core
    Qt6::Gui
    Qt6::Multimedia
    Qt6::MultimediaWidgets
    Qt6::Widgets
+   Shcore.lib
 )
 
 if(${Qt6_VERSION} VERSION_LESS 6.1.0)

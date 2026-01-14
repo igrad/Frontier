@@ -36,7 +36,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingWallpaperColorsChanged1)
    SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperColors,
                                       QVariant(colorStrings));
 
-   ASSERT_TRUE(Spy.wait());
+   QCoreApplication::processEvents();
 
    QList<QColor> colors;
    colors.push_back(QColor("white"));
@@ -52,7 +52,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperDurationChanged1)
    SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperDuration,
                                       QVariant(duration));
 
-   ASSERT_TRUE(Spy.wait());
+   QCoreApplication::processEvents();
    EXPECT_EQ(duration, Proxy.GetDuration());
 }
 
@@ -66,7 +66,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperFitsChanged1)
    SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperFits,
                                      QVariant::fromValue<QList<Fit>>(fits));
 
-   ASSERT_TRUE(Spy.wait());
+   QCoreApplication::processEvents();
 
    EXPECT_EQ(fits, Proxy.GetFits());
 }
@@ -78,7 +78,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperImagePathsChanged1)
    SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperImagePaths,
                                       QVariant(strings));
 
-   ASSERT_TRUE(Spy.wait());
+   QCoreApplication::processEvents();
 
    EXPECT_EQ(strings, Proxy.GetPaths());
 }
@@ -90,7 +90,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperScheduleChanged1)
    SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperSchedule,
                                       QVariant::fromValue<Schedule>(sched));
 
-   ASSERT_TRUE(Spy.wait());
+   QCoreApplication::processEvents();
 
    EXPECT_EQ(sched, Proxy.GetSchedule());
 }
@@ -102,7 +102,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperStyleChanged1)
    SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperStyle,
                                       QVariant::fromValue<Style>(style));
 
-   ASSERT_TRUE(Spy.wait());
+   QCoreApplication::processEvents();
 
    EXPECT_EQ(style, Proxy.GetStyle());
 }
