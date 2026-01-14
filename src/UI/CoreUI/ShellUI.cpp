@@ -8,13 +8,11 @@
 
 #include <AssetManager.h>
 
-ShellUI::ShellUI(std::shared_ptr<Assets::AssetManager> assetManager,
-                 XPtr<TaskBar::TaskBarServiceInterface>& taskBarService,
+ShellUI::ShellUI(XPtr<TaskBar::TaskBarServiceInterface>& taskBarService,
                  XPtr<Wallpaper::WallpaperServiceInterface>& wallpaperService,
                  const DisplayInfo& displayInfo,
                  QObject* parent)
    : QObject(parent)
-   , TheAssetManager(assetManager)
    , TaskBarService(nullptr)
    , WallpaperService(nullptr)
    , TheShellWindow(nullptr)

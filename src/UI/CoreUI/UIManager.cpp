@@ -70,7 +70,7 @@ void UIManager::HandleServiceThreadStarted()
 void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 {
    TheAssetLoader = XPtr(loader);
-   TheAssetManager.reset(new Assets::AssetManager(TheAssetLoader, this));
+   TheAssetManager = new Assets::AssetManager(TheAssetLoader, this);
    // Don't bother trying to build UI components until service thread components are built
 }
 
@@ -141,8 +141,7 @@ void UIManager::BuildShellWindows()
       {
          LogInfo(QString("Building ShellUI for display: %1")
                     .arg(info.ID));
-         Shells.push_back(new ShellUI(TheAssetManager,
-                                      TaskBarService,
+         Shells.push_back(new ShellUI(TaskBarService,
                                       WallpaperService,
                                       info,
                                       this));

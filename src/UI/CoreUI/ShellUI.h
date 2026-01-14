@@ -6,11 +6,6 @@
 
 class ShellWindow;
 
-namespace Assets
-{
-   class AssetManager;
-}
-
 namespace TaskBar
 {
    class TaskBarServiceInterface;
@@ -28,8 +23,7 @@ class ShellUI: public QObject
    Q_OBJECT
 
 public:
-   ShellUI(std::shared_ptr<Assets::AssetManager> assetManager,
-           XPtr<TaskBar::TaskBarServiceInterface>& taskBarService,
+   ShellUI(XPtr<TaskBar::TaskBarServiceInterface>& taskBarService,
            XPtr<Wallpaper::WallpaperServiceInterface>& wallpaperService,
            const DisplayInfo& displayInfo,
            QObject* parent = nullptr);
@@ -51,7 +45,6 @@ private:
    void BuildTheTaskBarView();
    void Start();
 
-   std::shared_ptr<Assets::AssetManager> TheAssetManager;
    XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
    XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
    ShellWindow* TheShellWindow;

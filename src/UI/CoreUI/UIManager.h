@@ -48,7 +48,7 @@ private:
    XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
    XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
 
-   std::shared_ptr<Assets::AssetManager> TheAssetManager;
+   Assets::AssetManager* TheAssetManager;
 
    QList<ShellUI*> Shells;
    QList<DisplayInfo> DisplaysInfo;
