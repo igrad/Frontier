@@ -1,5 +1,9 @@
 target_sources(FrontierUnitTests
    PRIVATE
+   ShellUITests.cpp
+   ShellWindowTests.cpp
+   UIManagerTests.cpp
+
    TaskBarTests/TaskBarViewTests.cpp
    WallpaperTests/WallpaperViewTests.cpp
 )

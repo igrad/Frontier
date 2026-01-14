@@ -1,4 +1,4 @@
-#include "ShellWindow.h"
+#include "ShellUI.h"
 #include "UIManager.h"
 
 #include <AssetManager.h>
@@ -10,12 +10,13 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
                      BackendThreadManager* backend)
    : DataAccess(dataAccess)
    , Backend(backend)
-   , TheShellWindow(nullptr)
    , TheAssetLoader(nullptr)
-   , TheAssetManager(nullptr)
    , TaskBarService(nullptr)
    , WallpaperService(nullptr)
-   , TheWallpaperView(nullptr)
+   , TheAssetManager(nullptr)
+   , Shells()
+   , DisplaysInfo()
+   , DisplaysInfoReceived(false)
 {
    connect(this, &UIManager::UIConnectedToServiceComponents,
            DataAccess.get(), &DataAccessThreadManager::HandleUIConnectedToComponents);
@@ -28,18 +29,17 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
 
 UIManager::~UIManager()
 {
-   if(TheShellWindow)
-   {
-      TheShellWindow->deleteLater();
-      TheShellWindow = nullptr;
-   }
 }
 
-void UIManager::Start()
+void UIManager::HandleDisplaysInfo(const QList<DisplayInfo>& info)
 {
-   emit UIConnectedToServiceComponents();
+   DisplaysInfoReceived = true;
 
-   TheShellWindow->show();
+   if(info != DisplaysInfo)
+   {
+      DisplaysInfo = info;
+      BuildShellWindows();
+   }
 }
 
 void UIManager::HandleDataAccessThreadStarted()
@@ -70,46 +70,82 @@ void UIManager::HandleServiceThreadStarted()
 void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 {
    TheAssetLoader = XPtr(loader);
-   TheAssetManager = new Assets::AssetManager(TheAssetLoader, this);
+   TheAssetManager.reset(new Assets::AssetManager(TheAssetLoader, this));
    // Don't bother trying to build UI components until service thread components are built
 }
 
 void UIManager::HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service)
 {
    TaskBarService = XPtr(service);
-   BuildUIComponents();
+   BuildShellWindows();
 }
 
 void UIManager::HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service)
 {
    WallpaperService = XPtr(service);
-   BuildUIComponents();
+   BuildShellWindows();
 }
 
-void UIManager::BuildUIComponents()
+void UIManager::Start()
 {
-   if(!TaskBarService.isNull()&&
-       !WallpaperService.isNull())
+   emit UIConnectedToServiceComponents();
+}
+
+void UIManager::BuildShellWindows()
+{
+   if(!DisplaysInfoReceived ||
+       TaskBarService.isNull() ||
+       WallpaperService.isNull() ||
+       (nullptr == TheAssetManager))
    {
-      BuildTheShellWindow();
-
-      // Build in z-index order
-      BuildTheWallpaperView();
-      // BuildTheTaskBarView();
-
-      Start();
+      return;
    }
-}
 
-void UIManager::BuildTheShellWindow()
-{
-   TheShellWindow = new ShellWindow();
-   connect(TheShellWindow, &ShellWindow::Closed,
-           this, &UIManager::ShellWindowClosed);
-}
+   LogInfo("Building shell windows");
 
-void UIManager::BuildTheWallpaperView()
-{
-   TheWallpaperView = new Wallpaper::WallpaperView(WallpaperService,
-                                                   TheShellWindow);
+   if(DisplaysInfo.count() < Shells.count())
+   {
+      LogInfo(QString("Monitor count has dropped from %1 to %2")
+                 .arg(Shells.count(), DisplaysInfo.count()));
+
+      while(DisplaysInfo.count() < Shells.count())
+      {
+         ShellUI* ui = Shells.last();
+         LogInfo(QString("Discarding existing ShellUI for monitor %1")
+          .arg(ui->GetDisplayID()));
+         ui = nullptr;
+         Shells.removeLast();
+      }
+   }
+
+   for(const DisplayInfo& info : std::as_const(DisplaysInfo))
+   {
+      const uint8_t id = info.ID;
+
+      auto shellIter = std::find_if(Shells.begin(),
+                                    Shells.end(),
+                                    [&](const ShellUI* shell) {
+         return id == shell->GetDisplayID();
+      });
+
+      const bool exists = (Shells.end() != shellIter);
+      if(exists &&
+          (info != (*shellIter)->GetDisplayInfo()))
+      {
+         LogInfo(QString("DisplayInfo changed for display: %1")
+                    .arg(info.ID));
+         (*shellIter)->HandleDisplayInfoUpdated(info);
+      }
+
+      if(!exists)
+      {
+         LogInfo(QString("Building ShellUI for display: %1")
+                    .arg(info.ID));
+         Shells.push_back(new ShellUI(TheAssetManager,
+                                      TaskBarService,
+                                      WallpaperService,
+                                      info,
+                                      this));
+      }
+   }
 }

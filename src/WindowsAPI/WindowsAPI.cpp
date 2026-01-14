@@ -8,6 +8,10 @@
 #include <windows.h>
 #include <shellscalingapi.h>
 
+// NOTE: For now, the WindowsAPI class directly interfaces with windows.h. This isn't very
+// testable, but it's fine for now. We will eventually need to make a 1:1 wrapper for the windows
+// API so that we can mock it and test this thoroughly.
+
 QList<HMONITOR> WindowsAPI::MONITOR_HANDLES;
 
 WindowsAPI::WindowsAPI(const WindowsEventMessageFilter& filter,

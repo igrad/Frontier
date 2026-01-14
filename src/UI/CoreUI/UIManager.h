@@ -10,25 +10,26 @@ namespace Assets
    class AssetLoaderInterface;
    class AssetManager;
 }
-class ShellWindow;
 
-namespace Wallpaper
-{
-   class WallpaperView;
-}
+struct DisplayInfo;
+
+class ShellUI;
 
 class UIManager: public QObject
 {
    Q_OBJECT
 
 public:
-   explicit UIManager(DataAccessThreadManager* dataAccess,
-                      BackendThreadManager* backend);
+   UIManager(DataAccessThreadManager* dataAccess,
+             BackendThreadManager* backend);
    ~UIManager();
 
 signals:
    void UIConnectedToServiceComponents();
    void ShellWindowClosed();
+
+public slots:
+   void HandleDisplaysInfo(const QList<DisplayInfo>& info);
 
 private slots:
    void HandleDataAccessThreadStarted();
@@ -39,20 +40,17 @@ private slots:
 
 private:
    void Start();
-
-   void BuildUIComponents();
-   void BuildTheShellWindow();
-   void BuildTheWallpaperView();
+   void BuildShellWindows();
 
    XPtr<DataAccessThreadManager> DataAccess;
    XPtr<BackendThreadManager> Backend;
-   ShellWindow* TheShellWindow;
-
    XPtr<Assets::AssetLoaderInterface> TheAssetLoader;
-   Assets::AssetManager* TheAssetManager;
-
    XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
-
    XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
-   Wallpaper::WallpaperView* TheWallpaperView;
+
+   std::shared_ptr<Assets::AssetManager> TheAssetManager;
+
+   QList<ShellUI*> Shells;
+   QList<DisplayInfo> DisplaysInfo;
+   bool DisplaysInfoReceived;
 };

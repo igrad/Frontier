@@ -20,4 +20,9 @@ struct DisplayInfo
              XDPI == rhs.XDPI &&
              YDPI == rhs.YDPI;
    }
+
+   bool operator!=(const DisplayInfo& rhs) const
+   {
+      return !(*this == rhs);
+   }
 };

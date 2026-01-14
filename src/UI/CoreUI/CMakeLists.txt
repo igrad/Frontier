@@ -1,4 +1,6 @@
 set(CoreUISources
+   ShellUI.cpp
+   ShellUI.h
    ShellWindow.cpp
    ShellWindow.h
    ShellWindowInterface.h
