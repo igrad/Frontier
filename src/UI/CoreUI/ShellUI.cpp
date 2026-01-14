@@ -8,8 +8,8 @@
 
 #include <AssetManager.h>
 
-ShellUI::ShellUI(XPtr<TaskBar::TaskBarServiceInterface>& taskBarService,
-                 XPtr<Wallpaper::WallpaperServiceInterface>& wallpaperService,
+ShellUI::ShellUI(XPtr<TaskBar::TaskBarServiceInterface> taskBarService,
+                 XPtr<Wallpaper::WallpaperServiceInterface> wallpaperService,
                  const DisplayInfo& displayInfo,
                  QObject* parent)
    : QObject(parent)

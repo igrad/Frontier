@@ -23,8 +23,8 @@ class ShellUI: public QObject
    Q_OBJECT
 
 public:
-   ShellUI(XPtr<TaskBar::TaskBarServiceInterface>& taskBarService,
-           XPtr<Wallpaper::WallpaperServiceInterface>& wallpaperService,
+   ShellUI(XPtr<TaskBar::TaskBarServiceInterface> taskBarService,
+           XPtr<Wallpaper::WallpaperServiceInterface> wallpaperService,
            const DisplayInfo& displayInfo,
            QObject* parent = nullptr);
    ~ShellUI() = default;
