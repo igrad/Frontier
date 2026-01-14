@@ -26,7 +26,7 @@ namespace Settings
       _All,							// Keep as penultimate
       _TestSetting = INT_MAX	// Must be last
    };
-   Q_ENUM_NS(Settings::Setting)
+   Q_ENUM_NS(Setting)
 
    inline QString ToString(Setting value)
    {
