@@ -71,9 +71,12 @@ int main(int argc, char *argv[])
       LogInfo(QString("arg %1: %2").arg(iter).arg(argv[iter]));
    }
 
+   Log::LogToStandardOut(true);
+
    WindowsEventMessageFilter messageFilter(&app);
    WindowsAPI windowsAPI(messageFilter, &app);
    app.installNativeEventFilter(&messageFilter);
+   windowsAPI.GetCurrentSettingValue(Windows::Setting::NumberOfDetectedMonitors);
 
    // Set up data access thread and its components
    DATA_ACCESS_THREAD_MANAGER = new DataAccessThreadManager();
@@ -81,7 +84,7 @@ int main(int argc, char *argv[])
    DATA_ACCESS_THREAD_MANAGER->AssignToThread(dataAccessThread.get());
 
    // Set up backend thread and its components
-   BACKEND_THREAD_MANAGER = new BackendThreadManager();
+   BACKEND_THREAD_MANAGER = new BackendThreadManager(DATA_ACCESS_THREAD_MANAGER);
    std::unique_ptr<QThread> backendThread(new QThread());
    BACKEND_THREAD_MANAGER->AssignToThread(backendThread.get());
 

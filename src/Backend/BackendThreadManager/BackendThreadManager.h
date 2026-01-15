@@ -2,13 +2,16 @@
 
 #include <QObject>
 
+class DataAccessThreadManager;
+
 namespace TaskBar
 {
-class TaskBarServiceInterface;
+   class TaskBarServiceInterface;
 }
+
 namespace Wallpaper
 {
-class WallpaperServiceInterface;
+   class WallpaperServiceInterface;
 }
 
 class BackendThreadManager: public QObject
@@ -16,7 +19,7 @@ class BackendThreadManager: public QObject
    Q_OBJECT
 
 public:
-   BackendThreadManager();
+   explicit BackendThreadManager(DataAccessThreadManager* dataAccess);
    ~BackendThreadManager() = default;
 
    void AssignToThread(QThread* thread);
@@ -34,7 +37,7 @@ signals:
    void PassTaskBarService(TaskBar::TaskBarServiceInterface* service);
 
 private slots:
-   void HandleServiceThreadStarted();
+   void HandleDataAccessThreadStarted();
 
 private:
    Wallpaper::WallpaperServiceInterface* TheWallpaperService;

@@ -1,23 +1,23 @@
 #include "BackendThreadManager.h"
 
+#include <DataAccessThreadManager.h>
+
 #include <TaskBarService.h>
 #include <WallpaperService.h>
 
 #include <QThread>
 
-BackendThreadManager::BackendThreadManager()
+BackendThreadManager::BackendThreadManager(DataAccessThreadManager* dataAccess)
    : TheTaskBarService(nullptr)
    , TheWallpaperService(nullptr)
 {
+   connect(dataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
+           this, &BackendThreadManager::HandleDataAccessThreadStarted);
 }
 
 void BackendThreadManager::AssignToThread(QThread* thread)
 {
    this->moveToThread(thread);
-
-   connect(thread, &QThread::started,
-           this, &BackendThreadManager::HandleServiceThreadStarted,
-           Qt::UniqueConnection);
 }
 
 TaskBar::TaskBarServiceInterface* BackendThreadManager::GetTheTaskBarService() const
@@ -40,7 +40,7 @@ void BackendThreadManager::HandleRequestPassWallpaperService()
    emit PassWallpaperService(TheWallpaperService);
 }
 
-void BackendThreadManager::HandleServiceThreadStarted()
+void BackendThreadManager::HandleDataAccessThreadStarted()
 {
    TheWallpaperService = new Wallpaper::WallpaperService(this);
    TheWallpaperService->RegisterMetaTypes();
