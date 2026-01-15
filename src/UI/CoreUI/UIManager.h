@@ -14,6 +14,7 @@ namespace Assets
 struct DisplayInfo;
 
 class ShellUI;
+class WindowsAPIInterface;
 
 class UIManager: public QObject
 {
@@ -21,12 +22,14 @@ class UIManager: public QObject
 
 public:
    UIManager(DataAccessThreadManager* dataAccess,
-             BackendThreadManager* backend);
+             BackendThreadManager* backend,
+             WindowsAPIInterface* windowsAPI);
    ~UIManager();
 
 signals:
    void UIConnectedToServiceComponents();
    void ShellWindowClosed();
+   void PollDisplaysInfo();
 
 public slots:
    void HandleDisplaysInfo(const QList<DisplayInfo>& info);
@@ -41,9 +44,11 @@ private slots:
 private:
    void Start();
    void BuildShellWindows();
+   void RequestDisplaysInfo();
 
    XPtr<DataAccessThreadManager> DataAccess;
    XPtr<BackendThreadManager> Backend;
+   XPtr<WindowsAPIInterface> TheWindowsAPI;
    XPtr<Assets::AssetLoaderInterface> TheAssetLoader;
    XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
    XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
@@ -52,5 +57,6 @@ private:
 
    QList<ShellUI*> Shells;
    QList<DisplayInfo> DisplaysInfo;
+   bool DisplaysInfoRequested;
    bool DisplaysInfoReceived;
 };

@@ -15,4 +15,7 @@ public:
 
 signals:
    void DisplaysDetected(QList<DisplayInfo> info);
+
+public slots:
+   virtual void HandlePollDisplaysInfo() = 0;
 };

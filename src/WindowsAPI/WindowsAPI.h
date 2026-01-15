@@ -18,17 +18,24 @@ public:
 
    QVariant GetCurrentSettingValue(Windows::Setting setting) override;
 
+public slots:
+   void HandlePollDisplaysInfo() override;
+
 private slots:
    void HandleSettingUpdated(const Windows::Setting setting,
                              const QVariant& value);
    void HandleDevicesChanged();
+   void MonitorDatumReceived();
 
-private:
    static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor,
                                         HDC hdcMonitor,
                                         LPRECT lprcMonitor,
                                         LPARAM dwData);
+
+private:
    static QList<HMONITOR> MONITOR_HANDLES;
+   static int NUM_MONITORS;
+   static WindowsAPI* INSTANCE;
 
    void ConnectToEventMessageFilter(const WindowsEventMessageFilter& filter);
    void GetAllDisplayInfo();

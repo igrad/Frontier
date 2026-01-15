@@ -3,19 +3,23 @@
 
 #include <AssetManager.h>
 #include <Wallpaper/WallpaperView.h>
+#include <WindowsAPI/WindowsAPI.h>
 
 #include <QMetaObject>
 
 UIManager::UIManager(DataAccessThreadManager* dataAccess,
-                     BackendThreadManager* backend)
+                     BackendThreadManager* backend,
+                     WindowsAPIInterface* windowsAPI)
    : DataAccess(dataAccess)
    , Backend(backend)
+   , TheWindowsAPI(windowsAPI)
    , TheAssetLoader(nullptr)
    , TaskBarService(nullptr)
    , WallpaperService(nullptr)
    , TheAssetManager(nullptr)
    , Shells()
    , DisplaysInfo()
+   , DisplaysInfoRequested(false)
    , DisplaysInfoReceived(false)
 {
    connect(this, &UIManager::UIConnectedToServiceComponents,
@@ -25,6 +29,11 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
            this, &UIManager::HandleDataAccessThreadStarted);
    connect(Backend.get(), &BackendThreadManager::ServiceThreadStarted,
            this, &UIManager::HandleServiceThreadStarted);
+
+   connect(this, &UIManager::PollDisplaysInfo,
+           TheWindowsAPI.get(), &WindowsAPIInterface::HandlePollDisplaysInfo);
+   connect(TheWindowsAPI.get(), &WindowsAPIInterface::DisplaysDetected,
+           this, &UIManager::HandleDisplaysInfo);
 }
 
 UIManager::~UIManager()
@@ -33,6 +42,7 @@ UIManager::~UIManager()
 
 void UIManager::HandleDisplaysInfo(const QList<DisplayInfo>& info)
 {
+   LogInfo("Displays info received");
    DisplaysInfoReceived = true;
 
    if(info != DisplaysInfo)
@@ -77,13 +87,13 @@ void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 void UIManager::HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service)
 {
    TaskBarService = XPtr(service);
-   BuildShellWindows();
+   RequestDisplaysInfo();
 }
 
 void UIManager::HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service)
 {
    WallpaperService = XPtr(service);
-   BuildShellWindows();
+   RequestDisplaysInfo();
 }
 
 void UIManager::Start()
@@ -93,14 +103,6 @@ void UIManager::Start()
 
 void UIManager::BuildShellWindows()
 {
-   if(!DisplaysInfoReceived ||
-       TaskBarService.isNull() ||
-       WallpaperService.isNull() ||
-       (nullptr == TheAssetManager))
-   {
-      return;
-   }
-
    LogInfo("Building shell windows");
 
    if(DisplaysInfo.count() < Shells.count())
@@ -146,5 +148,29 @@ void UIManager::BuildShellWindows()
                                       info,
                                       this));
       }
+   }
+}
+
+void UIManager::RequestDisplaysInfo()
+{
+   if(!DisplaysInfoReceived ||
+       TaskBarService.isNull() ||
+       WallpaperService.isNull() ||
+       (nullptr == TheAssetManager))
+   {
+      if(!DisplaysInfoReceived && !DisplaysInfoRequested)
+      {
+         LogInfo("Requesting initial display info");
+         emit PollDisplaysInfo();
+         DisplaysInfoRequested = true;
+      }
+      if(!DisplaysInfoReceived)
+      LogInfo("1")
+      if(TaskBarService.isNull())
+      LogInfo("2")
+      if(WallpaperService.isNull())
+      LogInfo("3")
+      if(nullptr == TheAssetManager)
+      LogInfo("4")
    }
 }

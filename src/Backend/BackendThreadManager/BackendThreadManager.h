@@ -28,8 +28,8 @@ public:
    Wallpaper::WallpaperServiceInterface* GetTheWallpaperService() const;
 
 public slots:
-   void HandleRequestPassWallpaperService();
    void HandleRequestPassTaskBarService();
+   void HandleRequestPassWallpaperService();
 
 signals:
    void ServiceThreadStarted();

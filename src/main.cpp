@@ -104,7 +104,8 @@ int main(int argc, char *argv[])
 
    // Set up UI components
    UI_MANAGER = new UIManager(DATA_ACCESS_THREAD_MANAGER,
-                              BACKEND_THREAD_MANAGER);
+                              BACKEND_THREAD_MANAGER,
+                              static_cast<WindowsAPIInterface*>(&windowsAPI));
 
    if(enterprise)
    {

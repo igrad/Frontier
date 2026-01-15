@@ -13,11 +13,14 @@
 // API so that we can mock it and test this thoroughly.
 
 QList<HMONITOR> WindowsAPI::MONITOR_HANDLES;
+WindowsAPI* WindowsAPI::INSTANCE = nullptr;
+int WindowsAPI::NUM_MONITORS = 1;
 
 WindowsAPI::WindowsAPI(const WindowsEventMessageFilter& filter,
                        QObject* parent)
    : CachedSettings()
 {
+   INSTANCE = this;
    setParent(parent);
 
    ConnectToEventMessageFilter(filter);
@@ -51,6 +54,11 @@ QVariant WindowsAPI::GetCurrentSettingValue(Windows::Setting setting)
    return retVal;
 }
 
+void WindowsAPI::HandlePollDisplaysInfo()
+{
+   GetAllDisplayInfo();
+}
+
 void WindowsAPI::HandleSettingUpdated(const Windows::Setting setting,
                                       const QVariant& value)
 {
@@ -63,12 +71,20 @@ void WindowsAPI::HandleDevicesChanged()
    GetAllDisplayInfo();
 }
 
+// TODO: Fix this static crap
 BOOL CALLBACK WindowsAPI::MonitorEnumProc(HMONITOR hMonitor,
                                  HDC hdcMonitor,
                                  LPRECT lprcMonitor,
                                  LPARAM dwData)
 {
+   LogInfo("Received monitor");
    MONITOR_HANDLES.push_back(hMonitor);
+
+   if(MONITOR_HANDLES.count() == NUM_MONITORS)
+   {
+      QMetaObject::invokeMethod(INSTANCE,
+                                "MonitorDatumReceived");
+   }
    return TRUE;
 }
 
@@ -80,15 +96,21 @@ void WindowsAPI::ConnectToEventMessageFilter(const WindowsEventMessageFilter& fi
 
 void WindowsAPI::GetAllDisplayInfo()
 {
+   LogInfo("GetAllDisplayInfo")
    MONITOR_HANDLES.clear();
 
    const int numDisplays = GetCurrentSettingValue(Windows::Setting::NumberOfDetectedMonitors)
                               .toInt();
+   NUM_MONITORS = numDisplays;
 
    EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, 0);
+}
 
+void WindowsAPI::MonitorDatumReceived()
+{
+   LogInfo("MonitorDatumReceived");
    QList<DisplayInfo> infos;
-   for(int iter = 0; iter < numDisplays; ++iter)
+   for(int iter = 0; iter < NUM_MONITORS; ++iter)
    {
       DisplayInfo info = GetDisplayInfo(iter);
       infos.push_back(info);
