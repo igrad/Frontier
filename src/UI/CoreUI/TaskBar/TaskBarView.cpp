@@ -94,7 +94,7 @@ void TaskBarView::CreateUI()
 
 void TaskBarView::ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service)
 {
-   if(!service.isNull())
+   if(service.isNull())
    {
       LogError("TaskBarService should have been created first!");
       return;

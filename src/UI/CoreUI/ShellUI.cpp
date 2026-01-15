@@ -13,8 +13,8 @@ ShellUI::ShellUI(XPtr<TaskBar::TaskBarServiceInterface> taskBarService,
                  const DisplayInfo& displayInfo,
                  QObject* parent)
    : QObject(parent)
-   , TaskBarService(nullptr)
-   , WallpaperService(nullptr)
+   , TaskBarService(taskBarService)
+   , WallpaperService(wallpaperService)
    , TheShellWindow(nullptr)
    , TheWallpaperView(nullptr)
    , TheTaskBarView(nullptr)

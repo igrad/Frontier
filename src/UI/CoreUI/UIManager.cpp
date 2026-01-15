@@ -86,12 +86,14 @@ void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 
 void UIManager::HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service)
 {
+   LogInfo("UIManager received TaskBar service");
    TaskBarService = XPtr(service);
    RequestDisplaysInfo();
 }
 
 void UIManager::HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service)
 {
+   LogInfo("UIManager received wallpaper service");
    WallpaperService = XPtr(service);
    RequestDisplaysInfo();
 }
@@ -153,16 +155,17 @@ void UIManager::BuildShellWindows()
 
 void UIManager::RequestDisplaysInfo()
 {
-   if(!DisplaysInfoReceived ||
-       TaskBarService.isNull() ||
-       WallpaperService.isNull() ||
-       (nullptr == TheAssetManager))
+   if(!DisplaysInfoReceived &&
+       !TaskBarService.isNull() &&
+       !WallpaperService.isNull() &&
+       (nullptr != TheAssetManager))
    {
-      if(!DisplaysInfoReceived && !DisplaysInfoRequested)
+      if(!DisplaysInfoRequested)
       {
          LogInfo("Requesting initial display info");
          emit PollDisplaysInfo();
          DisplaysInfoRequested = true;
+         // Note: Should we yield the thread right here?
       }
       if(!DisplaysInfoReceived)
       LogInfo("1")

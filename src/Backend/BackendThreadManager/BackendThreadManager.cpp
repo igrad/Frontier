@@ -42,6 +42,7 @@ void BackendThreadManager::HandleRequestPassWallpaperService()
 
 void BackendThreadManager::HandleDataAccessThreadStarted()
 {
+   LogInfo("Handling DataAccess thread started");
    TheWallpaperService = new Wallpaper::WallpaperService(this);
    TheWallpaperService->RegisterMetaTypes();
 
