@@ -19,19 +19,33 @@ namespace
    constexpr const char* QUERY_WRITE_SYSTEM_SETTING =
       "INSERT OR REPLACE INTO system_settings (setting, value) "
       "VALUES (:setting, :value);";
+   constexpr const char* QUERY_WRITE_DISPLAY_SETTING =
+      "INSERT OR REPLACE INTO display_settings (setting, display, value) "
+      "VALUES (:setting, :display, :value);";
    constexpr const char* QUERY_READ_SYSTEM_SETTING =
       "SELECT value FROM system_settings "
       "WHERE setting = :setting "
+      "LIMIT 1;";
+   constexpr const char* QUERY_READ_DISPLAY_SETTING =
+      "SELECT value FROM system_settings "
+      "WHERE setting = :setting "
+      "AND display = :display "
       "LIMIT 1;";
    constexpr const char* QUERY_READ_ALL_SYSTEM_SETTINGS =
       "SELECT * FROM system_settings;";
    constexpr const char* QUERY_CHECK_IF_SYSTEM_SETTINGS_EXISTS =
       "SELECT name FROM sqlite_master WHERE type='table' AND name='system_settings';";
+   constexpr const char* QUERY_CHECK_IF_DISPLAY_SETTINGS_EXISTS =
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='display_settings';";
 
    // TODO: This is fine for now, but eventually we need to migrate to using
    // versioned python files for db inits/migrations
    constexpr const char* QUERY_BUILD_SYSTEM_SETTINGS_TABLE =
       "CREATE TABLE system_settings(setting STRING PRIMARY KEY, "
+      "value STRING)";
+   constexpr const char* QUERY_BUILD_DISPLAY_SETTINGS_TABLE =
+      "CREATE TABLE display_settings(setting STRING PRIMARY KEY, "
+      "display INT, "
       "value STRING)";
 }
 
@@ -52,6 +66,125 @@ SettingsService::~SettingsService()
 {
    QSqlDatabase::removeDatabase(CONNECTION_NAME);
    SettingsClient::Service = nullptr;
+}
+
+void SettingsService::FetchAllSettings()
+{
+   // TODO: This could probably be optimized
+   // Check out QSqlQuery::BatchExecutionMode enum
+   QMap<Setting, QVariant> fetchedValues;
+
+   QSqlDatabase db = GetDb();
+   if(!OpenDb(db))
+   {
+      LogWarn("Failed to open database!");
+      return;
+   }
+
+   SqlQuery query(db);
+   query.prepare(QUERY_READ_ALL_SYSTEM_SETTINGS);
+   query.setForwardOnly(true);
+
+   if(RunQuery(query))
+   {
+      while(query.next())
+      {
+         const Setting setting = ToSetting(query.value(0).toString());
+         const QVariant val = FromSettingString(query.value(1).toString());
+         fetchedValues[setting] = val;
+      }
+   }
+
+   // Run the emits after the database is closed since these are more likely to cause any issues
+   LogInfo(QString("Fetched %1 settings from system_settings").arg(fetchedValues.count()))
+   for(const QPair<Setting, QVariant>& pair : fetchedValues.asKeyValueRange())
+   {
+      emit SystemSettingUpdated(pair.first, pair.second);
+   }
+}
+
+void SettingsService::HandleCacheSystemSettingValue(const Setting setting, const QVariant val)
+{
+   QSqlDatabase db = GetDb();
+   if(OpenDb(db))
+   {
+      SqlQuery query(db);
+      query.prepare(QUERY_WRITE_SYSTEM_SETTING);
+      query.bindValue(":setting", ToString(setting));
+      query.bindValue(":value", ToSettingString(val).c_str());
+
+      if(RunQuery(query) && (query.numRowsAffected() != 1))
+      {
+         LogWarn(QString("Settings update should have only affected 1 row, "
+                         "but it affected %1 rows").arg(query.numRowsAffected()))
+      }
+   }
+
+   emit SystemSettingUpdated(setting, val);
+}
+
+void SettingsService::HandleCacheDisplaySettingValue(const Setting setting,
+                                                     uint8_t display,
+                                                     const QVariant val)
+{
+   QSqlDatabase db = GetDb();
+   if(OpenDb(db))
+   {
+      SqlQuery query(db);
+      query.prepare(QUERY_WRITE_DISPLAY_SETTING);
+      query.bindValue(":setting", ToString(setting));
+      query.bindValue(":display", display);
+      query.bindValue(":value", ToSettingString(val).c_str());
+
+      if(RunQuery(query) && (query.numRowsAffected() != 1))
+      {
+         LogWarn(QString("Settings update should have only affected 1 row, "
+                         "but it affected %1 rows").arg(query.numRowsAffected()))
+      }
+   }
+
+   emit DisplaySettingUpdated(setting, display, val);
+}
+
+void SettingsService::HandleRequestSystemSettingValue(const Setting setting)
+{
+   QSqlDatabase db = GetDb();
+   QVariant val;
+   if(OpenDb(db))
+   {
+      SqlQuery query(db);
+      query.prepare(QUERY_READ_SYSTEM_SETTING);
+      query.bindValue(":setting", ToString(setting));
+      query.setForwardOnly(true);
+
+      if(RunQuery(query) && query.next())
+      {
+         val = FromSettingString(query.value(1).toString());
+      }
+   }
+
+   emit SystemSettingUpdated(setting, val);
+}
+
+void SettingsService::HandleRequestDisplaySettingValue(const Setting setting, uint8_t display)
+{
+   QSqlDatabase db = GetDb();
+   QVariant val;
+   if(OpenDb(db))
+   {
+      SqlQuery query(db);
+      query.prepare(QUERY_READ_DISPLAY_SETTING);
+      query.bindValue(":setting", ToString(setting));
+      query.bindValue(":display", display);
+      query.setForwardOnly(true);
+
+      if(RunQuery(query) && query.next())
+      {
+         val = FromSettingString(query.value(1).toString());
+      }
+   }
+
+   emit SystemSettingUpdated(setting, val);
 }
 
 void SettingsService::SetPointerInClientClass()
@@ -116,6 +249,7 @@ void SettingsService::SetUpSettingsDatabase()
    db.open();
 
    ValidateSystemSettingsTableExists();
+   ValidateDisplaySettingsTableExists();
 }
 
 void SettingsService::ValidateSystemSettingsTableExists()
@@ -136,6 +270,30 @@ void SettingsService::ValidateSystemSettingsTableExists()
          // Table doesn't exist
          query.clear();
          query.prepare(QUERY_BUILD_SYSTEM_SETTINGS_TABLE);
+         query.setForwardOnly(false);
+         RunQuery(query);
+      }
+   }
+}
+
+void SettingsService::ValidateDisplaySettingsTableExists()
+{
+   LogInfo("Validating DisplaySettingsTable exists");
+
+   QSqlDatabase db = GetDb();
+   if(OpenDb(db))
+   {
+      // Insert any tables necessary after building
+      // Only need to do this until python build files are up and running
+      SqlQuery query(db);
+      LogInfo(QUERY_CHECK_IF_DISPLAY_SETTINGS_EXISTS)
+      query.prepare(QString(QUERY_CHECK_IF_DISPLAY_SETTINGS_EXISTS));
+      query.setForwardOnly(true);
+      if(RunQuery(query) && !query.next())
+      {
+         // Table doesn't exist
+         query.clear();
+         query.prepare(QUERY_BUILD_DISPLAY_SETTINGS_TABLE);
          query.setForwardOnly(false);
          RunQuery(query);
       }
@@ -181,61 +339,4 @@ bool SettingsService::RunQuery(SqlQuery& query)
    }
 
    return true;
-}
-
-void SettingsService::FetchAllSettings()
-{
-   // TODO: This could probably be optimized
-   // Check out QSqlQuery::BatchExecutionMode enum
-   QMap<Setting, QVariant> fetchedValues;
-
-   QSqlDatabase db = GetDb();
-   if(OpenDb(db))
-   {
-      SqlQuery query(db);
-      query.prepare(QUERY_READ_ALL_SYSTEM_SETTINGS);
-      query.setForwardOnly(true);
-
-      if(RunQuery(query))
-      {
-         while(query.next())
-         {
-            const QString settingStr = query.value(0).toString();
-            const Setting setting = ToSetting(settingStr);
-
-            if(Setting::None != setting)
-            {
-               const QVariant val = FromSettingString(query.value(1).toString());
-               fetchedValues[setting] = val;
-            }
-         }
-      }
-   }
-
-   // Run the emits after the database is closed since these are more likely to cause any issues
-   LogInfo(QString("Fetched %1 settings from system_settings").arg(fetchedValues.count()))
-   for(const QPair<Setting, QVariant>& pair : fetchedValues.asKeyValueRange())
-   {
-      emit SettingUpdated(pair.first, pair.second);
-   }
-}
-
-void SettingsService::HandleCacheSettingValue(const Setting setting, const QVariant val)
-{
-   QSqlDatabase db = GetDb();
-   if(OpenDb(db))
-   {
-      SqlQuery query(db);
-      query.prepare(QUERY_WRITE_SYSTEM_SETTING);
-      query.bindValue(":setting", ToString(setting));
-      query.bindValue(":value", ToSettingString(val).c_str());
-
-      if(RunQuery(query) && (query.numRowsAffected() != 1))
-      {
-         LogWarn(QString("Settings update should have only affected 1 row, "
-                         "but it affected %1 rows").arg(query.numRowsAffected()))
-      }
-   }
-
-   emit SettingUpdated(setting, val);
 }

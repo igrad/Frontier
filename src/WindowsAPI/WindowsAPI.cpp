@@ -59,7 +59,7 @@ void WindowsAPI::HandlePollDisplaysInfo()
    GetAllDisplayInfo();
 }
 
-void WindowsAPI::HandleSettingUpdated(const Windows::Setting setting,
+void WindowsAPI::HandleWindowsSettingUpdated(const Windows::Setting setting,
                                       const QVariant& value)
 {
    Q_UNUSED(setting)
@@ -90,8 +90,8 @@ BOOL CALLBACK WindowsAPI::MonitorEnumProc(HMONITOR hMonitor,
 
 void WindowsAPI::ConnectToEventMessageFilter(const WindowsEventMessageFilter& filter)
 {
-   connect(&filter, &WindowsEventMessageFilter::SettingUpdated,
-           this, &WindowsAPI::HandleSettingUpdated);
+   connect(&filter, &WindowsEventMessageFilter::WindowsSettingUpdated,
+           this, &WindowsAPI::HandleWindowsSettingUpdated);
 }
 
 void WindowsAPI::GetAllDisplayInfo()

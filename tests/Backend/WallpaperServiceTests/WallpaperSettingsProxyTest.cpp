@@ -33,7 +33,7 @@ public:
 TEST_F(WallpaperSettingsProxyTest, HandleSettingWallpaperColorsChanged1)
 {
    const QStringList colorStrings = {"white", "blue", "green"};
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperColors,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperColors,
                                       QVariant(colorStrings));
 
    QCoreApplication::processEvents();
@@ -49,7 +49,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperDurationChanged1)
 {
    const int duration = 3;
 
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperDuration,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperDuration,
                                       QVariant(duration));
 
    QCoreApplication::processEvents();
@@ -63,7 +63,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperFitsChanged1)
    fits.push_back(Fit::Fill);
    fits.push_back(Fit::Fit);
 
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperFits,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperFits,
                                      QVariant::fromValue<QList<Fit>>(fits));
 
    QCoreApplication::processEvents();
@@ -75,7 +75,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperImagePathsChanged1)
 {
    const QStringList strings = {"1", "2", "3"};
 
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperImagePaths,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperImagePaths,
                                       QVariant(strings));
 
    QCoreApplication::processEvents();
@@ -87,7 +87,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperScheduleChanged1)
 {
    const Schedule sched = Schedule::Sequence;
 
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperSchedule,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperSchedule,
                                       QVariant::fromValue<Schedule>(sched));
 
    QCoreApplication::processEvents();
@@ -99,7 +99,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperStyleChanged1)
 {
    const Style style = Style::DynamicColor;
 
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperStyle,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperStyle,
                                       QVariant::fromValue<Style>(style));
 
    QCoreApplication::processEvents();

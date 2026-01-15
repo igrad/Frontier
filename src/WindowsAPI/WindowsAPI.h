@@ -22,7 +22,7 @@ public slots:
    void HandlePollDisplaysInfo() override;
 
 private slots:
-   void HandleSettingUpdated(const Windows::Setting setting,
+   void HandleWindowsSettingUpdated(const Windows::Setting setting,
                              const QVariant& value);
    void HandleDevicesChanged();
    void MonitorDatumReceived();

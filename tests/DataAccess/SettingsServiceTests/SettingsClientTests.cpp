@@ -59,7 +59,7 @@ TEST_F(SettingsClientTest, SubscribeToSetting3)
    QSignalSpy spy(&sub, &FakeSettingSubscriber::_TestSettingReceived);
 
    const QVariant value = QString("SomeValue");
-   ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);
+   ServiceMock.EmitSystemSettingUpdated(Setting::_TestSetting, value);
 
    QCoreApplication::processEvents();
 
@@ -92,7 +92,7 @@ TEST_F(SettingsClientTest, SubscribeToAllSettings2)
    QSignalSpy spy(&sub, &FakeAllSettingsSubscriber::SettingChangeReceived);
 
    const QVariant value = QString("SomeValue");
-   ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);
+   ServiceMock.EmitSystemSettingUpdated(Setting::_TestSetting, value);
 
    ASSERT_TRUE(spy.wait());
 
@@ -101,7 +101,7 @@ TEST_F(SettingsClientTest, SubscribeToAllSettings2)
    EXPECT_EQ(Setting::_TestSetting, spy.at(0).at(0).value<Settings::Setting>());
    EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
 
-   ServiceMock.EmitSettingUpdated(Setting::TaskBarAlignment, value);
+   ServiceMock.EmitSystemSettingUpdated(Setting::TaskBarAlignment, value);
 
    ASSERT_TRUE(spy.wait());
 
@@ -111,7 +111,7 @@ TEST_F(SettingsClientTest, SubscribeToAllSettings2)
    EXPECT_EQ(value, spy.at(1).at(1).value<QVariant>());
 }
 
-TEST_F(SettingsClientTest, HandleSettingUpdated1)
+TEST_F(SettingsClientTest, HandleSystemSettingUpdated1)
 {
    GWT("Service and client are created AND setting is not None",
        "WriteSettingValue is called",

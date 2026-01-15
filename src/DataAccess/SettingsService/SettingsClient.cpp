@@ -71,11 +71,11 @@ void SettingsClient::ConnectToService()
       // NOLINTNEXTLINE
       const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
                                                         Qt::QueuedConnection);
-      connect(SettingsClient::Service, &SettingsServiceInterface::SettingUpdated,
-              this, &SettingsClient::HandleSettingUpdated,
+      connect(SettingsClient::Service, &SettingsServiceInterface::SystemSettingUpdated,
+              this, &SettingsClient::HandleSystemSettingUpdated,
               conn);
       connect(this, &SettingsClient::CacheSettingValue,
-              SettingsClient::Service, &SettingsServiceInterface::HandleCacheSettingValue,
+              SettingsClient::Service, &SettingsServiceInterface::HandleCacheSystemSettingValue,
               conn);
    }
    else
@@ -153,7 +153,7 @@ bool SettingsClient::WriteSettingValue(Setting setting, const QVariant& value)
    return retVal;
 }
 
-void SettingsClient::HandleSettingUpdated(const Setting& setting, const QVariant& value)
+void SettingsClient::HandleSystemSettingUpdated(const Setting& setting, const QVariant& value)
 {
    const QList<QObject*> subscribers = Subscriptions.values(setting);
 

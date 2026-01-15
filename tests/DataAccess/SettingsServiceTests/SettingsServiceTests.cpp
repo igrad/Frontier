@@ -31,14 +31,14 @@ TEST(SettingsServiceTest, FetchAllSettings1)
 {
    GWT("An unconfigured empty test database",
        "FetchAllSettings is called",
-       "Do not emit SettingUpdated signal")
+       "Do not emit SystemSettingUpdated signal")
    FakeDbHelper db;
 
    MuteQtSqlWarnings();
    {
       SettingsService service;
 
-      QSignalSpy spy(&service, &SettingsService::SettingUpdated);
+      QSignalSpy spy(&service, &SettingsService::SystemSettingUpdated);
 
       service.FetchAllSettings();
 
@@ -51,13 +51,13 @@ TEST(SettingsServiceTest, FetchAllSettings2)
 {
    GWT("A configured empty test database",
        "FetchAllSettings is called",
-       "Do not emit SettingUpdated signal")
+       "Do not emit SystemSettingUpdated signal")
    FakeDbHelper db;
    SettingsService service;
 
    db.SetupSystemSettingsSchema();
 
-   QSignalSpy spy(&service, &SettingsService::SettingUpdated);
+   QSignalSpy spy(&service, &SettingsService::SystemSettingUpdated);
 
    service.FetchAllSettings();
 
@@ -68,7 +68,7 @@ TEST(SettingsServiceTest, FetchAllSettings3)
 {
    GWT("A db has one setting set",
        "FetchAllSettings is called",
-       "Emit SettingUpdated once")
+       "Emit SystemSettingUpdated once")
    FakeDbHelper db;
    SettingsService service;
 
@@ -76,7 +76,7 @@ TEST(SettingsServiceTest, FetchAllSettings3)
    const QVariant value("SomeValue");
    db.InsertSystemSetting(Setting::_TestSetting, value);
 
-   QSignalSpy spy(&service, &SettingsService::SettingUpdated);
+   QSignalSpy spy(&service, &SettingsService::SystemSettingUpdated);
 
    service.FetchAllSettings();
 
@@ -108,10 +108,10 @@ TEST(SettingsServiceTest, HandleWriteSettingValueTest1)
 
    SettingsService service;
 
-   QSignalSpy spy(&service, &SettingsService::SettingUpdated);
+   QSignalSpy spy(&service, &SettingsService::SystemSettingUpdated);
 
    const QVariant value("SomeValue");
-   service.HandleCacheSettingValue(Setting::_TestSetting,
+   service.HandleCacheSystemSettingValue(Setting::_TestSetting,
                                    value);
 
    ASSERT_EQ(1, spy.count());

@@ -27,7 +27,7 @@ namespace Settings
       bool WriteSettingValue(Setting setting, const QVariant& value) override;
 
    private slots:
-      void HandleSettingUpdated(const Setting& setting, const QVariant& value);
+      void HandleSystemSettingUpdated(const Setting& setting, const QVariant& value);
 
    private:
       friend class SettingsService;

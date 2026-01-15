@@ -22,18 +22,25 @@ namespace Settings
       static bool UseRAMDatabases;
 
    public slots:
-      void HandleCacheSettingValue(const Setting setting,
-                                   const QVariant val) override;
+      void HandleCacheSystemSettingValue(const Setting setting,
+                                         const QVariant val) override;
+      void HandleCacheDisplaySettingValue(const Setting setting,
+                                          uint8_t display,
+                                          const QVariant value) override;
+      void HandleRequestSystemSettingValue(const Setting setting) override;
+      void HandleRequestDisplaySettingValue(const Setting setting,
+                                            uint8_t display) override;
 
    private:
       void SetPointerInClientClass();
       void SetUpSettingsDatabase();
       void ValidateSystemSettingsTableExists();
+      void ValidateDisplaySettingsTableExists();
 
       inline QSqlDatabase GetDb();
       bool OpenDb(QSqlDatabase& db);
       bool RunQuery(SqlQuery& query);
-      void WriteSettingToDatabase(const Setting setting, const QVariant val);
+      void WriteSystemSettingToDatabase(const Setting setting, const QVariant val);
 
       std::filesystem::path SettingsDbPath;
       QString DatabaseName;

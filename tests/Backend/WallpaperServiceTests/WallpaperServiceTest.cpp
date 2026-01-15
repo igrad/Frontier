@@ -31,18 +31,18 @@ TEST_F(WallpaperServiceTest, HandleRotationTimeout1)
 {
    QSignalSpy spy(&Service, &WallpaperService::WallpaperDataChanged);
 
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperStyle,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperStyle,
                                       QVariant::fromValue(Style::StaticColor));
    const int duration = 1000;
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperDuration,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperDuration,
                                       1000);
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperSchedule,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperSchedule,
                                       QVariant::fromValue(Schedule::Sequence));
 
    ASSERT_TRUE(spy.wait());
    spy.clear();
 
-   SettingsSvcMock.EmitSettingUpdated(Setting::WallpaperColors,
+   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperColors,
                                       QStringList{"white", "blue", "green"});
 
    ASSERT_TRUE(spy.wait());

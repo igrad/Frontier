@@ -19,7 +19,7 @@ public:
    bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr*) override;
 
 signals:
-   void SettingUpdated(const Windows::Setting setting, const QVariant& value);
+   void WindowsSettingUpdated(const Windows::Setting setting, const QVariant& value);
    void DevicesChanged();
 
 private:
