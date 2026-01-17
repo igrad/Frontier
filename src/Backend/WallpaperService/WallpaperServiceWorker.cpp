@@ -28,6 +28,15 @@ WallpaperServiceWorker::WallpaperServiceWorker(const DisplayInfo& info,
            this, &WallpaperServiceWorker::HandleRotationTimeout);
 }
 
+uint8_t WallpaperServiceWorker::GetDisplayNum() const
+{
+   return DisplayNum;
+}
+
+DisplayInfo WallpaperServiceWorker::GetDisplayInfo() const
+{
+   return Info;
+}
 
 void WallpaperServiceWorker::HandleRotationTimeout()
 {

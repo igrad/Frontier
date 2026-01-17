@@ -19,6 +19,9 @@ namespace Wallpaper
               QObject* parent = nullptr);
       ~WallpaperServiceWorker() = default;
 
+      uint8_t GetDisplayNum() const;
+      DisplayInfo GetDisplayInfo() const;
+
    signals:
       void WallpaperViewDataChanged(uint8_t display,
                                     const Wallpaper::ViewData& data);
