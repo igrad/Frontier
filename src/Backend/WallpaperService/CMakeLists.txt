@@ -4,6 +4,8 @@ set(WallpaperServiceSources
    WallpaperServiceInterface.h
    WallpaperSettingsProxy.cpp
    WallpaperSettingsProxy.h
+   WallpaperServiceWorker.cpp
+   WallpaperServiceWorker.h
 
    StaticColorWallpaper.cpp
    StaticColorWallpaper.h

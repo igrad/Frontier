@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Utilities/XPtr.h>
-
 #include <QObject>
 
 class DataAccessThreadManager;
+class DisplaysManagerInterface;
+class QApplication;
 
 namespace TaskBar
 {
@@ -17,6 +17,7 @@ namespace Wallpaper
 }
 
 class WindowsAPIInterface;
+class WindowsEventMessageFilter;
 
 class BackendThreadManager: public QObject
 {
@@ -24,20 +25,19 @@ class BackendThreadManager: public QObject
 
 public:
    BackendThreadManager(DataAccessThreadManager* dataAccess,
-                        WindowsAPIInterface* windowsAPI);
+                        QApplication* app);
    ~BackendThreadManager() = default;
 
    void AssignToThread(QThread* thread);
 
-   TaskBar::TaskBarServiceInterface* GetTheTaskBarService() const;
-   Wallpaper::WallpaperServiceInterface* GetTheWallpaperService() const;
-
 public slots:
+   void HandleRequestPassDisplaysManager();
    void HandleRequestPassTaskBarService();
    void HandleRequestPassWallpaperService();
 
 signals:
    void ServiceThreadStarted();
+   void PassDisplaysManager(DisplaysManagerInterface* service);
    void PassWallpaperService(Wallpaper::WallpaperServiceInterface* service);
    void PassTaskBarService(TaskBar::TaskBarServiceInterface* service);
 
@@ -45,10 +45,13 @@ private slots:
    void HandleDataAccessThreadStarted();
 
 private:
+   void CreateDisplaysManager();
    void CreateTaskBarService();
    void CreateWallpaperService();
 
-   XPtr<WindowsAPIInterface> WindowsAPI;
+   WindowsEventMessageFilter* WindowsEventFilter;
+   WindowsAPIInterface* TheWindowsAPI;
+   DisplaysManagerInterface* TheDisplaysManager;
    Wallpaper::WallpaperServiceInterface* TheWallpaperService;
    TaskBar::TaskBarServiceInterface* TheTaskBarService;
 };

@@ -6,7 +6,6 @@
 #include <DataAccess/DataAccessThreadManager.h>
 #include <UIManager.h>
 #include <Enterprise/EnterpriseService.h>
-#include <WindowsAPI.h>
 #include <WindowsEventMessageFilter.h>
 
 #include <QApplication>
@@ -70,11 +69,6 @@ int main(int argc, char *argv[])
    {
       LogInfo(QString("arg %1: %2").arg(iter).arg(argv[iter]));
    }
-
-   WindowsEventMessageFilter messageFilter(&app);
-   WindowsAPI windowsAPI(messageFilter, &app);
-   app.installNativeEventFilter(&messageFilter);
-   windowsAPI.GetCurrentSettingValue(Windows::Setting::NumberOfDetectedMonitors);
 
    // Set up data access thread and its components
    DATA_ACCESS_THREAD_MANAGER = new DataAccessThreadManager();

@@ -2,12 +2,9 @@
 
 #include "WallpaperServiceInterface.h"
 #include "WallpaperSettingsProxy.h"
+#include "WallpaperServiceWorker.h"
 
 #include <DisplayInfo.h>
-#include <Utilities/Rando.h>
-
-#include <QTimer>
-#include <Timer.h>
 
 namespace Wallpaper
 {
@@ -22,27 +19,14 @@ namespace Wallpaper
       void RegisterMetaTypes() const override;
 
    public slots:
-      void HandleDisplaysDetected(const QList<DisplayInfo>& info) override;
+      void HandleDisplayConfigChanged(const DisplayEvent& event,
+                                      const QSet<DisplayInfo>& displays) override;
 
    private slots:
-      void HandleRotationTimeout();
       void HandleSettingsChanged();
 
    private:
-      void CalculateCurrentWallpaperData(bool triggeredByRotationTimer = false);
-      void CalculateNextColor(bool shuffled);
-      void CalculateNextImage(bool shuffled);
-      void CalculateSequenceOrShuffleViewData(bool triggeredByTimer);
-      void CalculateStaticViewData();
-      void ProcessColorStyle(bool triggeredByTimer);
-      void ProcessImageStyle(bool triggeredByTimer);
-
       WallpaperSettingsProxy SettingsProxy;
-
-      QList<ViewData> CurrentData;
-      int CurrentColorsIndex;
-      int CurrentImageIndex;
-      Timer RotationTimer;
-      Rando ShuffleRando;
+      QList<WallpaperServiceWorker> Workers;
    };
 }

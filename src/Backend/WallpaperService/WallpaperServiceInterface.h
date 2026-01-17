@@ -2,9 +2,9 @@
 
 #include "WallpaperTypes.h"
 
-#include <QObject>
+#include <DisplayInfo.h>
 
-struct DisplayInfo;
+#include <QObject>
 
 namespace Wallpaper
 {
@@ -21,6 +21,7 @@ namespace Wallpaper
       void WallpaperDataChanged(uint8_t display, const Wallpaper::ViewData& data);
 
    public slots:
-      virtual void HandleDisplaysDetected(const QList<DisplayInfo>& info) = 0;
+      virtual void HandleDisplayConfigChanged(const DisplayEvent& event,
+                                              const QSet<DisplayInfo>& displays) = 0;
    };
 }

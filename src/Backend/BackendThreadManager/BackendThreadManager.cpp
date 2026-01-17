@@ -1,20 +1,25 @@
 #include "BackendThreadManager.h"
 
-#include <WindowsAPI/WindowsAPIInterface.h>
-
 #include <DataAccessThreadManager.h>
-
+#include <DisplaysManager.h>
 #include <TaskBarService.h>
 #include <WallpaperService.h>
+#include <WindowsAPI.h>
+#include <WindowsEventMessageFilter.h>
 
+#include <QApplication>
 #include <QThread>
 
 BackendThreadManager::BackendThreadManager(DataAccessThreadManager* dataAccess,
-                                           WindowsAPIInterface* windowsAPI)
-   : WindowsAPI(windowsAPI)
+                                           QApplication* app)
+   : WindowsEventFilter(new WindowsEventMessageFilter(this))
+   , TheWindowsAPI(new WindowsAPI(*WindowsEventFilter))
+   , TheDisplaysManager()
    , TheTaskBarService(nullptr)
    , TheWallpaperService(nullptr)
 {
+   app->installNativeEventFilter(WindowsEventFilter);
+
    connect(dataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
            this, &BackendThreadManager::HandleDataAccessThreadStarted);
 }
@@ -24,14 +29,9 @@ void BackendThreadManager::AssignToThread(QThread* thread)
    this->moveToThread(thread);
 }
 
-TaskBar::TaskBarServiceInterface* BackendThreadManager::GetTheTaskBarService() const
+void BackendThreadManager::HandleRequestPassDisplaysManager()
 {
-   return TheTaskBarService;
-}
-
-Wallpaper::WallpaperServiceInterface* BackendThreadManager::GetTheWallpaperService() const
-{
-   return TheWallpaperService;
+   emit PassDisplaysManager(TheDisplaysManager);
 }
 
 void BackendThreadManager::HandleRequestPassTaskBarService()
@@ -54,6 +54,11 @@ void BackendThreadManager::HandleDataAccessThreadStarted()
    emit ServiceThreadStarted();
 }
 
+void BackendThreadManager::CreateDisplaysManager()
+{
+   TheDisplaysManager = new DisplaysManager(*TheWindowsAPI, this);
+}
+
 void BackendThreadManager::CreateTaskBarService()
 {
    TheTaskBarService = new TaskBar::TaskBarService(this);
@@ -65,6 +70,6 @@ void BackendThreadManager::CreateWallpaperService()
    TheWallpaperService = new Wallpaper::WallpaperService(this);
    TheWallpaperService->RegisterMetaTypes();
 
-   connect(WindowsAPI.get(), &WindowsAPIInterface::DisplaysDetected,
-           TheWallpaperService, &Wallpaper::WallpaperServiceInterface::HandleDisplaysDetected);
+   connect(TheDisplaysManager, &DisplaysManagerInterface::DisplayConfigChanged,
+           TheWallpaperService, &Wallpaper::WallpaperServiceInterface::HandleDisplayConfigChanged);
 }
