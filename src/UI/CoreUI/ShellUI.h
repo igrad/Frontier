@@ -29,7 +29,7 @@ public:
            QObject* parent = nullptr);
    ~ShellUI() = default;
 
-   uint8_t GetDisplayID() const;
+   uint8_t GetDisplayNumber() const;
    DisplayInfo GetDisplayInfo() const;
 
 signals:

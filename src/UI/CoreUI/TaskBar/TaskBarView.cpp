@@ -6,8 +6,10 @@
 using namespace TaskBar;
 
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
-                         ShellWindowInterface* window)
+                         ShellWindowInterface* window,
+                         uint8_t displayNumber)
    : QWidget(window)
+   , DisplayNum(displayNumber)
    , AssetClient("TaskBarView", this)
    , CurrentData()
    , MainLayout(nullptr)

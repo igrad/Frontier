@@ -9,6 +9,7 @@ class Rando
 public:
    Rando();
    Rando(int lowerBound, int upperBound);
+   Rando(const Rando& other);
 
    int Value();
    int Value(int lowerBound, int upperBound);

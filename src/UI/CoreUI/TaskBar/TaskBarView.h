@@ -24,7 +24,8 @@ namespace TaskBar
 
    public:
       TaskBarView(XPtr<TaskBarServiceInterface> service,
-                  ShellWindowInterface* window);
+                  ShellWindowInterface* window,
+                  uint8_t displayNumber);
       ~TaskBarView() = default;
 
    public:
@@ -38,6 +39,7 @@ namespace TaskBar
       void ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service);
       void ConnectToAssetClientSignals();
 
+      uint8_t DisplayNum;
       Assets::AssetClient AssetClient;
       TaskBar::ViewData CurrentData;
       QBoxLayout* MainLayout;

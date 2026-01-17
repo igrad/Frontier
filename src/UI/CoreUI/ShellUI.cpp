@@ -23,9 +23,9 @@ ShellUI::ShellUI(XPtr<TaskBar::TaskBarServiceInterface> taskBarService,
    BuildUIComponents();
 }
 
-uint8_t ShellUI::GetDisplayID() const
+uint8_t ShellUI::GetDisplayNumber() const
 {
-   return TheDisplayInfo.ID;
+   return TheDisplayInfo.Number;
 }
 
 DisplayInfo ShellUI::GetDisplayInfo() const
@@ -35,11 +35,11 @@ DisplayInfo ShellUI::GetDisplayInfo() const
 
 void ShellUI::HandleDisplayInfoUpdated(const DisplayInfo& info)
 {
-   if((info.ID == TheDisplayInfo.ID) &&
+   if((info.Number == TheDisplayInfo.Number) &&
        (info != TheDisplayInfo))
    {
       LogInfo(QString("Display info for display %1 has changed")
-                 .arg(info.ID));
+                 .arg(info.Number));
 
       TheDisplayInfo = info;
       BuildUIComponents();
@@ -66,7 +66,7 @@ void ShellUI::BuildTheShellWindow()
    TheShellWindow = new ShellWindow();
    connect(TheShellWindow, &ShellWindow::Closed,
            this, [&](){
-      emit ShellWindowClosed(GetDisplayID());
+      emit ShellWindowClosed(GetDisplayNumber());
    });
 }
 
@@ -80,7 +80,7 @@ void ShellUI::BuildTheWallpaperView()
 
    TheWallpaperView = new Wallpaper::WallpaperView(WallpaperService,
                                                    TheShellWindow,
-                                                   GetDisplayID());
+                                                   GetDisplayNumber());
 }
 
 void ShellUI::BuildTheTaskBarView()
@@ -93,5 +93,5 @@ void ShellUI::BuildTheTaskBarView()
 
    TheTaskBarView = new TaskBar::TaskBarView(TaskBarService,
                                              TheShellWindow,
-                                             GetDisplayID());
+                                             GetDisplayNumber());
 }

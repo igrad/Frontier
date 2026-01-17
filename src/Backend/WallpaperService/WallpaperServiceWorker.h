@@ -17,10 +17,13 @@ namespace Wallpaper
       WallpaperServiceWorker(const DisplayInfo& info,
               WallpaperSettingsProxy& settingsProxy,
               QObject* parent = nullptr);
+      WallpaperServiceWorker(const WallpaperServiceWorker& other);
       ~WallpaperServiceWorker() = default;
 
       uint8_t GetDisplayNum() const;
       DisplayInfo GetDisplayInfo() const;
+
+      bool operator==(const WallpaperServiceWorker& rhs) const;
 
    signals:
       void WallpaperViewDataChanged(uint8_t display,
@@ -49,4 +52,10 @@ namespace Wallpaper
       Timer RotationTimer;
       Rando ShuffleRando;
    };
+
+   inline size_t qHash(const Wallpaper::WallpaperServiceWorker& key, size_t seed = 0)
+   {
+      return qHashMulti(seed, key.GetDisplayNum(), key.GetDisplayInfo().Name);
+   }
 }
+

@@ -15,6 +15,8 @@ public:
                    QObject* parent = nullptr);
    ~DisplaysManager() = default;
 
+   void RegisterMetaTypes() const override;
+
 private slots:
    void HandleDisplayDetected(const DisplayInfo& info);
    void HandleNumberOfDisplaysChanged(uint8_t numDisplays);

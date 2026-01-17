@@ -42,7 +42,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingWallpaperColorsChanged1)
    colors.push_back(QColor("white"));
    colors.push_back(QColor("blue"));
    colors.push_back(QColor("green"));
-   EXPECT_EQ(colors, Proxy.GetColors());
+   EXPECT_EQ(colors, Proxy.GetColors(0));
 }
 
 TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperDurationChanged1)
@@ -53,7 +53,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperDurationChanged1)
                                       QVariant(duration));
 
    QCoreApplication::processEvents();
-   EXPECT_EQ(duration, Proxy.GetDuration());
+   EXPECT_EQ(duration, Proxy.GetDuration(0));
 }
 
 TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperFitsChanged1)
@@ -68,7 +68,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperFitsChanged1)
 
    QCoreApplication::processEvents();
 
-   EXPECT_EQ(fits, Proxy.GetFits());
+   EXPECT_EQ(fits, Proxy.GetFits(0));
 }
 
 TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperImagePathsChanged1)
@@ -80,7 +80,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperImagePathsChanged1)
 
    QCoreApplication::processEvents();
 
-   EXPECT_EQ(strings, Proxy.GetPaths());
+   EXPECT_EQ(strings, Proxy.GetPaths(0));
 }
 
 TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperScheduleChanged1)
@@ -92,7 +92,7 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperScheduleChanged1)
 
    QCoreApplication::processEvents();
 
-   EXPECT_EQ(sched, Proxy.GetSchedule());
+   EXPECT_EQ(sched, Proxy.GetSchedule(0));
 }
 
 TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperStyleChanged1)
@@ -104,5 +104,5 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperStyleChanged1)
 
    QCoreApplication::processEvents();
 
-   EXPECT_EQ(style, Proxy.GetStyle());
+   EXPECT_EQ(style, Proxy.GetStyle(0));
 }

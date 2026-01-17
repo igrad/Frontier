@@ -28,6 +28,20 @@ WallpaperServiceWorker::WallpaperServiceWorker(const DisplayInfo& info,
            this, &WallpaperServiceWorker::HandleRotationTimeout);
 }
 
+WallpaperServiceWorker::WallpaperServiceWorker(const WallpaperServiceWorker& other)
+   : QObject(other.parent())
+   , DisplayNum(other.GetDisplayNum())
+   , Info(other.GetDisplayInfo())
+   , SettingsProxy(other.SettingsProxy)
+   , Data(other.Data)
+   , CurrentColorsIndex(other.CurrentColorsIndex)
+   , CurrentImageIndex(other.CurrentImageIndex)
+   , RotationTimer(other.RotationTimer)
+   , ShuffleRando(other.ShuffleRando)
+{
+
+}
+
 uint8_t WallpaperServiceWorker::GetDisplayNum() const
 {
    return DisplayNum;
@@ -36,6 +50,11 @@ uint8_t WallpaperServiceWorker::GetDisplayNum() const
 DisplayInfo WallpaperServiceWorker::GetDisplayInfo() const
 {
    return Info;
+}
+
+bool WallpaperServiceWorker::operator==(const WallpaperServiceWorker& rhs) const
+{
+   return DisplayNum == rhs.GetDisplayNum();
 }
 
 void WallpaperServiceWorker::HandleRotationTimeout()

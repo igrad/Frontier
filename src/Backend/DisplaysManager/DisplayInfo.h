@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMetaType>
 #include <QRect>
 #include <QSet>
 
@@ -19,8 +20,11 @@ struct DisplayEvent
    QSet<uint8_t> AffectedDisplays;
 };
 
+Q_DECLARE_METATYPE(DisplayEvent);
+
 struct DisplayInfo
 {
+   QString Name;
    HMONITOR Handle;
    uint8_t Number;
    bool IsPrimary;
@@ -30,7 +34,8 @@ struct DisplayInfo
 
    bool operator==(const DisplayInfo& rhs) const
    {
-      return Handle == rhs.Handle &&
+      return Name == rhs.Name &&
+             Handle == rhs.Handle &&
              Number == rhs.Number &&
              IsPrimary == rhs.IsPrimary &&
              Rect == rhs.Rect &&
@@ -43,3 +48,10 @@ struct DisplayInfo
       return !(*this == rhs);
    }
 };
+
+Q_DECLARE_METATYPE(DisplayInfo);
+
+inline size_t qHash(const DisplayInfo& key, size_t seed = 0)
+{
+   return qHashMulti(seed, key.Name, key.Number);
+}

@@ -8,6 +8,7 @@ class Timer: public QObject
 
 public:
    explicit Timer(QObject* parent = nullptr);
+   Timer(const Timer& other);
    Timer(int interval, bool singleShot = false, QObject* parent = nullptr);
    ~Timer() = default;
 

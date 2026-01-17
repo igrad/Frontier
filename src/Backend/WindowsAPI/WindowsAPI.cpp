@@ -85,9 +85,12 @@ void WindowsAPI::ConnectToEventMessageFilter(const WindowsEventMessageFilter& fi
 
 void WindowsAPI::GetAllDisplayInfo()
 {
-   LogInfo("GetAllDisplayInfo")
-   const int numDisplays = GetCurrentSettingValue(Windows::Setting::NumberOfDetectedMonitors)
-                              .toInt();
+   LogInfo("GetAllDisplayInfo");
+   DisplayDevices.clear();
+
+   GetDisplayDevicesAndMonitorNames();
+   const int numDisplays = DisplayDevices.size();
+
    if(numDisplays != NumDisplays)
    {
       NumDisplays = numDisplays;
@@ -107,19 +110,23 @@ void WindowsAPI::MonitorDatumReceived(HMONITOR hMonitor,
    LogInfo("MonitorDatumReceived");
    DisplayInfo info = GetDisplayInfo(hMonitor);
 
-   emit DisplayDetected(info);
+   if(DisplayInfo() != info)
+   {
+      emit DisplayDetected(info);
+   }
 }
 
 DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
 {
-   DisplayInfo info;
-   info.Handle = handle;
-
    MONITORINFO monitorInfo;
-   LPMONITORINFO lpmi = &monitorInfo;
-   lpmi->cbSize = sizeof(MONITORINFO);
-   if(GetMonitorInfo(handle, lpmi))
+   monitorInfo.cbSize = sizeof(MONITORINFO);
+   MONITORINFOEXA monitorInfoEx;
+   monitorInfoEx.cbSize = sizeof(monitorInfoEx);
+   if(GetMonitorInfo(handle, &monitorInfo) && GetMonitorInfo(handle, &monitorInfoEx))
    {
+      const QString name = monitorInfoEx.szDevice;
+      DisplayInfo& info = *(DisplayDevices.find(name.toStdString().c_str()));
+
       const RECT rect = monitorInfo.rcMonitor;
       info.Rect = {rect.left,
                    rect.top,
@@ -136,7 +143,35 @@ DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
          info.XDPI = dpiX;
          info.YDPI = dpiY;
       }
+
+      LogInfo(QString("Matched handle to id %1")
+                 .arg(info.Name));
+
+      return info;
    }
 
-   return info;
+   return DisplayInfo();
+}
+
+void WindowsAPI::GetDisplayDevicesAndMonitorNames()
+{
+   DISPLAY_DEVICEA displayDevice;
+   displayDevice.cb = sizeof(displayDevice);
+   for(int iter = 0; EnumDisplayDevicesA(NULL, iter, &displayDevice, 0); ++iter)
+   {
+      DisplayInfo info;
+      info.Name = QString("Monitor %1").arg(iter);
+
+      DISPLAY_DEVICEA displayDeviceForMonitorName;
+      displayDeviceForMonitorName.cb = sizeof(displayDeviceForMonitorName);
+      if(EnumDisplayDevicesA(displayDevice.DeviceName, 0, &displayDeviceForMonitorName, 0))
+      {
+         info.Name = displayDeviceForMonitorName.DeviceString;
+      }
+
+      info.Number = iter;
+      DisplayDevices[displayDevice.DeviceName] = info;
+      LogInfo(QString("Got DisplayDevice %1 with id %2 and name %3")
+                 .arg(QString::number(iter), displayDevice.DeviceName, info.Name));
+   }
 }

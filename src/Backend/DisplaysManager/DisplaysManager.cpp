@@ -15,6 +15,12 @@ DisplaysManager::DisplaysManager(WindowsAPIInterface& windowsAPI,
    ConnectToWindowsAPI();
 }
 
+void DisplaysManager::RegisterMetaTypes() const
+{
+   qRegisterMetaType<DisplayEvent>("DisplayEvent");
+   qRegisterMetaType<DisplayInfo>("DisplayInfo");
+}
+
 void DisplaysManager::HandleDisplayDetected(const DisplayInfo& info)
 {
    DisplayInfo i = info;
@@ -44,7 +50,6 @@ void DisplaysManager::HandleNumberOfDisplaysChanged(uint8_t numDisplays)
    NumDisplays = numDisplays;
    CurrentEvent = event;
    CurrentEventInfo.clear();
-   CurrentEventInfo.reserve(NumDisplays);
 }
 
 void DisplaysManager::ConnectToWindowsAPI()
@@ -57,7 +62,7 @@ void DisplaysManager::ConnectToWindowsAPI()
 
 void DisplaysManager::FinalizeCurrentEvent()
 {
-   for(DisplayInfo info : CurrentEventInfo)
+   for(const auto& info : std::as_const(CurrentEventInfo))
    {
       // Check if this display is already known
       auto ptr = std::find_if(Displays.cbegin(),

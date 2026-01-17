@@ -22,8 +22,7 @@ class UIManager: public QObject
 
 public:
    UIManager(DataAccessThreadManager* dataAccess,
-             BackendThreadManager* backend,
-             WindowsAPIInterface* windowsAPI);
+             BackendThreadManager* backend);
    ~UIManager();
 
 signals:
@@ -48,7 +47,6 @@ private:
 
    XPtr<DataAccessThreadManager> DataAccess;
    XPtr<BackendThreadManager> Backend;
-   XPtr<WindowsAPIInterface> TheWindowsAPI;
    XPtr<Assets::AssetLoaderInterface> TheAssetLoader;
    XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
    XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;

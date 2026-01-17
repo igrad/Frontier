@@ -8,11 +8,9 @@
 #include <QMetaObject>
 
 UIManager::UIManager(DataAccessThreadManager* dataAccess,
-                     BackendThreadManager* backend,
-                     WindowsAPIInterface* windowsAPI)
+                     BackendThreadManager* backend)
    : DataAccess(dataAccess)
    , Backend(backend)
-   , TheWindowsAPI(windowsAPI)
    , TheAssetLoader(nullptr)
    , TaskBarService(nullptr)
    , WallpaperService(nullptr)
@@ -29,11 +27,6 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
            this, &UIManager::HandleDataAccessThreadStarted);
    connect(Backend.get(), &BackendThreadManager::ServiceThreadStarted,
            this, &UIManager::HandleServiceThreadStarted);
-
-   connect(this, &UIManager::PollDisplaysInfo,
-           TheWindowsAPI.get(), &WindowsAPIInterface::HandlePollDisplaysInfo);
-   connect(TheWindowsAPI.get(), &WindowsAPIInterface::DisplaysDetected,
-           this, &UIManager::HandleDisplaysInfo);
 }
 
 UIManager::~UIManager()
@@ -116,7 +109,7 @@ void UIManager::BuildShellWindows()
       {
          ShellUI* ui = Shells.last();
          LogInfo(QString("Discarding existing ShellUI for monitor %1")
-          .arg(ui->GetDisplayID()));
+          .arg(ui->GetDisplayNumber()));
          ui = nullptr;
          Shells.removeLast();
       }
@@ -124,12 +117,12 @@ void UIManager::BuildShellWindows()
 
    for(const DisplayInfo& info : std::as_const(DisplaysInfo))
    {
-      const uint8_t id = info.ID;
+      const uint8_t id = info.Number;
 
       auto shellIter = std::find_if(Shells.begin(),
                                     Shells.end(),
                                     [&](const ShellUI* shell) {
-         return id == shell->GetDisplayID();
+         return id == shell->GetDisplayNumber();
       });
 
       const bool exists = (Shells.end() != shellIter);
@@ -137,14 +130,14 @@ void UIManager::BuildShellWindows()
           (info != (*shellIter)->GetDisplayInfo()))
       {
          LogInfo(QString("DisplayInfo changed for display: %1")
-                    .arg(info.ID));
+                    .arg(info.Number));
          (*shellIter)->HandleDisplayInfoUpdated(info);
       }
 
       if(!exists)
       {
          LogInfo(QString("Building ShellUI for display: %1")
-                    .arg(info.ID));
+                    .arg(info.Number));
          Shells.push_back(new ShellUI(TaskBarService,
                                       WallpaperService,
                                       info,

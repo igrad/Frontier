@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
    DATA_ACCESS_THREAD_MANAGER->AssignToThread(dataAccessThread.get());
 
    // Set up backend thread and its components
-   BACKEND_THREAD_MANAGER = new BackendThreadManager(DATA_ACCESS_THREAD_MANAGER);
+   BACKEND_THREAD_MANAGER = new BackendThreadManager(DATA_ACCESS_THREAD_MANAGER, &app);
    std::unique_ptr<QThread> backendThread(new QThread());
    BACKEND_THREAD_MANAGER->AssignToThread(backendThread.get());
 
@@ -96,8 +96,7 @@ int main(int argc, char *argv[])
 
    // Set up UI components
    UI_MANAGER = new UIManager(DATA_ACCESS_THREAD_MANAGER,
-                              BACKEND_THREAD_MANAGER,
-                              static_cast<WindowsAPIInterface*>(&windowsAPI));
+                              BACKEND_THREAD_MANAGER);
 
    if(enterprise)
    {

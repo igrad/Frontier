@@ -63,6 +63,15 @@ Timer::Timer(QObject* parent)
    AllTimers.insert(this);
 }
 
+Timer::Timer(const Timer& other)
+   : QObject(other.parent())
+   , Interval(other.Interval)
+   , SingleShot(other.SingleShot)
+   , Started(other.Started)
+{
+   // Note that a copied timer will not be automatically started!
+}
+
 Timer::Timer(int interval, bool singleShot, QObject* parent)
    : QObject(parent)
    , Interval(interval)

@@ -20,15 +20,13 @@ WallpaperService::WallpaperService(QObject* parent)
 {
    setParent(parent);
 
-   Workers.reserve(2);
-
    connect(&SettingsProxy, &WallpaperSettingsProxy::SettingsChanged,
            this, &WallpaperService::HandleSettingsChanged);
 }
 
 void WallpaperService::RegisterMetaTypes() const
 {
-   qRegisterMetaType<ViewData>("Wallpaper::ViewData");
+   qRegisterMetaType<Wallpaper::ViewData>("Wallpaper::ViewData");
 }
 
 void WallpaperService::HandleDisplayConfigChanged(const DisplayEvent& event,

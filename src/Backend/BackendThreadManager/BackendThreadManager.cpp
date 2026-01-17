@@ -57,6 +57,7 @@ void BackendThreadManager::HandleDataAccessThreadStarted()
 void BackendThreadManager::CreateDisplaysManager()
 {
    TheDisplaysManager = new DisplaysManager(*TheWindowsAPI, this);
+   TheDisplaysManager->RegisterMetaTypes();
 }
 
 void BackendThreadManager::CreateTaskBarService()

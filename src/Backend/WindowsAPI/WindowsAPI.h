@@ -38,8 +38,10 @@ private:
    void ConnectToEventMessageFilter(const WindowsEventMessageFilter& filter);
    void GetAllDisplayInfo();
    DisplayInfo GetDisplayInfo(HMONITOR handle);
+   void GetDisplayDevicesAndMonitorNames();
 
    QHash<Windows::Setting, QVariant> CachedSettings;
    uint8_t NumDisplays;
    QHash<HMONITOR, DisplayInfo> CachedDisplaysInfo;
+   QMap<LPCSTR, DisplayInfo> DisplayDevices;
 };
