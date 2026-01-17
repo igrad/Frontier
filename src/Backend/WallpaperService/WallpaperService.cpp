@@ -37,6 +37,14 @@ void WallpaperService::RegisterMetaTypes() const
    qRegisterMetaType<ViewData>("Wallpaper::ViewData");
 }
 
+void WallpaperService::HandleDisplaysDetected(const QList<DisplayInfo>& info)
+{
+   for(const DisplayInfo& data : std::as_const(info))
+   {
+      // data.
+   }
+}
+
 void WallpaperService::HandleRotationTimeout()
 {
    LogInfo("Wallpaper rotation timer is triggering a wallpaper change");

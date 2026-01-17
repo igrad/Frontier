@@ -100,7 +100,7 @@ TEST(SettingsServiceTest, SetPointerInClientClass1)
    EXPECT_EQ(nullptr, SettingsClient::GetSettingsServicePtr());
 }
 
-TEST(SettingsServiceTest, HandleWriteSettingValueTest1)
+TEST(SettingsServiceTest, HandleWriteSystemSettingValueTest1)
 {
    GWT("The program is already running",
        "One component writes a new settings value to disk",

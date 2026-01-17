@@ -79,7 +79,8 @@ void ShellUI::BuildTheWallpaperView()
    }
 
    TheWallpaperView = new Wallpaper::WallpaperView(WallpaperService,
-                                                   TheShellWindow);
+                                                   TheShellWindow,
+                                                   GetDisplayID());
 }
 
 void ShellUI::BuildTheTaskBarView()
@@ -91,5 +92,6 @@ void ShellUI::BuildTheTaskBarView()
    }
 
    TheTaskBarView = new TaskBar::TaskBarView(TaskBarService,
-                                             TheShellWindow);
+                                             TheShellWindow,
+                                             GetDisplayID());
 }

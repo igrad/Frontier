@@ -3,6 +3,7 @@
 #include "WallpaperServiceInterface.h"
 #include "WallpaperSettingsProxy.h"
 
+#include <DisplayInfo.h>
 #include <Utilities/Rando.h>
 
 #include <QTimer>
@@ -20,6 +21,9 @@ namespace Wallpaper
 
       void RegisterMetaTypes() const override;
 
+   public slots:
+      void HandleDisplaysDetected(const QList<DisplayInfo>& info) override;
+
    private slots:
       void HandleRotationTimeout();
       void HandleSettingsChanged();
@@ -35,7 +39,7 @@ namespace Wallpaper
 
       WallpaperSettingsProxy SettingsProxy;
 
-      ViewData CurrentData;
+      QList<ViewData> CurrentData;
       int CurrentColorsIndex;
       int CurrentImageIndex;
       Timer RotationTimer;

@@ -25,6 +25,7 @@ target_include_directories(WallpaperService PUBLIC
 
 target_link_libraries(WallpaperService PUBLIC
    DataAccess
+   DisplaysManager
    Qt6::Gui
    PRIVATE
    Shared

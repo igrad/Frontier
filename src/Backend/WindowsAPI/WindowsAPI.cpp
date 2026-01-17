@@ -12,15 +12,10 @@
 // testable, but it's fine for now. We will eventually need to make a 1:1 wrapper for the windows
 // API so that we can mock it and test this thoroughly.
 
-QList<HMONITOR> WindowsAPI::MONITOR_HANDLES;
-WindowsAPI* WindowsAPI::INSTANCE = nullptr;
-int WindowsAPI::NUM_MONITORS = 1;
-
 WindowsAPI::WindowsAPI(const WindowsEventMessageFilter& filter,
                        QObject* parent)
    : CachedSettings()
 {
-   INSTANCE = this;
    setParent(parent);
 
    ConnectToEventMessageFilter(filter);
@@ -71,20 +66,14 @@ void WindowsAPI::HandleDevicesChanged()
    GetAllDisplayInfo();
 }
 
-// TODO: Fix this static crap
 BOOL CALLBACK WindowsAPI::MonitorEnumProc(HMONITOR hMonitor,
                                  HDC hdcMonitor,
                                  LPRECT lprcMonitor,
                                  LPARAM dwData)
 {
-   LogInfo("Received monitor");
-   MONITOR_HANDLES.push_back(hMonitor);
+   WindowsAPI* me = reinterpret_cast<WindowsAPI*>(dwData);
+   me->MonitorDatumReceived(hMonitor, hdcMonitor, lprcMonitor);
 
-   if(MONITOR_HANDLES.count() == NUM_MONITORS)
-   {
-      QMetaObject::invokeMethod(INSTANCE,
-                                "MonitorDatumReceived");
-   }
    return TRUE;
 }
 
@@ -97,53 +86,49 @@ void WindowsAPI::ConnectToEventMessageFilter(const WindowsEventMessageFilter& fi
 void WindowsAPI::GetAllDisplayInfo()
 {
    LogInfo("GetAllDisplayInfo")
-   MONITOR_HANDLES.clear();
-
    const int numDisplays = GetCurrentSettingValue(Windows::Setting::NumberOfDetectedMonitors)
                               .toInt();
-   NUM_MONITORS = numDisplays;
+   if(numDisplays != NumDisplays)
+   {
+      NumDisplays = numDisplays;
+      emit NumberOfDisplaysChanged(numDisplays);
+   }
 
-   EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, 0);
+   EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, reinterpret_cast<LPARAM>(this));
 }
 
-void WindowsAPI::MonitorDatumReceived()
+void WindowsAPI::MonitorDatumReceived(HMONITOR hMonitor,
+                                      HDC hdcMonitor,
+                                      LPRECT lprcMonitor)
 {
+   Q_UNUSED(hdcMonitor)
+   Q_UNUSED(lprcMonitor)
+
    LogInfo("MonitorDatumReceived");
-   QList<DisplayInfo> infos;
-   for(int iter = 0; iter < NUM_MONITORS; ++iter)
-   {
-      DisplayInfo info = GetDisplayInfo(iter);
-      infos.push_back(info);
-   }
+   DisplayInfo info = GetDisplayInfo(hMonitor);
 
-   if(infos != CachedDisplaysInfo)
-   {
-      CachedDisplaysInfo = infos;
-
-      emit DisplaysDetected(infos);
-   }
+   emit DisplayDetected(info);
 }
 
-DisplayInfo WindowsAPI::GetDisplayInfo(int index)
+DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
 {
    DisplayInfo info;
-   info.ID = index;
+   info.Handle = handle;
 
    MONITORINFO monitorInfo;
    LPMONITORINFO lpmi = &monitorInfo;
    lpmi->cbSize = sizeof(MONITORINFO);
-   if(GetMonitorInfo(MONITOR_HANDLES[index], lpmi))
+   if(GetMonitorInfo(handle, lpmi))
    {
       const RECT rect = monitorInfo.rcMonitor;
       info.Rect = {rect.left,
                    rect.top,
                    std::abs(rect.left - rect.right),
                    std::abs(rect.top - rect.bottom)};
-      MONITORINFOF_PRIMARY;
       info.IsPrimary = (monitorInfo.dwFlags & MONITORINFOF_PRIMARY);
 
       UINT dpiX, dpiY;
-      if(S_OK == GetDpiForMonitor(MONITOR_HANDLES[index],
+      if(S_OK == GetDpiForMonitor(handle,
                                    MDT_EFFECTIVE_DPI,
                                    &dpiX,
                                    &dpiY))

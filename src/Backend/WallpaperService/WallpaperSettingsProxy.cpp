@@ -20,86 +20,90 @@ namespace
 WallpaperSettingsProxy::WallpaperSettingsProxy(QObject* parent)
    : QObject(parent)
    , SettingsClient(SETTINGS_CLIENT_NAME)
-   , CurrentColors{Qt::blue}
-   , CurrentDuration(DEFAULT_ROTATION_DURATION_MS)
-   , CurrentFits{DEFAULT_WALLPAPER_FIT}
-   , CurrentImagePaths()
-   , CurrentSchedule(DEFAULT_WALLPAPER_SCHEDULE)
-   , CurrentStyle(DEFAULT_WALLPAPER_STYLE)
+   , Data()
 {
-   SubscribeToSettings();
+   SubscribeToDisplaySettings();
 }
 
-const QList<QColor>& WallpaperSettingsProxy::GetColors() const
+const QList<QColor>& WallpaperSettingsProxy::GetColors(uint8_t display) const
 {
-   return CurrentColors;
+   return Data[display].Colors;
 }
 
-const int WallpaperSettingsProxy::GetDuration() const
+const int WallpaperSettingsProxy::GetDuration(uint8_t display) const
 {
-   return CurrentDuration;
+   return Data[display].Duration;
 }
 
-const QList<Fit>& WallpaperSettingsProxy::GetFits() const
+const QList<Fit>& WallpaperSettingsProxy::GetFits(uint8_t display) const
 {
-   return CurrentFits;
+   return Data[display].Fits;
 }
 
-const QStringList& WallpaperSettingsProxy::GetPaths() const
+const QStringList& WallpaperSettingsProxy::GetPaths(uint8_t display) const
 {
-   return CurrentImagePaths;
+   return Data[display].ImagePaths;
 }
 
-const Schedule WallpaperSettingsProxy::GetSchedule() const
+const Schedule WallpaperSettingsProxy::GetSchedule(uint8_t display) const
 {
-   return CurrentSchedule;
+   return Data[display].Schedule;
 }
 
-const Style WallpaperSettingsProxy::GetStyle() const
+const Style WallpaperSettingsProxy::GetStyle(uint8_t display) const
 {
-   return CurrentStyle;
+   return Data[display].Style;
 }
 
-void WallpaperSettingsProxy::HandleSettingWallpaperColorsChanged(const QVariant& value)
+const DisplayData WallpaperSettingsProxy::GetData(uint8_t display) const
 {
-   CurrentColors.clear();
+   return Data[display];
+}
+
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperColorsChanged(const QVariant& value,
+                                                                        uint8_t display)
+{
+
+   Data[display].Colors.clear();
 
    if(value.canConvert<QStringList>())
    {
       const QStringList strList = value.toStringList();
       for(const QString& str : strList)
       {
-         CurrentColors.push_back(QColor(str));
+         Data[display].Colors.push_back(QColor(str));
       }
    }
    else
    {
-      CurrentColors.push_back(QColor(value.toString()));
+      Data[display].Colors.push_back(QColor(value.toString()));
    }
 
    QStringList strList;
-   for(const QColor& color : std::as_const(CurrentColors))
+   for(const QColor& color : std::as_const(Data[display].Colors))
    {
       strList.push_back(color.name());
    }
 
    LogInfo(QString("Wallpaper CurrentColors changed to \"%1\"").arg(strList.join(",")));
 
-   emit SettingsChanged();
+   emit SettingsChanged(display);
 }
 
-void WallpaperSettingsProxy::HandleSettingWallpaperDurationChanged(const QVariant& value)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperDurationChanged(const QVariant& value,
+                                                                          uint8_t display)
 {
    if(value.canConvert<int>())
    {
-      CurrentDuration = value.toInt();
-      LogInfo(QString("Wallpaper rotation duration changed to %1msec").arg(CurrentDuration));
+      Data[display].Duration = value.toInt();
+      LogInfo(QString("Wallpaper rotation duration changed to %1msec").arg(Data[display].Duration));
 
-      emit SettingsChanged();
+      emit SettingsChanged(display);
    }
 }
 
-void WallpaperSettingsProxy::HandleSettingWallpaperFitsChanged(const QVariant& value)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperFitsChanged(const QVariant& value,
+                                                                      uint8_t display)
 {
    const QVariantList list = value.toList();
 
@@ -121,20 +125,21 @@ void WallpaperSettingsProxy::HandleSettingWallpaperFitsChanged(const QVariant& v
 
    if(canConvert)
    {
-      if(fits != CurrentFits)
+      if(fits != Data[display].Fits)
       {
-         CurrentFits = fits;
+         Data[display].Fits = fits;
 
          LogInfo(QString("Wallpaper CurrentFits changed to \"%1\"").arg(strList.join(",")));
 
-         emit SettingsChanged();
+         emit SettingsChanged(display);
       }
    }
 }
 
-void WallpaperSettingsProxy::HandleSettingWallpaperImagePathsChanged(const QVariant& value)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperImagePathsChanged(const QVariant& value,
+                                                                            uint8_t display)
 {
-   CurrentImagePaths.clear();
+   Data[display].ImagePaths.clear();
 
    // NOTE: Is this necessary?
    // if(value.canConvert<QStringList>())
@@ -143,51 +148,53 @@ void WallpaperSettingsProxy::HandleSettingWallpaperImagePathsChanged(const QVari
    // }
    // else	// Just pass in a single image
    // {
-   CurrentImagePaths = value.toStringList();
+   Data[display].ImagePaths = value.toStringList();
    // }
 
    LogInfo(QString("Wallpaper CurrentImagePaths changed to \"%1\"")
-              .arg(CurrentImagePaths.join(",")));
-   emit SettingsChanged();
+              .arg(Data[display].ImagePaths.join(",")));
+   emit SettingsChanged(display);
 }
 
-void WallpaperSettingsProxy::HandleSettingWallpaperScheduleChanged(const QVariant& value)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperScheduleChanged(const QVariant& value,
+                                                                          uint8_t display)
 {
    const Schedule newSchedule = value.value<Schedule>();
 
-   if(newSchedule != CurrentSchedule)
+   if(newSchedule != Data[display].Schedule)
    {
-      CurrentSchedule = newSchedule;
-      LogInfo(QString("Wallpaper schedule changed to: %1").arg(ToString(CurrentSchedule)));
+      Data[display].Schedule = newSchedule;
+      LogInfo(QString("Wallpaper schedule changed to: %1").arg(ToString(Data[display].Schedule)));
 
-      emit SettingsChanged();
+      emit SettingsChanged(display);
    }
 }
 
 // TODO: Future support for different image styles in the rotation
-void WallpaperSettingsProxy::HandleSettingWallpaperStyleChanged(const QVariant& value)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperStyleChanged(const QVariant& value,
+                                                                       uint8_t display)
 {
    if(value.canConvert<Style>())
    {
       const Style style = value.value<Style>();
 
-      if(style != CurrentStyle)
+      if(style != Data[display].Style)
       {
-         CurrentStyle = style;
+         Data[display].Style = style;
 
          LogInfo(QString("Wallpaper style changed to %1").arg(ToString(style)));
 
-         emit SettingsChanged();
+         emit SettingsChanged(display);
       }
    }
 }
 
-void WallpaperSettingsProxy::SubscribeToSettings()
+void WallpaperSettingsProxy::SubscribeToDisplaySettings()
 {
-   SettingsClient.SubscribeToSetting(Setting::WallpaperColors, this);
-   SettingsClient.SubscribeToSetting(Setting::WallpaperDuration, this);
-   SettingsClient.SubscribeToSetting(Setting::WallpaperFits, this);
-   SettingsClient.SubscribeToSetting(Setting::WallpaperImagePaths, this);
-   SettingsClient.SubscribeToSetting(Setting::WallpaperSchedule, this);
-   SettingsClient.SubscribeToSetting(Setting::WallpaperStyle, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::WallpaperColors, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::WallpaperDuration, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::WallpaperFits, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::WallpaperImagePaths, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::WallpaperSchedule, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::WallpaperStyle, this);
 }

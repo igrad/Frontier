@@ -1,3 +1,5 @@
 add_subdirectory(BackendThreadManager)
+add_subdirectory(DisplaysManager)
 add_subdirectory(TaskBarService)
 add_subdirectory(WallpaperService)
+add_subdirectory(WindowsAPI)

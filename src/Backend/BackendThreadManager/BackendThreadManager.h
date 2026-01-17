@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Utilities/XPtr.h>
+
 #include <QObject>
 
 class DataAccessThreadManager;
@@ -14,12 +16,15 @@ namespace Wallpaper
    class WallpaperServiceInterface;
 }
 
+class WindowsAPIInterface;
+
 class BackendThreadManager: public QObject
 {
    Q_OBJECT
 
 public:
-   explicit BackendThreadManager(DataAccessThreadManager* dataAccess);
+   BackendThreadManager(DataAccessThreadManager* dataAccess,
+                        WindowsAPIInterface* windowsAPI);
    ~BackendThreadManager() = default;
 
    void AssignToThread(QThread* thread);
@@ -40,6 +45,10 @@ private slots:
    void HandleDataAccessThreadStarted();
 
 private:
+   void CreateTaskBarService();
+   void CreateWallpaperService();
+
+   XPtr<WindowsAPIInterface> WindowsAPI;
    Wallpaper::WallpaperServiceInterface* TheWallpaperService;
    TaskBar::TaskBarServiceInterface* TheTaskBarService;
 };

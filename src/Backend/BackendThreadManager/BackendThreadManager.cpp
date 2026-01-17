@@ -1,5 +1,7 @@
 #include "BackendThreadManager.h"
 
+#include <WindowsAPI/WindowsAPIInterface.h>
+
 #include <DataAccessThreadManager.h>
 
 #include <TaskBarService.h>
@@ -7,8 +9,10 @@
 
 #include <QThread>
 
-BackendThreadManager::BackendThreadManager(DataAccessThreadManager* dataAccess)
-   : TheTaskBarService(nullptr)
+BackendThreadManager::BackendThreadManager(DataAccessThreadManager* dataAccess,
+                                           WindowsAPIInterface* windowsAPI)
+   : WindowsAPI(windowsAPI)
+   , TheTaskBarService(nullptr)
    , TheWallpaperService(nullptr)
 {
    connect(dataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
@@ -43,11 +47,24 @@ void BackendThreadManager::HandleRequestPassWallpaperService()
 void BackendThreadManager::HandleDataAccessThreadStarted()
 {
    LogInfo("Handling DataAccess thread started");
+
+   CreateWallpaperService();
+   CreateTaskBarService();
+
+   emit ServiceThreadStarted();
+}
+
+void BackendThreadManager::CreateTaskBarService()
+{
+   TheTaskBarService = new TaskBar::TaskBarService(this);
+   TheTaskBarService->RegisterMetaTypes();
+}
+
+void BackendThreadManager::CreateWallpaperService()
+{
    TheWallpaperService = new Wallpaper::WallpaperService(this);
    TheWallpaperService->RegisterMetaTypes();
 
-   TheTaskBarService = new TaskBar::TaskBarService(this);
-   TheTaskBarService->RegisterMetaTypes();
-
-   emit ServiceThreadStarted();
+   connect(WindowsAPI.get(), &WindowsAPIInterface::DisplaysDetected,
+           TheWallpaperService, &Wallpaper::WallpaperServiceInterface::HandleDisplaysDetected);
 }

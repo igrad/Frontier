@@ -16,6 +16,6 @@ namespace Wallpaper
 
       MOCK_METHOD(void, RegisterMetaTypes, (), (const, override));
 
-      void EmitWallpaperDataChanged(const Wallpaper::ViewData& data);
+      void EmitWallpaperDataChanged(uint8_t display, const Wallpaper::ViewData& data);
    };
 }

@@ -16,6 +16,7 @@ target_include_directories(WindowsAPI PUBLIC
 )
 
 target_link_libraries(WindowsAPI PRIVATE
+   DisplaysManager
    Shared
    Qt6::Core
 )

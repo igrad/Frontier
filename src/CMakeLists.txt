@@ -10,7 +10,6 @@ add_subdirectory(DataAccess)
 add_subdirectory(Enterprise)
 add_subdirectory(Shared)
 add_subdirectory(UI)
-add_subdirectory(WindowsAPI)
 
 find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
 

@@ -4,6 +4,8 @@
 
 #include <QObject>
 
+struct DisplayInfo;
+
 namespace Wallpaper
 {
    class WallpaperServiceInterface: public QObject
@@ -16,6 +18,9 @@ namespace Wallpaper
       virtual void RegisterMetaTypes() const = 0;
 
    signals:
-      void WallpaperDataChanged(const Wallpaper::ViewData& data);
+      void WallpaperDataChanged(uint8_t display, const Wallpaper::ViewData& data);
+
+   public slots:
+      virtual void HandleDisplaysDetected(const QList<DisplayInfo>& info) = 0;
    };
 }

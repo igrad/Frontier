@@ -11,7 +11,7 @@ TaskBarSettingsProxy::TaskBarSettingsProxy(QObject* parent)
    , CurrentOrientation(Orientation::LeftToRight)
    , CurrentShown(true)
 {
-   SubscribeToSettings();
+   SubscribeToSystemSettings();
 }
 
 const Alignment TaskBarSettingsProxy::GetAlignment() const
@@ -134,11 +134,11 @@ void TaskBarSettingsProxy::HandleSettingTaskBarShownChanged(const QVariant& valu
    }
 }
 
-void TaskBarSettingsProxy::SubscribeToSettings()
+void TaskBarSettingsProxy::SubscribeToSystemSettings()
 {
-   SettingsClient.SubscribeToSetting(Setting::TaskBarAlignment, this);
-   SettingsClient.SubscribeToSetting(Setting::TaskBarAutoHide, this);
-   SettingsClient.SubscribeToSetting(Setting::TaskBarHideDuration, this);
-   SettingsClient.SubscribeToSetting(Setting::TaskBarOrientation, this);
-   SettingsClient.SubscribeToSetting(Setting::TaskBarShown, this);
+   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarAlignment, this);
+   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarAutoHide, this);
+   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarHideDuration, this);
+   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarOrientation, this);
+   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarShown, this);
 }

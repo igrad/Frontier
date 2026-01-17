@@ -2,8 +2,6 @@ set(SharedSources
    ArgParser.cpp
    ArgParser.h
 
-   DisplayInfo.h
-
    Log.h
    Logging/Log.cpp
    Logging/Logger.cpp

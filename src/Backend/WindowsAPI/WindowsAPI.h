@@ -25,7 +25,9 @@ private slots:
    void HandleWindowsSettingUpdated(const Windows::Setting setting,
                              const QVariant& value);
    void HandleDevicesChanged();
-   void MonitorDatumReceived();
+   void MonitorDatumReceived(HMONITOR hMonitor,
+                             HDC hdcMonitor,
+                             LPRECT lprcMonitor);
 
    static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor,
                                         HDC hdcMonitor,
@@ -33,14 +35,11 @@ private slots:
                                         LPARAM dwData);
 
 private:
-   static QList<HMONITOR> MONITOR_HANDLES;
-   static int NUM_MONITORS;
-   static WindowsAPI* INSTANCE;
-
    void ConnectToEventMessageFilter(const WindowsEventMessageFilter& filter);
    void GetAllDisplayInfo();
-   DisplayInfo GetDisplayInfo(int index);
+   DisplayInfo GetDisplayInfo(HMONITOR handle);
 
    QHash<Windows::Setting, QVariant> CachedSettings;
-   QList<DisplayInfo> CachedDisplaysInfo;
+   uint8_t NumDisplays;
+   QHash<HMONITOR, DisplayInfo> CachedDisplaysInfo;
 };

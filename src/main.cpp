@@ -71,8 +71,6 @@ int main(int argc, char *argv[])
       LogInfo(QString("arg %1: %2").arg(iter).arg(argv[iter]));
    }
 
-   Log::LogToStandardOut(true);
-
    WindowsEventMessageFilter messageFilter(&app);
    WindowsAPI windowsAPI(messageFilter, &app);
    app.installNativeEventFilter(&messageFilter);

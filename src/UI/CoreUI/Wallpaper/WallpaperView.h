@@ -21,11 +21,12 @@ namespace Wallpaper
 
    public:
       WallpaperView(XPtr<WallpaperServiceInterface> service,
-                    ShellWindowInterface* window);
+                    ShellWindowInterface* window,
+                    uint8_t display);
       ~WallpaperView();
 
    public slots:
-      void HandleWallpaperDataChanged(const Wallpaper::ViewData& data);
+      void HandleWallpaperDataChanged(uint8_t displya, const Wallpaper::ViewData& data);
 
    private:
       void CreateUI();
@@ -35,6 +36,7 @@ namespace Wallpaper
       void HandleImage(const ViewData& data);
       void HandleVideo(const ViewData& data);
 
+      const uint8_t DisplayNumber;
       ViewData CurrentData;
       QStackedLayout* Layout;
       QWidget* Widget;

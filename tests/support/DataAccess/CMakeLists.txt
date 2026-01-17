@@ -2,6 +2,7 @@ set(DataAccessSupportSources
    AssetLoader/AssetLoaderMock.cpp
    AssetLoader/AssetLoaderMock.h
 
+   SettingsService/SettingsClientMock.cpp
    SettingsService/SettingsClientMock.h
    SettingsService/SettingsServiceMock.cpp
    SettingsService/SettingsServiceMock.h

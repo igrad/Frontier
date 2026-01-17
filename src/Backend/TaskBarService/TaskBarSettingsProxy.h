@@ -34,7 +34,7 @@ namespace TaskBar
       void HandleSettingTaskBarShownChanged(const QVariant& value);
 
    private:
-      void SubscribeToSettings();
+      void SubscribeToSystemSettings();
 
       Settings::SettingsClient SettingsClient;
 
