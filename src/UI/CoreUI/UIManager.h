@@ -7,6 +7,8 @@
 
 #include <Utilities/XPtr.h>
 
+#include <QMap>
+
 namespace Assets
 {
    class AssetLoaderInterface;
@@ -35,7 +37,7 @@ private slots:
    void HandleDataAccessThreadStarted();
    void HandleServiceThreadStarted();
    void HandleDisplayConfigChanged(const DisplayEvent& event,
-                                   const QSet<DisplayInfo>& displays);
+                                   const QMap<QString, DisplayInfo>& displays);
    void HandlePassDisplaysManager(DisplaysManagerInterface* manager);
    void HandlePassAssetLoader(Assets::AssetLoaderInterface* loader);
    void HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service);
@@ -56,7 +58,7 @@ private:
    Assets::AssetManager* TheAssetManager;
 
    QList<ShellUI*> Shells;
-   QSet<DisplayInfo> Displays;
+   QMap<QString, DisplayInfo> Displays;
    bool DisplaysInfoRequested;
    bool DisplaysInfoReceived;
 };

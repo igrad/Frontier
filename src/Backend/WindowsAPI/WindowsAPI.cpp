@@ -5,6 +5,7 @@
 
 #include <Log.h>
 
+#include <Ntddvdeo.h>
 #include <windows.h>
 #include <shellscalingapi.h>
 
@@ -170,16 +171,48 @@ void WindowsAPI::GetDisplayDevicesAndMonitorNames()
       }
 
       DisplayInfo info;
-      info.ID = displayDevice.DeviceName;
+      info.SessionName = displayDevice.DeviceName;
 
       DISPLAY_DEVICEA displayDeviceForMonitorName;
       displayDeviceForMonitorName.cb = sizeof(displayDeviceForMonitorName);
-      if(EnumDisplayDevicesA(displayDevice.DeviceName, 0, &displayDeviceForMonitorName, 0))
+      // The EDD_GET_DEVICE_INTERFACE_NAME flag populated the DeviceID field with the display EDID
+      if(EnumDisplayDevicesA(displayDevice.DeviceName,
+                              0,
+                              &displayDeviceForMonitorName,
+                              EDD_GET_DEVICE_INTERFACE_NAME))
       {
-         info.Name = displayDeviceForMonitorName.DeviceString;
+         info.DisplayName = displayDeviceForMonitorName.DeviceString;
+         info.ID = displayDeviceForMonitorName.DeviceID;
       }
 
-      info.Number = iter;
-      DisplayDevices[info.ID] = info;
+      info.Number = GetDisplayNumberFromName(info.SessionName);
+      if(UINT8_MAX == info.Number)
+      {
+         info.Number = iter;
+      }
+      DisplayDevices[info.SessionName] = info;
    }
+}
+
+
+int WindowsAPI::GetDisplayNumberFromName(const QString& name)
+{
+   int val = UINT8_MAX;
+
+   QStringList tokens = name.split("\\");
+   bool ok = false;
+   if(tokens.size() >= 4)
+   {
+      tokens = tokens[3].split("DISPLAY");
+      if(tokens.size() >= 2)
+      {
+         const int num = tokens[1].toInt(&ok);
+         if(ok)
+         {
+            val = num;
+         }
+      }
+   }
+
+   return val;
 }

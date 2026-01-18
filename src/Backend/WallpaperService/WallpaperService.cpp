@@ -45,7 +45,7 @@ void WallpaperService::HandleDisplayConfigChanged(const DisplayEvent& event,
    {
       for(const WallpaperServiceWorker* worker : Workers)
       {
-         if(worker->GetDisplayInfo())
+         // if(worker->GetDisplayInfo())
       }
 
    }

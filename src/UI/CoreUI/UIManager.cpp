@@ -35,7 +35,7 @@ UIManager::~UIManager()
 }
 
 void UIManager::HandleDisplayConfigChanged(const DisplayEvent& event,
-                                           const QSet<DisplayInfo>& displays)
+                                           const QMap<QString, DisplayInfo>& displays)
 {
    LogInfo("Displays info received");
    DisplaysInfoReceived = true;

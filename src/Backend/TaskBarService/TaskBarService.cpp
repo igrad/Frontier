@@ -15,7 +15,7 @@ void TaskBarService::RegisterMetaTypes() const
 }
 
 void TaskBarService::HandleDisplayConfigChanged(const DisplayEvent& event,
-                                                const QSet<DisplayInfo>& displays)
+                                                const QMap<QString, DisplayInfo>& displays)
 {
 
 }

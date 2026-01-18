@@ -49,7 +49,7 @@ void TaskBarServiceWorker::HandleSettingsChanged()
    data.Alignment = SettingsProxy->GetAlignment(DisplayNum);
    data.AssignedMonitor = DisplayNum;
    data.AutoHide = SettingsProxy->GetAutoHide(DisplayNum);
-   data.AutoHideDelayMs = SettingsProxy->GetHideDuration(DisplayNum);
+   data.AutoHideDelayMs = SettingsProxy->GetAutoHideDelayMs(DisplayNum);
    data.Opacity = SettingsProxy->GetOpacity(DisplayNum);
    data.Orientation = SettingsProxy->GetOrientation(DisplayNum);
 

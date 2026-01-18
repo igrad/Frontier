@@ -17,7 +17,7 @@ namespace Wallpaper
       MOCK_METHOD(void, RegisterMetaTypes, (), (const, override));
       MOCK_METHOD(void,
                   HandleDisplayConfigChanged,
-                  (const DisplayEvent&, const QSet<DisplayInfo>&),
+                  (const DisplayEvent&, (const QMap<QString, DisplayInfo>&)),
                   (override));
 
       void EmitWallpaperDataChanged(uint8_t display, const Wallpaper::ViewData& data);

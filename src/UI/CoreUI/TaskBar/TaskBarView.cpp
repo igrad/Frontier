@@ -22,7 +22,7 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    ConnectToServiceSignals(service);
 }
 
-void TaskBarView::HandleViewDataChanged(const TaskBar::ViewData& data)
+void TaskBarView::HandleViewDataChanged(uint8_t display, const TaskBar::ViewData& data)
 {
    if(data == CurrentData)
    {

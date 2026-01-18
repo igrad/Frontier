@@ -39,6 +39,7 @@ private:
    void GetAllDisplayInfo();
    DisplayInfo GetDisplayInfo(HMONITOR handle);
    void GetDisplayDevicesAndMonitorNames();
+   int GetDisplayNumberFromName(const QString& name);
 
    QHash<Windows::Setting, QVariant> CachedSettings;
    uint8_t NumDisplays;

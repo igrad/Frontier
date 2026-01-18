@@ -29,7 +29,7 @@ namespace TaskBar
       ~TaskBarView() = default;
 
    public:
-      void HandleViewDataChanged(const TaskBar::ViewData& data);
+      void HandleViewDataChanged(uint8_t display, const TaskBar::ViewData& data);
 
    private slots:
       void HandleImageReady(Assets::ImageName name, const QPixmap& image);
