@@ -10,7 +10,7 @@ namespace
 }
 
 WallpaperServiceWorker::WallpaperServiceWorker(const DisplayInfo& info,
-                                               WallpaperSettingsProxy& settingsProxy,
+                                               WallpaperSettingsProxy* settingsProxy,
                                                QObject* parent)
    : QObject(parent)
    , DisplayNum(info.Number)
@@ -57,6 +57,20 @@ bool WallpaperServiceWorker::operator==(const WallpaperServiceWorker& rhs) const
    return DisplayNum == rhs.GetDisplayNum();
 }
 
+WallpaperServiceWorker& WallpaperServiceWorker::operator=(const WallpaperServiceWorker& rhs)
+{
+   setParent(rhs.parent());
+   DisplayNum = rhs.DisplayNum;
+   Info = rhs.Info;
+   SettingsProxy = rhs.SettingsProxy;
+   Data = rhs.Data;
+   CurrentColorsIndex = rhs.CurrentColorsIndex;
+   CurrentImageIndex = rhs.CurrentImageIndex;
+   RotationTimer = rhs.RotationTimer;
+   ShuffleRando = rhs.ShuffleRando;
+   return *this;
+}
+
 void WallpaperServiceWorker::HandleRotationTimeout()
 {
    LogInfo("Wallpaper rotation timer is triggering a wallpaper change");
@@ -65,25 +79,25 @@ void WallpaperServiceWorker::HandleRotationTimeout()
 
 void WallpaperServiceWorker::HandleSettingsChanged()
 {
-   const QList<QColor>& colors = SettingsProxy.GetColors(DisplayNum);
+   const QList<QColor>& colors = SettingsProxy->GetColors(DisplayNum);
    if(colors.count() <= CurrentColorsIndex)
    {
       CurrentColorsIndex = 0;
    }
 
-   const QStringList& imagePaths = SettingsProxy.GetPaths(DisplayNum);
+   const QStringList& imagePaths = SettingsProxy->GetPaths(DisplayNum);
    if(imagePaths.count() <= CurrentImageIndex)
    {
       CurrentImageIndex = 0;
    }
 
-   if(Schedule::Static == SettingsProxy.GetSchedule(DisplayNum))
+   if(Schedule::Static == SettingsProxy->GetSchedule(DisplayNum))
    {
       RotationTimer.Stop();
    }
    else
    {
-      RotationTimer.Start(SettingsProxy.GetDuration(DisplayNum));
+      RotationTimer.Start(SettingsProxy->GetDuration(DisplayNum));
    }
 
    CalculateCurrentWallpaperData();
@@ -94,7 +108,7 @@ void WallpaperServiceWorker::CalculateCurrentWallpaperData(bool triggeredByRotat
    ViewData data;
    Data = data;
 
-   Data.Style = SettingsProxy.GetStyle(DisplayNum);
+   Data.Style = SettingsProxy->GetStyle(DisplayNum);
 
    // Temporary workaround, I don't like it for prod
    if(Style::None == Data.Style)
@@ -102,7 +116,7 @@ void WallpaperServiceWorker::CalculateCurrentWallpaperData(bool triggeredByRotat
       Data.Style = Style::StaticColor;
    }
 
-   const Schedule schedule = SettingsProxy.GetSchedule(DisplayNum);
+   const Schedule schedule = SettingsProxy->GetSchedule(DisplayNum);
    switch(schedule)
    {
       case Schedule::Sequence:
@@ -131,7 +145,7 @@ void WallpaperServiceWorker::CalculateCurrentWallpaperData(bool triggeredByRotat
 void WallpaperServiceWorker::CalculateNextColor(bool shuffled)
 {
    int index = CurrentColorsIndex;
-   const QList<QColor>& colors = SettingsProxy.GetColors(DisplayNum);
+   const QList<QColor>& colors = SettingsProxy->GetColors(DisplayNum);
 
    if(shuffled)
    {
@@ -160,7 +174,7 @@ void WallpaperServiceWorker::CalculateNextColor(bool shuffled)
 void WallpaperServiceWorker::CalculateNextImage(bool shuffled)
 {
    int index = CurrentImageIndex;
-   const QStringList& paths = SettingsProxy.GetPaths(DisplayNum);
+   const QStringList& paths = SettingsProxy->GetPaths(DisplayNum);
 
    if(shuffled)
    {
@@ -188,8 +202,8 @@ void WallpaperServiceWorker::CalculateNextImage(bool shuffled)
 
 void WallpaperServiceWorker::CalculateSequenceOrShuffleViewData(bool triggeredByTimer)
 {
-   const Style style = SettingsProxy.GetStyle(DisplayNum);
-   const int duration = SettingsProxy.GetDuration(DisplayNum);
+   const Style style = SettingsProxy->GetStyle(DisplayNum);
+   const int duration = SettingsProxy->GetDuration(DisplayNum);
 
    // TODO: Multi-monitor
    Data.AssignedMonitor = 0;
@@ -209,10 +223,10 @@ void WallpaperServiceWorker::CalculateSequenceOrShuffleViewData(bool triggeredBy
 
 void WallpaperServiceWorker::CalculateStaticViewData()
 {
-   const Style style = SettingsProxy.GetStyle(DisplayNum);
-   const QList<QColor>& colors = SettingsProxy.GetColors(DisplayNum);
-   const QStringList& imagePaths = SettingsProxy.GetPaths(DisplayNum);
-   const QList<Fit>& fits = SettingsProxy.GetFits(DisplayNum);
+   const Style style = SettingsProxy->GetStyle(DisplayNum);
+   const QList<QColor>& colors = SettingsProxy->GetColors(DisplayNum);
+   const QStringList& imagePaths = SettingsProxy->GetPaths(DisplayNum);
+   const QList<Fit>& fits = SettingsProxy->GetFits(DisplayNum);
 
    // TODO: Multi-monitor
    Data.AssignedMonitor = 0;
@@ -238,11 +252,11 @@ void WallpaperServiceWorker::CalculateStaticViewData()
 
 void WallpaperServiceWorker::ProcessColorStyle(bool triggeredByTimer)
 {
-   const Style style = SettingsProxy.GetStyle(DisplayNum);
-   // const int duration = SettingsProxy.GetDuration();
-   const QList<QColor>& colors = SettingsProxy.GetColors(DisplayNum);
-   const bool shuffle = (Schedule::Shuffle == SettingsProxy.GetSchedule(DisplayNum));
-   // const QList<Fit>& fits = SettingsProxy.GetFits();
+   const Style style = SettingsProxy->GetStyle(DisplayNum);
+   // const int duration = SettingsProxy->GetDuration();
+   const QList<QColor>& colors = SettingsProxy->GetColors(DisplayNum);
+   const bool shuffle = (Schedule::Shuffle == SettingsProxy->GetSchedule(DisplayNum));
+   // const QList<Fit>& fits = SettingsProxy->GetFits();
 
    Data.Fit = Fit::Fill;
 
@@ -271,12 +285,12 @@ void WallpaperServiceWorker::ProcessColorStyle(bool triggeredByTimer)
 
 void WallpaperServiceWorker::ProcessImageStyle(bool triggeredByTimer)
 {
-   const Style style = SettingsProxy.GetStyle(DisplayNum);
-   // const int duration = SettingsProxy.GetDuration();
-   const QList<QColor>& colors = SettingsProxy.GetColors(DisplayNum);
-   const bool shuffle = (Schedule::Shuffle == SettingsProxy.GetSchedule(DisplayNum));
-   const QStringList& imagePaths = SettingsProxy.GetPaths(DisplayNum);
-   const QList<Fit>& fits = SettingsProxy.GetFits(DisplayNum);
+   const Style style = SettingsProxy->GetStyle(DisplayNum);
+   // const int duration = SettingsProxy->GetDuration();
+   const QList<QColor>& colors = SettingsProxy->GetColors(DisplayNum);
+   const bool shuffle = (Schedule::Shuffle == SettingsProxy->GetSchedule(DisplayNum));
+   const QStringList& imagePaths = SettingsProxy->GetPaths(DisplayNum);
+   const QList<Fit>& fits = SettingsProxy->GetFits(DisplayNum);
 
    if(triggeredByTimer)
    {

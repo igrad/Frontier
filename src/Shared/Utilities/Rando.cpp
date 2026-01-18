@@ -28,6 +28,15 @@ Rando::Rando(const Rando& other)
 {
 }
 
+Rando& Rando::operator=(const Rando& rhs)
+{
+   LowerBound = rhs.LowerBound;
+   UpperBound = rhs.UpperBound;
+   Dist = rhs.Dist;
+
+   return *this;
+}
+
 int Rando::Value()
 {
    return Dist(Engine);

@@ -27,6 +27,6 @@ namespace Wallpaper
 
    private:
       WallpaperSettingsProxy SettingsProxy;
-      QSet<WallpaperServiceWorker> Workers;
+      QList<WallpaperServiceWorker*> Workers;
    };
 }

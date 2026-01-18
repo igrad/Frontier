@@ -11,7 +11,7 @@ TaskBarSettingsProxy::TaskBarSettingsProxy(QObject* parent)
    , CurrentOrientation(Orientation::LeftToRight)
    , CurrentShown(true)
 {
-   SubscribeToSystemSettings();
+   SubscribeToDisplaySettings();
 }
 
 const Alignment TaskBarSettingsProxy::GetAlignment() const
@@ -44,7 +44,8 @@ const bool TaskBarSettingsProxy::GetShown() const
    return CurrentShown;
 }
 
-void TaskBarSettingsProxy::HandleSettingTaskBarAlignmentChanged(const QVariant& value)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAlignmentChanged(const QVariant& value,
+                                                                       uint8_t displayNum)
 {
    if(value.canConvert<Alignment>())
    {
@@ -59,7 +60,8 @@ void TaskBarSettingsProxy::HandleSettingTaskBarAlignmentChanged(const QVariant& 
    }
 }
 
-void TaskBarSettingsProxy::HandleSettingTaskBarAutoHideChanged(const QVariant& value)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideChanged(const QVariant& value,
+                                                                      uint8_t displayNum)
 {
    if(value.canConvert<bool>())
    {
@@ -74,7 +76,8 @@ void TaskBarSettingsProxy::HandleSettingTaskBarAutoHideChanged(const QVariant& v
    }
 }
 
-void TaskBarSettingsProxy::HandleSettingTaskBarHideDurationChanged(const QVariant& value)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarHideDurationChanged(const QVariant& value,
+                                                                          uint8_t displayNum)
 {
    if(value.canConvert<int>())
    {
@@ -89,7 +92,8 @@ void TaskBarSettingsProxy::HandleSettingTaskBarHideDurationChanged(const QVarian
    }
 }
 
-void TaskBarSettingsProxy::HandleSettingTaskBarOpacityChanged(const QVariant& value)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOpacityChanged(const QVariant& value,
+                                                                     uint8_t displayNum)
 {
    if(value.canConvert<int>())
    {
@@ -104,7 +108,8 @@ void TaskBarSettingsProxy::HandleSettingTaskBarOpacityChanged(const QVariant& va
    }
 }
 
-void TaskBarSettingsProxy::HandleSettingTaskBarOrientationChanged(const QVariant& value)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOrientationChanged(const QVariant& value,
+                                                                         uint8_t displayNum)
 {
    if(value.canConvert<Orientation>())
    {
@@ -119,7 +124,8 @@ void TaskBarSettingsProxy::HandleSettingTaskBarOrientationChanged(const QVariant
    }
 }
 
-void TaskBarSettingsProxy::HandleSettingTaskBarShownChanged(const QVariant& value)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarShownChanged(const QVariant& value,
+                                                                   uint8_t displayNum)
 {
    if(value.canConvert<bool>())
    {
@@ -134,11 +140,11 @@ void TaskBarSettingsProxy::HandleSettingTaskBarShownChanged(const QVariant& valu
    }
 }
 
-void TaskBarSettingsProxy::SubscribeToSystemSettings()
+void TaskBarSettingsProxy::SubscribeToDisplaySettings()
 {
-   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarAlignment, this);
-   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarAutoHide, this);
-   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarHideDuration, this);
-   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarOrientation, this);
-   SettingsClient.SubscribeToSystemSetting(Setting::TaskBarShown, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAlignment, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAutoHide, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarHideDuration, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarOrientation, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarShown, this);
 }

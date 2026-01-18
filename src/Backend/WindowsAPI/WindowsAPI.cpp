@@ -85,11 +85,11 @@ void WindowsAPI::ConnectToEventMessageFilter(const WindowsEventMessageFilter& fi
 
 void WindowsAPI::GetAllDisplayInfo()
 {
-   LogInfo("GetAllDisplayInfo");
    DisplayDevices.clear();
 
    GetDisplayDevicesAndMonitorNames();
    const int numDisplays = DisplayDevices.size();
+   LogInfo(QString("Detected %1 active displays").arg(numDisplays));
 
    if(numDisplays != NumDisplays)
    {
@@ -107,7 +107,6 @@ void WindowsAPI::MonitorDatumReceived(HMONITOR hMonitor,
    Q_UNUSED(hdcMonitor)
    Q_UNUSED(lprcMonitor)
 
-   LogInfo("MonitorDatumReceived");
    DisplayInfo info = GetDisplayInfo(hMonitor);
 
    if(DisplayInfo() != info)
@@ -118,13 +117,12 @@ void WindowsAPI::MonitorDatumReceived(HMONITOR hMonitor,
 
 DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
 {
-   MONITORINFO monitorInfo;
-   monitorInfo.cbSize = sizeof(MONITORINFO);
-   MONITORINFOEXA monitorInfoEx;
-   monitorInfoEx.cbSize = sizeof(monitorInfoEx);
-   if(GetMonitorInfo(handle, &monitorInfo) && GetMonitorInfo(handle, &monitorInfoEx))
+   MONITORINFOEXA monitorInfo;
+   monitorInfo.cbSize = sizeof(MONITORINFOEXA);
+   bool a = GetMonitorInfoA(handle, &monitorInfo);
+   if(a)
    {
-      const QString name = monitorInfoEx.szDevice;
+      const QString name = monitorInfo.szDevice;
       DisplayInfo& info = *(DisplayDevices.find(name.toStdString().c_str()));
 
       const RECT rect = monitorInfo.rcMonitor;
@@ -144,9 +142,6 @@ DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
          info.YDPI = dpiY;
       }
 
-      LogInfo(QString("Matched handle to id %1")
-                 .arg(info.Name));
-
       return info;
    }
 
@@ -159,8 +154,13 @@ void WindowsAPI::GetDisplayDevicesAndMonitorNames()
    displayDevice.cb = sizeof(displayDevice);
    for(int iter = 0; EnumDisplayDevicesA(NULL, iter, &displayDevice, 0); ++iter)
    {
+      if(!(displayDevice.StateFlags & DISPLAY_DEVICE_ACTIVE))
+      {
+         break;
+      }
+
       DisplayInfo info;
-      info.Name = QString("Monitor %1").arg(iter);
+      info.ID = displayDevice.DeviceName;
 
       DISPLAY_DEVICEA displayDeviceForMonitorName;
       displayDeviceForMonitorName.cb = sizeof(displayDeviceForMonitorName);
@@ -170,8 +170,6 @@ void WindowsAPI::GetDisplayDevicesAndMonitorNames()
       }
 
       info.Number = iter;
-      DisplayDevices[displayDevice.DeviceName] = info;
-      LogInfo(QString("Got DisplayDevice %1 with id %2 and name %3")
-                 .arg(QString::number(iter), displayDevice.DeviceName, info.Name));
+      DisplayDevices[info.ID] = info;
    }
 }

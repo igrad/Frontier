@@ -12,6 +12,7 @@ public:
    ~DisplaysManagerInterface() = default;
 
    virtual void RegisterMetaTypes() const = 0;
+   virtual void PollDisplaysInfo() = 0;
 
 signals:
    void DisplayConfigChanged(const DisplayEvent& event,

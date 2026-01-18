@@ -3,6 +3,8 @@
 #include <BackendThreadManager/BackendThreadManager.h>
 #include <DataAccessThreadManager.h>
 
+#include <DisplaysManager/DisplayInfo.h>
+
 #include <Utilities/XPtr.h>
 
 namespace Assets
@@ -11,8 +13,7 @@ namespace Assets
    class AssetManager;
 }
 
-struct DisplayInfo;
-
+class DisplaysManagerInterface;
 class ShellUI;
 class WindowsAPIInterface;
 
@@ -30,12 +31,12 @@ signals:
    void ShellWindowClosed();
    void PollDisplaysInfo();
 
-public slots:
-   void HandleDisplaysInfo(const QList<DisplayInfo>& info);
-
 private slots:
    void HandleDataAccessThreadStarted();
    void HandleServiceThreadStarted();
+   void HandleDisplayConfigChanged(const DisplayEvent& event,
+                                   const QSet<DisplayInfo>& displays);
+   void HandlePassDisplaysManager(DisplaysManagerInterface* manager);
    void HandlePassAssetLoader(Assets::AssetLoaderInterface* loader);
    void HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service);
    void HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service);
@@ -48,13 +49,14 @@ private:
    XPtr<DataAccessThreadManager> DataAccess;
    XPtr<BackendThreadManager> Backend;
    XPtr<Assets::AssetLoaderInterface> TheAssetLoader;
+   XPtr<DisplaysManagerInterface> DisplaysManager;
    XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
    XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
 
    Assets::AssetManager* TheAssetManager;
 
    QList<ShellUI*> Shells;
-   QList<DisplayInfo> DisplaysInfo;
+   QSet<DisplayInfo> Displays;
    bool DisplaysInfoRequested;
    bool DisplaysInfoReceived;
 };

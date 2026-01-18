@@ -34,6 +34,7 @@ public slots:
    void HandleRequestPassDisplaysManager();
    void HandleRequestPassTaskBarService();
    void HandleRequestPassWallpaperService();
+   void HandlePollDisplaysInfo();
 
 signals:
    void ServiceThreadStarted();

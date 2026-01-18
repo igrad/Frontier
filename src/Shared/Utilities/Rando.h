@@ -11,6 +11,8 @@ public:
    Rando(int lowerBound, int upperBound);
    Rando(const Rando& other);
 
+   Rando& operator=(const Rando& rhs);
+
    int Value();
    int Value(int lowerBound, int upperBound);
 

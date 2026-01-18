@@ -2,6 +2,7 @@
 #include "UIManager.h"
 
 #include <AssetManager.h>
+#include <DisplaysManagerInterface.h>
 #include <Wallpaper/WallpaperView.h>
 #include <WindowsAPI/WindowsAPI.h>
 
@@ -16,7 +17,7 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
    , WallpaperService(nullptr)
    , TheAssetManager(nullptr)
    , Shells()
-   , DisplaysInfo()
+   , Displays()
    , DisplaysInfoRequested(false)
    , DisplaysInfoReceived(false)
 {
@@ -33,22 +34,21 @@ UIManager::~UIManager()
 {
 }
 
-void UIManager::HandleDisplaysInfo(const QList<DisplayInfo>& info)
+void UIManager::HandleDisplayConfigChanged(const DisplayEvent& event,
+                                           const QSet<DisplayInfo>& displays)
 {
    LogInfo("Displays info received");
    DisplaysInfoReceived = true;
 
-   if(info != DisplaysInfo)
+   if(displays != Displays)
    {
-      DisplaysInfo = info;
+      Displays = displays;
       BuildShellWindows();
    }
 }
 
 void UIManager::HandleDataAccessThreadStarted()
 {
-   LogInfo("Handling DataAccess thread started");
-
    connect(DataAccess.get(), &DataAccessThreadManager::PassAssetLoader,
            this, &UIManager::HandlePassAssetLoader);
    QMetaObject::invokeMethod(DataAccess.Object,
@@ -57,7 +57,13 @@ void UIManager::HandleDataAccessThreadStarted()
 
 void UIManager::HandleServiceThreadStarted()
 {
-   LogInfo("Handling Service thread started");
+   connect(this, &UIManager::PollDisplaysInfo,
+           Backend.get(), &BackendThreadManager::HandlePollDisplaysInfo);
+
+   connect(Backend.get(), &BackendThreadManager::PassDisplaysManager,
+           this, &UIManager::HandlePassDisplaysManager);
+   QMetaObject::invokeMethod(Backend.Object,
+                             "HandleRequestPassDisplaysManager");
 
    connect(Backend.get(), &BackendThreadManager::PassTaskBarService,
            this, &UIManager::HandlePassTaskBarService);
@@ -70,6 +76,13 @@ void UIManager::HandleServiceThreadStarted()
                              "HandleRequestPassWallpaperService");
 }
 
+void UIManager::HandlePassDisplaysManager(DisplaysManagerInterface* manager)
+{
+   DisplaysManager = XPtr(manager);
+   connect(DisplaysManager.get(), &DisplaysManagerInterface::DisplayConfigChanged,
+           this, &UIManager::HandleDisplayConfigChanged);
+}
+
 void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 {
    TheAssetLoader = XPtr(loader);
@@ -79,14 +92,12 @@ void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 
 void UIManager::HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service)
 {
-   LogInfo("UIManager received TaskBar service");
    TaskBarService = XPtr(service);
    RequestDisplaysInfo();
 }
 
 void UIManager::HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service)
 {
-   LogInfo("UIManager received wallpaper service");
    WallpaperService = XPtr(service);
    RequestDisplaysInfo();
 }
@@ -100,12 +111,12 @@ void UIManager::BuildShellWindows()
 {
    LogInfo("Building shell windows");
 
-   if(DisplaysInfo.count() < Shells.count())
+   if(Displays.count() < Shells.count())
    {
       LogInfo(QString("Monitor count has dropped from %1 to %2")
-                 .arg(Shells.count(), DisplaysInfo.count()));
+                 .arg(Shells.count(), Displays.count()));
 
-      while(DisplaysInfo.count() < Shells.count())
+      while(Displays.count() < Shells.count())
       {
          ShellUI* ui = Shells.last();
          LogInfo(QString("Discarding existing ShellUI for monitor %1")
@@ -115,7 +126,7 @@ void UIManager::BuildShellWindows()
       }
    }
 
-   for(const DisplayInfo& info : std::as_const(DisplaysInfo))
+   for(const DisplayInfo& info : std::as_const(Displays))
    {
       const uint8_t id = info.Number;
 
@@ -151,22 +162,12 @@ void UIManager::RequestDisplaysInfo()
    if(!DisplaysInfoReceived &&
        !TaskBarService.isNull() &&
        !WallpaperService.isNull() &&
-       (nullptr != TheAssetManager))
+       (nullptr != TheAssetManager) &&
+       !DisplaysInfoRequested)
    {
-      if(!DisplaysInfoRequested)
-      {
-         LogInfo("Requesting initial display info");
-         emit PollDisplaysInfo();
-         DisplaysInfoRequested = true;
-         // Note: Should we yield the thread right here?
-      }
-      if(!DisplaysInfoReceived)
-      LogInfo("1")
-      if(TaskBarService.isNull())
-      LogInfo("2")
-      if(WallpaperService.isNull())
-      LogInfo("3")
-      if(nullptr == TheAssetManager)
-      LogInfo("4")
+      LogInfo("Requesting initial display info");
+      emit PollDisplaysInfo();
+      DisplaysInfoRequested = true;
+      // Note: Should we yield the thread right here?
    }
 }

@@ -88,6 +88,16 @@ Timer::Timer(int interval, bool singleShot, QObject* parent)
    AllTimers.insert(this);
 }
 
+Timer& Timer::operator=(const Timer& rhs)
+{
+   setParent(rhs.parent());
+   Interval = rhs.Interval;
+   SingleShot = rhs.SingleShot;
+   Started = rhs.Started;
+
+   return *this;
+}
+
 void Timer::SetInterval(int interval)
 {
    Interval = interval;

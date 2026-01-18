@@ -17,6 +17,8 @@ public:
 
    void RegisterMetaTypes() const override;
 
+   void PollDisplaysInfo() override;
+
 private slots:
    void HandleDisplayDetected(const DisplayInfo& info);
    void HandleNumberOfDisplaysChanged(uint8_t numDisplays);

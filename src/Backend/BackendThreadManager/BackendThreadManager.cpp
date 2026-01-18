@@ -44,10 +44,16 @@ void BackendThreadManager::HandleRequestPassWallpaperService()
    emit PassWallpaperService(TheWallpaperService);
 }
 
+void BackendThreadManager::HandlePollDisplaysInfo()
+{
+   TheDisplaysManager->PollDisplaysInfo();
+}
+
 void BackendThreadManager::HandleDataAccessThreadStarted()
 {
    LogInfo("Handling DataAccess thread started");
 
+   CreateDisplaysManager();
    CreateWallpaperService();
    CreateTaskBarService();
 
@@ -64,6 +70,8 @@ void BackendThreadManager::CreateTaskBarService()
 {
    TheTaskBarService = new TaskBar::TaskBarService(this);
    TheTaskBarService->RegisterMetaTypes();
+
+   // TODO Connect tot displays manager
 }
 
 void BackendThreadManager::CreateWallpaperService()

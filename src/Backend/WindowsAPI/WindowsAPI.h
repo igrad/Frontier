@@ -43,5 +43,5 @@ private:
    QHash<Windows::Setting, QVariant> CachedSettings;
    uint8_t NumDisplays;
    QHash<HMONITOR, DisplayInfo> CachedDisplaysInfo;
-   QMap<LPCSTR, DisplayInfo> DisplayDevices;
+   QMap<QString, DisplayInfo> DisplayDevices;
 };

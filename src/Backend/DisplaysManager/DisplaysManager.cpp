@@ -21,6 +21,11 @@ void DisplaysManager::RegisterMetaTypes() const
    qRegisterMetaType<DisplayInfo>("DisplayInfo");
 }
 
+void DisplaysManager::PollDisplaysInfo()
+{
+   WindowsAPI.HandlePollDisplaysInfo();
+}
+
 void DisplaysManager::HandleDisplayDetected(const DisplayInfo& info)
 {
    DisplayInfo i = info;
@@ -74,7 +79,7 @@ void DisplaysManager::FinalizeCurrentEvent()
       if(Displays.cend() == ptr)
       {
          // This display isn't known
-         CurrentEvent.AffectedDisplays.insert(ptr->Number);
+         CurrentEvent.AffectedDisplays.insert(info.Number);
       }
       else if(*ptr != info)
       {

@@ -15,7 +15,7 @@ namespace Wallpaper
 
    public:
       WallpaperServiceWorker(const DisplayInfo& info,
-              WallpaperSettingsProxy& settingsProxy,
+              WallpaperSettingsProxy* settingsProxy,
               QObject* parent = nullptr);
       WallpaperServiceWorker(const WallpaperServiceWorker& other);
       ~WallpaperServiceWorker() = default;
@@ -24,6 +24,7 @@ namespace Wallpaper
       DisplayInfo GetDisplayInfo() const;
 
       bool operator==(const WallpaperServiceWorker& rhs) const;
+      WallpaperServiceWorker& operator=(const WallpaperServiceWorker& rhs);
 
    signals:
       void WallpaperViewDataChanged(uint8_t display,
@@ -44,7 +45,7 @@ namespace Wallpaper
 
       uint8_t DisplayNum;
       DisplayInfo Info;
-      WallpaperSettingsProxy& SettingsProxy;
+      WallpaperSettingsProxy* SettingsProxy;
 
       ViewData Data;
       int CurrentColorsIndex;
@@ -52,10 +53,5 @@ namespace Wallpaper
       Timer RotationTimer;
       Rando ShuffleRando;
    };
-
-   inline size_t qHash(const Wallpaper::WallpaperServiceWorker& key, size_t seed = 0)
-   {
-      return qHashMulti(seed, key.GetDisplayNum(), key.GetDisplayInfo().Name);
-   }
 }
 

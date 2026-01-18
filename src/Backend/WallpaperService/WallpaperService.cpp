@@ -43,15 +43,15 @@ void WallpaperService::HandleDisplayConfigChanged(const DisplayEvent& event,
                                          [&](const DisplayInfo& display){
                                             return display.Number == Workers.size();
                                          });
-         Workers.insert(WallpaperServiceWorker(*iter, SettingsProxy, this));
+         Workers.append(new WallpaperServiceWorker(*iter, &SettingsProxy, this));
       }
    }
    else if(DisplayEvent::EventType::Removed == event.Event)
    {
       for(const uint8_t displayNum : event.AffectedDisplays)
       {
-         Workers.removeIf([&](const WallpaperServiceWorker& worker){
-            return worker.GetDisplayNum() == displayNum;
+         Workers.removeIf([&](const WallpaperServiceWorker* worker){
+            return worker->GetDisplayNum() == displayNum;
          });
       }
    }

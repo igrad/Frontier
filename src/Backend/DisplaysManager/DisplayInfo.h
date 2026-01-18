@@ -24,6 +24,7 @@ Q_DECLARE_METATYPE(DisplayEvent);
 
 struct DisplayInfo
 {
+   QString ID;
    QString Name;
    HMONITOR Handle;
    uint8_t Number;
@@ -34,7 +35,8 @@ struct DisplayInfo
 
    bool operator==(const DisplayInfo& rhs) const
    {
-      return Name == rhs.Name &&
+      return ID == rhs.ID &&
+             Name == rhs.Name &&
              Handle == rhs.Handle &&
              Number == rhs.Number &&
              IsPrimary == rhs.IsPrimary &&

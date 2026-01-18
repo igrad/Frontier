@@ -26,15 +26,21 @@ namespace TaskBar
       void SettingsChanged();
 
    public slots:
-      void HandleSettingTaskBarAlignmentChanged(const QVariant& value);
-      void HandleSettingTaskBarAutoHideChanged(const QVariant& value);
-      void HandleSettingTaskBarHideDurationChanged(const QVariant& value);
-      void HandleSettingTaskBarOpacityChanged(const QVariant& value);
-      void HandleSettingTaskBarOrientationChanged(const QVariant& value);
-      void HandleSettingTaskBarShownChanged(const QVariant& value);
+      void HandleDisplaySettingTaskBarAlignmentChanged(const QVariant& value,
+                                                       uint8_t displayNum);
+      void HandleDisplaySettingTaskBarAutoHideChanged(const QVariant& value,
+                                                      uint8_t displayNum);
+      void HandleDisplaySettingTaskBarHideDurationChanged(const QVariant& value,
+                                                          uint8_t displayNum);
+      void HandleDisplaySettingTaskBarOpacityChanged(const QVariant& value,
+                                                     uint8_t displayNum);
+      void HandleDisplaySettingTaskBarOrientationChanged(const QVariant& value,
+                                                         uint8_t displayNum);
+      void HandleDisplaySettingTaskBarShownChanged(const QVariant& value,
+                                                   uint8_t displayNum);
 
    private:
-      void SubscribeToSystemSettings();
+      void SubscribeToDisplaySettings();
 
       Settings::SettingsClient SettingsClient;
 
