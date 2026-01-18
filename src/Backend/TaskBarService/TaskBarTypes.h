@@ -2,6 +2,7 @@
 
 #include <Utilities/EnumHelpers.h>
 
+#include <QRect>
 #include <QString>
 
 namespace TaskBar
@@ -48,6 +49,9 @@ namespace TaskBar
       int AutoHideDelayMs;
       Orientation Orientation;
       double Opacity;
+      QRect Rect;
+      bool Shown;
+      bool StartButtonShown;
 
       bool operator==(const ViewData& rhs) const
       {

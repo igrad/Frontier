@@ -17,7 +17,7 @@ struct DisplayEvent
    };
 
    EventType Event;
-   QSet<uint8_t> AffectedDisplays;
+   QSet<QString> AffectedDisplays;
 };
 
 Q_DECLARE_METATYPE(DisplayEvent);

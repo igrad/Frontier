@@ -2,7 +2,7 @@
 
 #include "DisplaysManagerInterface.h"
 
-#include <QQueue>
+#include <QMap>
 
 class WindowsAPIInterface;
 
@@ -29,8 +29,8 @@ private:
 
    WindowsAPIInterface& WindowsAPI;
    uint8_t NumDisplays;
-   QSet<DisplayInfo> Displays;
+   QMap<QString, DisplayInfo> Displays;
 
    DisplayEvent CurrentEvent;
-   QSet<DisplayInfo> CurrentEventInfo;
+   QMap<QString, DisplayInfo> CurrentEventInfo;
 };

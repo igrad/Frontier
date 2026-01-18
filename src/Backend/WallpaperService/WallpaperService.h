@@ -20,13 +20,13 @@ namespace Wallpaper
 
    public slots:
       void HandleDisplayConfigChanged(const DisplayEvent& event,
-                                      const QSet<DisplayInfo>& displays) override;
+                                      const QMap<QString, DisplayInfo>& displays) override;
 
    private slots:
       void HandleSettingsChanged();
 
    private:
       WallpaperSettingsProxy SettingsProxy;
-      QList<WallpaperServiceWorker*> Workers;
+      QMap<QString, WallpaperServiceWorker*> Workers;
    };
 }

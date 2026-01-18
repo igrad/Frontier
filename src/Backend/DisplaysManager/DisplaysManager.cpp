@@ -28,9 +28,7 @@ void DisplaysManager::PollDisplaysInfo()
 
 void DisplaysManager::HandleDisplayDetected(const DisplayInfo& info)
 {
-   DisplayInfo i = info;
-   i.Number = CurrentEventInfo.size();
-   CurrentEventInfo << i;
+   CurrentEventInfo[info.ID] = info;
 
    if(CurrentEventInfo.size() == NumDisplays)
    {
@@ -69,22 +67,25 @@ void DisplaysManager::FinalizeCurrentEvent()
 {
    for(const auto& info : std::as_const(CurrentEventInfo))
    {
-      // Check if this display is already known
-      auto ptr = std::find_if(Displays.cbegin(),
-                               Displays.cend(),
-                               [&](const DisplayInfo& display){
-                                  return display.Handle == info.Handle;
-                               });
+      const auto iter = Displays.constFind(info.ID);
+      const bool exists = (Displays.cend() != iter);
 
-      if(Displays.cend() == ptr)
+      if(!exists || (exists && (*iter != info)))
       {
-         // This display isn't known
-         CurrentEvent.AffectedDisplays.insert(info.Number);
+         CurrentEvent.AffectedDisplays.insert(info.ID);
       }
-      else if(*ptr != info)
+   }
+
+   if(DisplayEvent::EventType::Removed == CurrentEvent.Event)
+   {
+      for(const auto& info : std::as_const(Displays))
       {
-         // This display is known and has changed
-         CurrentEvent.AffectedDisplays.insert(ptr->Number);
+         // If a display existed previously but is no longer detected, add it to the
+         // list of affected displays
+         if(!CurrentEventInfo.contains(info.ID))
+         {
+            CurrentEvent.AffectedDisplays.insert(info.ID);
+         }
       }
    }
 

@@ -22,6 +22,6 @@ namespace Wallpaper
 
    public slots:
       virtual void HandleDisplayConfigChanged(const DisplayEvent& event,
-                                              const QSet<DisplayInfo>& displays) = 0;
+                                              const QMap<QString, DisplayInfo>& displays) = 0;
    };
 }

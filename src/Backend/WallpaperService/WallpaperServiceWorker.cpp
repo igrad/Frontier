@@ -13,7 +13,7 @@ WallpaperServiceWorker::WallpaperServiceWorker(const DisplayInfo& info,
                                                WallpaperSettingsProxy* settingsProxy,
                                                QObject* parent)
    : QObject(parent)
-   , DisplayNum(info.Number)
+   , DisplayID(info.ID)
    , Info(info)
    , SettingsProxy(settingsProxy)
    , Data()
@@ -30,7 +30,7 @@ WallpaperServiceWorker::WallpaperServiceWorker(const DisplayInfo& info,
 
 WallpaperServiceWorker::WallpaperServiceWorker(const WallpaperServiceWorker& other)
    : QObject(other.parent())
-   , DisplayNum(other.GetDisplayNum())
+   , DisplayID(other.GetDisplayID())
    , Info(other.GetDisplayInfo())
    , SettingsProxy(other.SettingsProxy)
    , Data(other.Data)
@@ -42,9 +42,9 @@ WallpaperServiceWorker::WallpaperServiceWorker(const WallpaperServiceWorker& oth
 
 }
 
-uint8_t WallpaperServiceWorker::GetDisplayNum() const
+QString WallpaperServiceWorker::GetDisplayID() const
 {
-   return DisplayNum;
+   return DisplayID;
 }
 
 DisplayInfo WallpaperServiceWorker::GetDisplayInfo() const
@@ -54,13 +54,13 @@ DisplayInfo WallpaperServiceWorker::GetDisplayInfo() const
 
 bool WallpaperServiceWorker::operator==(const WallpaperServiceWorker& rhs) const
 {
-   return DisplayNum == rhs.GetDisplayNum();
+   return DisplayID == rhs.GetDisplayID();
 }
 
 WallpaperServiceWorker& WallpaperServiceWorker::operator=(const WallpaperServiceWorker& rhs)
 {
    setParent(rhs.parent());
-   DisplayNum = rhs.DisplayNum;
+   DisplayID = rhs.DisplayID;
    Info = rhs.Info;
    SettingsProxy = rhs.SettingsProxy;
    Data = rhs.Data;
@@ -79,7 +79,7 @@ void WallpaperServiceWorker::HandleRotationTimeout()
 
 void WallpaperServiceWorker::HandleSettingsChanged()
 {
-   const QList<QColor>& colors = SettingsProxy->GetColors(DisplayNum);
+   const QList<QColor>& colors = SettingsProxy->GetColors(DisplayID);
    if(colors.count() <= CurrentColorsIndex)
    {
       CurrentColorsIndex = 0;

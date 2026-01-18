@@ -20,7 +20,7 @@ namespace Wallpaper
       WallpaperServiceWorker(const WallpaperServiceWorker& other);
       ~WallpaperServiceWorker() = default;
 
-      uint8_t GetDisplayNum() const;
+      QString GetDisplayID() const;
       DisplayInfo GetDisplayInfo() const;
 
       bool operator==(const WallpaperServiceWorker& rhs) const;
@@ -43,7 +43,7 @@ namespace Wallpaper
       void ProcessColorStyle(bool triggeredByTimer);
       void ProcessImageStyle(bool triggeredByTimer);
 
-      uint8_t DisplayNum;
+      QString DisplayID;
       DisplayInfo Info;
       WallpaperSettingsProxy* SettingsProxy;
 

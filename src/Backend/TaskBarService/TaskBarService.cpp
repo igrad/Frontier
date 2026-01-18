@@ -4,6 +4,7 @@ using namespace TaskBar;
 
 TaskBarService::TaskBarService(QObject* parent)
    : SettingsProxy(this)
+   , Workers()
 {
    setParent(parent);
 }
@@ -13,15 +14,13 @@ void TaskBarService::RegisterMetaTypes() const
    qRegisterMetaType<TaskBar::ViewData>("TaskBar::ViewData");
 }
 
-void TaskBarService::HandleSettingsChanged()
+void TaskBarService::HandleDisplayConfigChanged(const DisplayEvent& event,
+                                                const QSet<DisplayInfo>& displays)
 {
-   ViewData data;
-   data.Alignment = SettingsProxy.GetAlignment();
-   data.AssignedMonitor = 0; // TODO: Multiple monitors
-   data.AutoHide = SettingsProxy.GetAutoHide();
-   data.AutoHideDelayMs = SettingsProxy.GetHideDuration();
-   data.Opacity = SettingsProxy.GetOpacity();
-   data.Orientation = SettingsProxy.GetOrientation();
 
-   emit ViewDataChanged(data);
+}
+
+void TaskBarService::HandleSettingsChanged(uint8_t displayNum)
+{
+   Workers[displayNum]->HandleSettingsChanged();
 }

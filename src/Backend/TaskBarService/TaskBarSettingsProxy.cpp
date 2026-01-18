@@ -5,43 +5,49 @@ using namespace TaskBar;
 
 TaskBarSettingsProxy::TaskBarSettingsProxy(QObject* parent)
    : SettingsClient("TaskBarService")
-   , CurrentAlignment(Alignment::Bottom)
-   , CurrentAutoHide(false)
-   , CurrentHideDurationMsec(0)
-   , CurrentOrientation(Orientation::LeftToRight)
-   , CurrentShown(true)
+   , Data()
 {
    SubscribeToDisplaySettings();
 }
 
-const Alignment TaskBarSettingsProxy::GetAlignment() const
+const Alignment TaskBarSettingsProxy::GetAlignment(uint8_t display) const
 {
-   return CurrentAlignment;
+   return Data[display].Alignment;
 }
 
-const bool TaskBarSettingsProxy::GetAutoHide() const
+const bool TaskBarSettingsProxy::GetAutoHide(uint8_t display) const
 {
-   return CurrentAutoHide;
+   return Data[display].AutoHide;
 }
 
-const int TaskBarSettingsProxy::GetHideDuration() const
+const int TaskBarSettingsProxy::GetAutoHideDelayMs(uint8_t display) const
 {
-   return CurrentHideDurationMsec;
+   return Data[display].AutoHideDelayMs;
 }
 
-const int TaskBarSettingsProxy::GetOpacity() const
+const int TaskBarSettingsProxy::GetOpacity(uint8_t display) const
 {
-   return CurrentOpacity;
+   return Data[display].Opacity;
 }
 
-const Orientation TaskBarSettingsProxy::GetOrientation() const
+const Orientation TaskBarSettingsProxy::GetOrientation(uint8_t display) const
 {
-   return CurrentOrientation;
+   return Data[display].Orientation;
 }
 
-const bool TaskBarSettingsProxy::GetShown() const
+const QRect TaskBarSettingsProxy::GetRect(uint8_t display) const
 {
-   return CurrentShown;
+   return Data[display].Rect;
+}
+
+const bool TaskBarSettingsProxy::GetShown(uint8_t display) const
+{
+   return Data[display].Shown;
+}
+
+const bool TaskBarSettingsProxy::GetStartButtonShown(uint8_t display) const
+{
+   return Data[display].StartButtonShown;
 }
 
 void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAlignmentChanged(const QVariant& value,
@@ -50,12 +56,13 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAlignmentChanged(const QVa
    if(value.canConvert<Alignment>())
    {
       const Alignment val = value.value<Alignment>();
-      if(val != CurrentAlignment)
+      if(val != Data[displayNum].Alignment)
       {
-         CurrentAlignment = val;
-         LogInfo(QString("TaskBar alignment changed to %1").arg(ToString(val)));
+         Data[displayNum].Alignment = val;
+         LogInfo(QString("TaskBar alignment for display %1 changed to %2")
+                    .arg(QString::number(displayNum), ToString(val)));
 
-         emit SettingsChanged();
+         emit SettingsChanged(displayNum);
       }
    }
 }
@@ -66,28 +73,30 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideChanged(const QVar
    if(value.canConvert<bool>())
    {
       const bool val = value.toBool();
-      if(val != CurrentAutoHide)
+      if(val != Data[displayNum].AutoHide)
       {
-         CurrentAutoHide = val;
-         LogInfo(QString("TaskBar AutoHide changed to %1").arg(val));
+         Data[displayNum].AutoHide = val;
+         LogInfo(QString("TaskBar AutoHide for display %1 changed to %2")
+                    .arg(QString::number(displayNum), val));
 
-         emit SettingsChanged();
+         emit SettingsChanged(displayNum);
       }
    }
 }
 
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarHideDurationChanged(const QVariant& value,
-                                                                          uint8_t displayNum)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideDelayMsChanged(const QVariant& value,
+                                                                             uint8_t displayNum)
 {
    if(value.canConvert<int>())
    {
       const bool val = value.toInt();
-      if(val != CurrentHideDurationMsec)
+      if(val != Data[displayNum].AutoHideDelayMs)
       {
-         CurrentHideDurationMsec = val;
-         LogInfo(QString("TaskBar Hide Duration changed to %1msec").arg(val));
+         Data[displayNum].AutoHideDelayMs = val;
+         LogInfo(QString("TaskBar auto hide delay (ms) for display %1 changed to %2msec")
+                    .arg(QString::number(displayNum), val));
 
-         emit SettingsChanged();
+         emit SettingsChanged(displayNum);
       }
    }
 }
@@ -98,12 +107,13 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOpacityChanged(const QVari
    if(value.canConvert<int>())
    {
       const bool val = value.toInt();
-      if(val != CurrentOpacity)
+      if(val != Data[displayNum].Opacity)
       {
-         CurrentOpacity = val;
-         LogInfo(QString("TaskBar opacity changed to %1per cent").arg(val));
+         Data[displayNum].Opacity = val;
+         LogInfo(QString("TaskBar opacity for display %1 changed to %2per cent")
+                    .arg(QString::number(displayNum), val));
 
-         emit SettingsChanged();
+         emit SettingsChanged(displayNum);
       }
    }
 }
@@ -114,12 +124,34 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOrientationChanged(const Q
    if(value.canConvert<Orientation>())
    {
       const Orientation val = value.value<Orientation>();
-      if(val != CurrentOrientation)
+      if(val != Data[displayNum].Orientation)
       {
-         CurrentOrientation = val;
-         LogInfo(QString("TaskBar orientation changed to %1").arg(ToString(val)));
+         Data[displayNum].Orientation = val;
+         LogInfo(QString("TaskBar orientation for display %1 changed to %2")
+                    .arg(QString::number(displayNum), ToString(val)));
 
-         emit SettingsChanged();
+         emit SettingsChanged(displayNum);
+      }
+   }
+}
+
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarRectChanged(const QVariant& value,
+                                                  uint8_t displayNum)
+{
+   if(value.canConvert<QRect>())
+   {
+      const QRect val = value.value<QRect>();
+      if(val != Data[displayNum].Rect)
+      {
+         Data[displayNum].Rect = val;
+         LogInfo(QString("TaskBar rect for display %1 changed to { %2, %3, %4, %5 }")
+                    .arg(QString::number(displayNum),
+                         QString::number(val.x()),
+                         QString::number(val.y()),
+                         QString::number(val.width()),
+                         QString::number(val.height())));
+
+         emit SettingsChanged(displayNum);
       }
    }
 }
@@ -130,12 +162,29 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarShownChanged(const QVarian
    if(value.canConvert<bool>())
    {
       const bool val = value.toBool();
-      if(val != CurrentShown)
+      if(val != Data[displayNum].Shown)
       {
-         CurrentShown = val;
-         LogInfo(QString("TaskBar shown changed to %1").arg(val));
+         Data[displayNum].Shown = val;
+         LogInfo(QString("TaskBar shown for display %1 changed to %2")
+                    .arg(QString::number(displayNum), val));
 
-         emit SettingsChanged();
+         emit SettingsChanged(displayNum);
+      }
+   }
+}
+
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarStartButtonShownChanged(const QVariant& value,
+                                                                              uint8_t displayNum)
+{
+   if(value.canConvert<bool>())
+   {
+      const bool val = value.toBool();
+      if(val != Data[displayNum].StartButtonShown)
+      {
+         Data[displayNum].StartButtonShown = val;
+         LogInfo(QString("TaskBar start button shown for display %1 changed to %2")
+                    .arg(QString::number(displayNum), val));
+         emit SettingsChanged(displayNum);
       }
    }
 }

@@ -30,30 +30,24 @@ void WallpaperService::RegisterMetaTypes() const
 }
 
 void WallpaperService::HandleDisplayConfigChanged(const DisplayEvent& event,
-                                                  const QSet<DisplayInfo>& displays)
+                                                  const QMap<QString, DisplayInfo>& displays)
 {
    // If there are no current workers, just add them quickly. This is at startup.
    if(Workers.isEmpty() &&
        (DisplayEvent::EventType::Added == event.Event))
    {
-      while(Workers.size() < displays.size())
+      for(const DisplayInfo& info : std::as_const(displays))
       {
-         const auto iter = std::find_if(displays.constBegin(),
-                                         displays.constEnd(),
-                                         [&](const DisplayInfo& display){
-                                            return display.Number == Workers.size();
-                                         });
-         Workers.append(new WallpaperServiceWorker(*iter, &SettingsProxy, this));
+         Workers[info.ID] = new WallpaperServiceWorker(info, &SettingsProxy, this);
       }
    }
-   else if(DisplayEvent::EventType::Removed == event.Event)
+   else
    {
-      for(const uint8_t displayNum : event.AffectedDisplays)
+      for(const WallpaperServiceWorker* worker : Workers)
       {
-         Workers.removeIf([&](const WallpaperServiceWorker* worker){
-            return worker->GetDisplayNum() == displayNum;
-         });
+         if(worker->GetDisplayInfo())
       }
+
    }
 }
 
