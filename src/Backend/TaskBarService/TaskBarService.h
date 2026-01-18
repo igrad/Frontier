@@ -18,14 +18,13 @@ namespace TaskBar
       void RegisterMetaTypes() const override;
 
    public slots:
-      void HandleDisplayConfigChanged(const DisplayEvent& event,
-                                      const QMap<QString, DisplayInfo>& displays) override;
+      void HandleDisplayConfigChanged(const DisplayConfigEvent& event) override;
 
    private slots:
-      void HandleSettingsChanged(uint8_t displayNum);
+      void HandleSettingsChanged(DisplayID id);
 
    private:
       TaskBarSettingsProxy SettingsProxy;
-      QMap<uint8_t, TaskBarServiceWorker*> Workers;
+      QMap<DisplayID, TaskBarServiceWorker*> Workers;
    };
 }

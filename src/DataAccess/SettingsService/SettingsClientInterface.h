@@ -19,11 +19,11 @@ namespace Settings
       virtual bool SubscribeToAllDisplaySettings(QObject* subscriber) = 0;
       virtual bool WriteSystemSettingValue(Setting setting, const QVariant& value) = 0;
       virtual bool WriteDisplaySettingValue(Setting setting,
-                                            uint8_t display,
+                                            const QString& displayID,
                                             const QVariant& value) = 0;
 
    signals:
       void CacheSystemSettingValue(Setting setting, const QVariant& value);
-      void CacheDisplaySettingValue(Setting setting, uint8_t display, const QVariant& value);
+      void CacheDisplaySettingValue(Setting setting, const QString& displayID, const QVariant& value);
    };
 }

@@ -15,14 +15,14 @@ class TaskBarViewTest: public Test
    TaskBarViewTest()
       : ShellWindow()
       , Service()
-      , DisplayNum(0)
-      , View(XPtr<TaskBarServiceInterface>(&Service), &ShellWindow, DisplayNum)
+      , Info()
+      , View(XPtr<TaskBarServiceInterface>(&Service), &ShellWindow, Info)
    {
 
    }
 
    NiceMock<ShellWindowMock> ShellWindow;
    NiceMock<TaskBarServiceMock> Service;
-   uint8_t DisplayNum;
+   DisplayInfo Info;
    TaskBarView View;
 };

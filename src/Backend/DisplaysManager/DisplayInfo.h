@@ -2,29 +2,16 @@
 
 #include <QMetaType>
 #include <QRect>
-#include <QSet>
+#include <QMap>
 
 #include <cstdint>
 #include <windef.h>
 
-struct DisplayEvent
-{
-   enum class EventType: int
-   {
-      None = 0,
-      Added,
-      Removed
-   };
-
-   EventType Event;
-   QSet<QString> AffectedDisplays;
-};
-
-Q_DECLARE_METATYPE(DisplayEvent);
+typedef QString DisplayID;
 
 struct DisplayInfo
 {
-   QString ID = "";				// The EDID of the display hardware
+   DisplayID ID = "";			// The EDID of the display hardware
    QString SessionName = "";	// The name assigned to this monitor for this session
    QString DisplayName = "";	// The name of the monitor itself
    HMONITOR Handle;				// The handle used to fetch display info in windows API
@@ -55,7 +42,18 @@ struct DisplayInfo
 
 Q_DECLARE_METATYPE(DisplayInfo);
 
-inline size_t qHash(const DisplayInfo& key, size_t seed = 0)
+struct DisplayConfigEvent
 {
-   return qHashMulti(seed, key.SessionName, key.Number);
-}
+   enum class EventType: int
+   {
+      None = 0,
+      Changed,
+      Added,
+      Removed
+   };
+
+   QMap<DisplayID, QPair<EventType, DisplayInfo>> Displays;
+};
+typedef DisplayConfigEvent::EventType DisplayConfigEventType;
+
+Q_DECLARE_METATYPE(DisplayConfigEvent);

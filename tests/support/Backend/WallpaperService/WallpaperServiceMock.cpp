@@ -2,7 +2,7 @@
 
 using namespace Wallpaper;
 
-void WallpaperServiceMock::EmitWallpaperDataChanged(uint8_t display, const ViewData& data)
+void WallpaperServiceMock::EmitWallpaperDataChanged(const DisplayID& displayID, const ViewData& data)
 {
-   emit WallpaperDataChanged(display, data);
+   emit WallpaperDataChanged(displayID, data);
 }

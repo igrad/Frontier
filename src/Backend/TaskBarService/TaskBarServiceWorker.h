@@ -17,7 +17,7 @@ namespace TaskBar
       TaskBarServiceWorker(const TaskBarServiceWorker& other);
       ~TaskBarServiceWorker() = default;
 
-      uint8_t GetDisplayNum() const;
+      QString GetDisplayID() const;
       DisplayInfo GetDisplayInfo() const;
 
       // bool operator==(const TaskBarServiceWorker& rhs) const;
@@ -25,13 +25,15 @@ namespace TaskBar
 
    public slots:
       void HandleSettingsChanged();
+      void HandleDisplayConfigChanged(const DisplayInfo& info);
+      void HandleDisplayRemoved(const DisplayInfo& info);
 
    signals:
-      void TaskBarViewDataChanged(uint8_t displayNum,
+      void TaskBarViewDataChanged(const QString& displayID,
                                   const TaskBar::ViewData& data);
 
    private:
-      uint8_t DisplayNum;
+      QString DisplayID;
       DisplayInfo Info;
       TaskBarSettingsProxy* SettingsProxy;
    };

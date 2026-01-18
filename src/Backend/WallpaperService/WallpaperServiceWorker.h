@@ -33,6 +33,8 @@ namespace Wallpaper
    public slots:
       void HandleRotationTimeout();
       void HandleSettingsChanged();
+      void HandleDisplayConfigChanged(const DisplayInfo& info);
+      void HandleDisplayRemoved(const DisplayInfo& info);
 
    private:
       void CalculateCurrentWallpaperData(bool triggeredByRotationTimer = false);

@@ -10,7 +10,7 @@ public:
    void EmitCacheSystemSettingValue(Settings::Setting setting,
                                     const QVariant& value);
    void EmitCacheDisplaySettingValue(Settings::Setting setting,
-                                     uint8_t display,
+                                     const QString& displayID,
                                      const QVariant& value);
 
    MOCK_METHOD(bool, SubscribeToSystemSetting, (Settings::Setting,
@@ -22,6 +22,6 @@ public:
    MOCK_METHOD(bool, WriteSystemSettingValue, (Settings::Setting,
                                                const QVariant&), (override));
    MOCK_METHOD(bool, WriteDisplaySettingValue, (Settings::Setting,
-                                                uint8_t,
+                                                const QString&,
                                                 const QVariant&), (override));
 };

@@ -29,11 +29,11 @@ public:
            QObject* parent = nullptr);
    ~ShellUI() = default;
 
-   uint8_t GetDisplayNumber() const;
+   DisplayID GetDisplayID() const;
    DisplayInfo GetDisplayInfo() const;
 
 signals:
-   void ShellWindowClosed(uint8_t ID);
+   void ShellWindowClosed(const DisplayID& displayID);
 
 public slots:
    void HandleDisplayInfoUpdated(const DisplayInfo& info);

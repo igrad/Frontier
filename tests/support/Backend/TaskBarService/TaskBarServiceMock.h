@@ -14,9 +14,9 @@ namespace TaskBar
       MOCK_METHOD(void, RegisterMetaTypes, (), (const, override));
       MOCK_METHOD(void,
                   HandleDisplayConfigChanged,
-                  (const DisplayEvent&, (const QMap<QString, DisplayInfo>&)),
+                  (const DisplayConfigEvent&),
                   (override));
 
-      void EmitViewDataChanged(uint8_t display, const ViewData& data);
+      void EmitViewDataChanged(const DisplayID& displayID, const ViewData& data);
    };
 }

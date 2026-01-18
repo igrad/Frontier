@@ -15,6 +15,5 @@ public:
    virtual void PollDisplaysInfo() = 0;
 
 signals:
-   void DisplayConfigChanged(const DisplayEvent& event,
-                             const QMap<QString, DisplayInfo>& displays);
+   void DisplayConfigChanged(const DisplayConfigEvent& event);
 };

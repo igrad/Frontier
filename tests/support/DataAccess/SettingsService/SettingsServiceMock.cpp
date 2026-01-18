@@ -7,8 +7,8 @@ void SettingsServiceMock::EmitSystemSettingUpdated(const Settings::Setting setti
 }
 
 void SettingsServiceMock::EmitDisplaySettingUpdated(const Settings::Setting setting,
-                                                    uint8_t display,
+                                                    const QString& displayID,
                                                     const QVariant& val)
 {
-   emit DisplaySettingUpdated(setting, display, val);
+   emit DisplaySettingUpdated(setting, displayID, val);
 }

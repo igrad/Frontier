@@ -10,7 +10,7 @@ public:
    void EmitSystemSettingUpdated(const Settings::Setting setting,
                                  const QVariant& val);
    void EmitDisplaySettingUpdated(const Settings::Setting setting,
-                                  uint8_t display,
+                                  const QString& displayID,
                                   const QVariant& val);
 
    MOCK_METHOD(void, FetchAllSettings, (), (override));
@@ -22,7 +22,7 @@ public:
                (override));
    MOCK_METHOD(void,
                HandleCacheDisplaySettingValue,
-               (const Settings::Setting setting, uint8_t display, const QVariant value),
+               (const Settings::Setting setting, const QString& displayID, const QVariant value),
                (override));
    MOCK_METHOD(void,
                HandleRequestSystemSettingValue,
@@ -30,6 +30,6 @@ public:
                (override));
    MOCK_METHOD(void,
                HandleRequestDisplaySettingValue,
-               (const Settings::Setting setting, uint8_t display),
+               (const Settings::Setting setting, const QString& displayID),
                (override));
 };

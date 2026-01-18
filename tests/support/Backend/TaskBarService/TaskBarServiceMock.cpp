@@ -2,7 +2,7 @@
 
 using namespace TaskBar;
 
-void TaskBarServiceMock::EmitViewDataChanged(uint8_t display, const ViewData& data)
+void TaskBarServiceMock::EmitViewDataChanged(const DisplayID& displayID, const ViewData& data)
 {
-   emit ViewDataChanged(display, data);
+   emit ViewDataChanged(displayID, data);
 }

@@ -8,9 +8,10 @@ using namespace Wallpaper;
 
 WallpaperView::WallpaperView(XPtr<WallpaperServiceInterface> service,
                              ShellWindowInterface* window,
-                             uint8_t display)
+                             const DisplayInfo& info)
    : QWidget(window)
-   , DisplayNumber(display)
+   , Display(info.ID)
+   , Info(info)
    , CurrentData()
    , Layout(nullptr)
    , Widget(nullptr)
@@ -45,7 +46,7 @@ WallpaperView::~WallpaperView()
    // Layout->deleteLater();
 }
 
-void WallpaperView::HandleWallpaperDataChanged(uint8_t display, const ViewData& data)
+void WallpaperView::HandleWallpaperDataChanged(const DisplayID& displayID, const ViewData& data)
 {
    CurrentData = data;
 
@@ -96,7 +97,7 @@ void WallpaperView::CreateUI()
    data.ImagePath = "";
    data.Style = Style::StaticColor;
    data.Fit = Fit::Fill;
-   HandleWallpaperDataChanged(DisplayNumber, data);
+   HandleWallpaperDataChanged(Display, data);
    show();
 }
 

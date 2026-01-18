@@ -8,7 +8,6 @@ DisplaysManager::DisplaysManager(WindowsAPIInterface& windowsAPI,
    , NumDisplays(0)
    , Displays()
    , CurrentEvent()
-   , CurrentEventInfo()
 {
    setParent(parent);
 
@@ -17,8 +16,8 @@ DisplaysManager::DisplaysManager(WindowsAPIInterface& windowsAPI,
 
 void DisplaysManager::RegisterMetaTypes() const
 {
-   qRegisterMetaType<DisplayEvent>("DisplayEvent");
    qRegisterMetaType<DisplayInfo>("DisplayInfo");
+   qRegisterMetaType<DisplayConfigEvent>("DisplayEvent");
 }
 
 void DisplaysManager::PollDisplaysInfo()
@@ -28,9 +27,21 @@ void DisplaysManager::PollDisplaysInfo()
 
 void DisplaysManager::HandleDisplayDetected(const DisplayInfo& info)
 {
-   CurrentEventInfo[info.ID] = info;
+   DisplayConfigEventType eventType = DisplayConfigEventType::None;
+   const auto iter = Displays.constFind(info.ID);
 
-   if(CurrentEventInfo.size() == NumDisplays)
+   if(iter == Displays.constEnd())
+   {
+      eventType = DisplayConfigEventType::Added;
+   }
+   else if(*iter != info)
+   {
+      eventType = DisplayConfigEventType::Changed;
+   }
+
+   CurrentEvent.Displays[info.ID] = { eventType, info };
+
+   if(CurrentEvent.Displays.size() == NumDisplays)
    {
       FinalizeCurrentEvent();
    }
@@ -40,19 +51,8 @@ void DisplaysManager::HandleDisplayDetected(const DisplayInfo& info)
 // the WindowsAPI.
 void DisplaysManager::HandleNumberOfDisplaysChanged(uint8_t numDisplays)
 {
-   DisplayEvent event;
-   if(numDisplays > NumDisplays)
-   {
-      event.Event = DisplayEvent::EventType::Added;
-   }
-   else if(numDisplays < NumDisplays)
-   {
-      event.Event = DisplayEvent::EventType::Removed;
-   }
-
    NumDisplays = numDisplays;
-   CurrentEvent = event;
-   CurrentEventInfo.clear();
+   CurrentEvent = DisplayConfigEvent();
 }
 
 void DisplaysManager::ConnectToWindowsAPI()
@@ -65,34 +65,30 @@ void DisplaysManager::ConnectToWindowsAPI()
 
 void DisplaysManager::FinalizeCurrentEvent()
 {
-   for(const auto& info : std::as_const(CurrentEventInfo))
+   for(const auto& info : std::as_const(Displays))
    {
-      const auto iter = Displays.constFind(info.ID);
-      const bool exists = (Displays.cend() != iter);
-
-      if(!exists || (exists && (*iter != info)))
+      // If a display existed previously but is no longer detected, add it to the
+      // list of affected displays
+      auto iter = CurrentEvent.Displays.find(info.ID);
+      if(CurrentEvent.Displays.end() == iter)
       {
-         CurrentEvent.AffectedDisplays.insert(info.ID);
+         iter->first = DisplayConfigEventType::Removed;
       }
    }
 
-   if(DisplayEvent::EventType::Removed == CurrentEvent.Event)
+   Displays.clear();
+   bool changesMade = false;
+   for(const auto& info : std::as_const(CurrentEvent.Displays))
    {
-      for(const auto& info : std::as_const(Displays))
+      Displays[info.second.ID] = info.second;
+      if(DisplayConfigEventType::None != info.first)
       {
-         // If a display existed previously but is no longer detected, add it to the
-         // list of affected displays
-         if(!CurrentEventInfo.contains(info.ID))
-         {
-            CurrentEvent.AffectedDisplays.insert(info.ID);
-         }
+         changesMade = true;
       }
    }
 
-   Displays = CurrentEventInfo;
-
-   if(!CurrentEvent.AffectedDisplays.isEmpty())
+   if(changesMade)
    {
-      emit DisplayConfigChanged(CurrentEvent, CurrentEventInfo);
+      emit DisplayConfigChanged(CurrentEvent);
    }
 }

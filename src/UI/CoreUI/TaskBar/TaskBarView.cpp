@@ -7,9 +7,10 @@ using namespace TaskBar;
 
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
                          ShellWindowInterface* window,
-                         uint8_t displayNumber)
+                         const DisplayInfo& info)
    : QWidget(window)
-   , DisplayNum(displayNumber)
+   , Display(info.ID)
+   , Info(info)
    , AssetClient("TaskBarView", this)
    , CurrentData()
    , MainLayout(nullptr)
@@ -22,7 +23,7 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    ConnectToServiceSignals(service);
 }
 
-void TaskBarView::HandleViewDataChanged(uint8_t display, const TaskBar::ViewData& data)
+void TaskBarView::HandleViewDataChanged(const DisplayID& displayID, const TaskBar::ViewData& data)
 {
    if(data == CurrentData)
    {
@@ -34,7 +35,7 @@ void TaskBarView::HandleViewDataChanged(uint8_t display, const TaskBar::ViewData
 
    }
 
-   if(data.AssignedMonitor != CurrentData.AssignedMonitor)
+   if(data.DisplayID != CurrentData.DisplayID)
    {
       // TODO: Make sure we're processing the settings update for the correct monitor!
    }

@@ -26,30 +26,30 @@ namespace Wallpaper
       explicit WallpaperSettingsProxy(QObject* parent = nullptr);
       ~WallpaperSettingsProxy() = default;
 
-      QList<QColor> GetColors(QString id) const;
-      int GetDuration(QString id) const;
-      QList<Fit> GetFits(QString id) const;
-      QStringList GetPaths(QString id) const;
-      Schedule GetSchedule(QString id) const;
-      Style GetStyle(QString id) const;
-      DisplayData GetData(QString id) const;
+      QList<QColor> GetColors(const QString& displayID) const;
+      int GetDuration(const QString& displayID) const;
+      QList<Fit> GetFits(const QString& displayID) const;
+      QStringList GetPaths(const QString& displayID) const;
+      Schedule GetSchedule(const QString& displayID) const;
+      Style GetStyle(const QString& displayID) const;
+      DisplayData GetData(const QString& displayID) const;
 
    signals:
-      void SettingsChanged(QString id);
+      void SettingsChanged(const QString& displayID);
 
    public slots:
       void HandleDisplaySettingWallpaperColorsChanged(const QVariant& value,
-                                                      QString id);
+                                                      const QString& displayID);
       void HandleDisplaySettingWallpaperDurationChanged(const QVariant& value,
-                                                        QString id);
+                                                        const QString& displayID);
       void HandleDisplaySettingWallpaperFitsChanged(const QVariant& value,
-                                                    QString id);
+                                                    const QString& displayID);
       void HandleDisplaySettingWallpaperImagePathsChanged(const QVariant& value,
-                                                          QString id);
+                                                          const QString& displayID);
       void HandleDisplaySettingWallpaperScheduleChanged(const QVariant& value,
-                                                        QString id);
+                                                        const QString& displayID);
       void HandleDisplaySettingWallpaperStyleChanged(const QVariant& value,
-                                                     QString id);
+                                                     const QString& displayID);
 
       // TODO: public slots to update settings from GUI
 

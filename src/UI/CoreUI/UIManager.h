@@ -36,8 +36,7 @@ signals:
 private slots:
    void HandleDataAccessThreadStarted();
    void HandleServiceThreadStarted();
-   void HandleDisplayConfigChanged(const DisplayEvent& event,
-                                   const QMap<QString, DisplayInfo>& displays);
+   void HandleDisplayConfigChanged(const DisplayConfigEvent& event);
    void HandlePassDisplaysManager(DisplaysManagerInterface* manager);
    void HandlePassAssetLoader(Assets::AssetLoaderInterface* loader);
    void HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service);
@@ -58,7 +57,7 @@ private:
    Assets::AssetManager* TheAssetManager;
 
    QList<ShellUI*> Shells;
-   QMap<QString, DisplayInfo> Displays;
+   QMap<DisplayID, DisplayInfo> Displays;
    bool DisplaysInfoRequested;
    bool DisplaysInfoReceived;
 };

@@ -103,6 +103,17 @@ void WallpaperServiceWorker::HandleSettingsChanged()
    CalculateCurrentWallpaperData();
 }
 
+void WallpaperServiceWorker::HandleDisplayConfigChanged(const DisplayInfo& info)
+{
+   // TODO
+}
+
+void WallpaperServiceWorker::HandleDisplayRemoved(const DisplayInfo& info)
+{
+   // TODO
+   // Probably have to notify the view somehow?
+}
+
 void WallpaperServiceWorker::CalculateCurrentWallpaperData(bool triggeredByRotationTimer)
 {
    ViewData data;

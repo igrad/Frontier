@@ -96,6 +96,7 @@ void WindowsAPI::ConnectToEventMessageFilter(const WindowsEventMessageFilter& fi
 // before wrapping that up.
 void WindowsAPI::GetAllDisplayInfo()
 {
+   CachedDisplaysInfo.clear();
    DisplayDevices.clear();
 
    GetDisplayDevicesAndMonitorNames();

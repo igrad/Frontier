@@ -31,6 +31,5 @@ private:
    uint8_t NumDisplays;
    QMap<QString, DisplayInfo> Displays;
 
-   DisplayEvent CurrentEvent;
-   QMap<QString, DisplayInfo> CurrentEventInfo;
+   DisplayConfigEvent CurrentEvent;
 };

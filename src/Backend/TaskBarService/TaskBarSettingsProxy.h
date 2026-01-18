@@ -17,40 +17,40 @@ namespace TaskBar
       TaskBarSettingsProxy(QObject* parent = nullptr);
       ~TaskBarSettingsProxy() = default;
 
-      const Alignment GetAlignment(uint8_t display) const;
-      const bool GetAutoHide(uint8_t display) const;
-      const int GetAutoHideDelayMs(uint8_t display) const;
-      const int GetOpacity(uint8_t display) const;
-      const Orientation GetOrientation(uint8_t display) const;
-      const QRect GetRect(uint8_t display) const;
-      const bool GetShown(uint8_t display) const;
-      const bool GetStartButtonShown(uint8_t display) const;
+      Alignment GetAlignment(const QString& displayID) const;
+      bool GetAutoHide(const QString& displayID) const;
+      int GetAutoHideDelayMs(const QString& displayID) const;
+      int GetOpacity(const QString& displayID) const;
+      Orientation GetOrientation(const QString& displayID) const;
+      QRect GetRect(const QString& displayID) const;
+      bool GetShown(const QString& displayID) const;
+      bool GetStartButtonShown(const QString& displayID) const;
 
    signals:
-      void SettingsChanged(uint8_t display);
+      void SettingsChanged(QString id);
 
    public slots:
       void HandleDisplaySettingTaskBarAlignmentChanged(const QVariant& value,
-                                                       uint8_t displayNum);
+                                                       const QString& displayID);
       void HandleDisplaySettingTaskBarAutoHideChanged(const QVariant& value,
-                                                      uint8_t displayNum);
+                                                      const QString& displayID);
       void HandleDisplaySettingTaskBarAutoHideDelayMsChanged(const QVariant& value,
-                                                          uint8_t displayNum);
+                                                             const QString& displayID);
       void HandleDisplaySettingTaskBarOpacityChanged(const QVariant& value,
-                                                     uint8_t displayNum);
+                                                     const QString& displayID);
       void HandleDisplaySettingTaskBarOrientationChanged(const QVariant& value,
-                                                         uint8_t displayNum);
+                                                         const QString& displayID);
       void HandleDisplaySettingTaskBarRectChanged(const QVariant& value,
-                                                  uint8_t displayNum);
+                                                  const QString& displayID);
       void HandleDisplaySettingTaskBarShownChanged(const QVariant& value,
-                                                   uint8_t displayNum);
+                                                   const QString& displayID);
       void HandleDisplaySettingTaskBarStartButtonShownChanged(const QVariant& value,
-                                                              uint8_t displayNum);
+                                                              const QString& displayID);
 
    private:
       void SubscribeToDisplaySettings();
 
       Settings::SettingsClient SettingsClient;
-      QList<ViewData> Data;
+      QMap<QString, ViewData> Data;
    };
 }

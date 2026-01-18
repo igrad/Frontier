@@ -2,6 +2,7 @@
 
 #include <WallpaperService/WallpaperTypes.h>
 
+#include <DisplayInfo.h>
 #include <Utilities/XPtr.h>
 
 #include <QMediaPlayer>
@@ -22,11 +23,12 @@ namespace Wallpaper
    public:
       WallpaperView(XPtr<WallpaperServiceInterface> service,
                     ShellWindowInterface* window,
-                    uint8_t display);
+                    const DisplayInfo& info);
       ~WallpaperView();
 
    public slots:
-      void HandleWallpaperDataChanged(uint8_t displya, const Wallpaper::ViewData& data);
+      void HandleWallpaperDataChanged(const DisplayID& displayID,
+                                      const Wallpaper::ViewData& data);
 
    private:
       void CreateUI();
@@ -36,7 +38,8 @@ namespace Wallpaper
       void HandleImage(const ViewData& data);
       void HandleVideo(const ViewData& data);
 
-      const uint8_t DisplayNumber;
+      DisplayID Display;
+      DisplayInfo Info;
       ViewData CurrentData;
       QStackedLayout* Layout;
       QWidget* Widget;

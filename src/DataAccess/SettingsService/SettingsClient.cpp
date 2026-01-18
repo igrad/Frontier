@@ -101,14 +101,14 @@ bool SettingsClient::WriteSystemSettingValue(Setting setting, const QVariant& va
 }
 
 bool SettingsClient::WriteDisplaySettingValue(Setting setting,
-                                              uint8_t display,
+                                              const QString& displayID,
                                               const QVariant& value)
 {
    bool retVal = false;
 
    if(Setting::None != setting)
    {
-      emit CacheDisplaySettingValue(setting, display, value);
+      emit CacheDisplaySettingValue(setting, displayID, value);
       retVal = true;
    }
    else
@@ -149,7 +149,7 @@ void SettingsClient::HandleSystemSettingUpdated(const Setting& setting, const QV
 }
 
 void SettingsClient::HandleDisplaySettingUpdated(const Setting& setting,
-                                                 uint8_t display,
+                                                 const QString& displayID,
                                                  const QVariant& value)
 {
    const QList<QObject*> subscribers = Subscriptions.values(setting);
@@ -174,7 +174,7 @@ void SettingsClient::HandleDisplaySettingUpdated(const Setting& setting,
          QMetaObject::invokeMethod(sub,
                                    allSubStr,
                                    Q_ARG(Setting, setting),
-                                   Q_ARG(uint8_t, display),
+                                   Q_ARG(QString, displayID),
                                    Q_ARG(QVariant, value));
       }
    }
@@ -317,4 +317,3 @@ void SettingsClient::ConnectToService()
                   .arg(Owner));
    }
 }
-

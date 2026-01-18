@@ -28,13 +28,13 @@ namespace Settings
       bool SubscribeToAllDisplaySettings(QObject* subscriber) override;
       bool WriteSystemSettingValue(Setting setting, const QVariant& value) override;
       bool WriteDisplaySettingValue(Setting setting,
-                                    uint8_t display,
+                                    const QString& displayID,
                                     const QVariant& value) override;
 
    private slots:
       void HandleSystemSettingUpdated(const Setting& setting, const QVariant& value);
       void HandleDisplaySettingUpdated(const Setting& setting,
-                                       uint8_t display,
+                                       const QString& displayID,
                                        const QVariant& value);
 
    private:

@@ -10,8 +10,8 @@ void SettingsClientMock::EmitCacheSystemSettingValue(Setting setting,
 }
 
 void SettingsClientMock::EmitCacheDisplaySettingValue(Setting setting,
-                                                      uint8_t display,
+                                                      const QString& displayID,
                                                       const QVariant& value)
 {
-   emit CacheDisplaySettingValue(setting, display, value);
+   emit CacheDisplaySettingValue(setting, displayID, value);
 }

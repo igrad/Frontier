@@ -34,12 +34,18 @@ UIManager::~UIManager()
 {
 }
 
-void UIManager::HandleDisplayConfigChanged(const DisplayEvent& event,
-                                           const QMap<QString, DisplayInfo>& displays)
+void UIManager::HandleDisplayConfigChanged(const DisplayConfigEvent& event)
 {
    LogInfo("Displays info received");
    DisplaysInfoReceived = true;
 
+   QMap<DisplayID, DisplayInfo> displays;
+   for(const QPair<DisplayConfigEventType, DisplayInfo>& info : std::as_const(event.Displays))
+   {
+      displays[info.second.ID] = info.second;
+   }
+
+   // Note: Maybe need to do more here?
    if(displays != Displays)
    {
       Displays = displays;
@@ -120,7 +126,7 @@ void UIManager::BuildShellWindows()
       {
          ShellUI* ui = Shells.last();
          LogInfo(QString("Discarding existing ShellUI for monitor %1")
-          .arg(ui->GetDisplayNumber()));
+          .arg(ui->GetDisplayID()));
          ui = nullptr;
          Shells.removeLast();
       }
@@ -128,12 +134,12 @@ void UIManager::BuildShellWindows()
 
    for(const DisplayInfo& info : std::as_const(Displays))
    {
-      const uint8_t id = info.Number;
+      const DisplayID id = info.ID;
 
       auto shellIter = std::find_if(Shells.begin(),
                                     Shells.end(),
                                     [&](const ShellUI* shell) {
-         return id == shell->GetDisplayNumber();
+         return (id == shell->GetDisplayID());
       });
 
       const bool exists = (Shells.end() != shellIter);

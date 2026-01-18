@@ -20,7 +20,7 @@ namespace
       "INSERT OR REPLACE INTO system_settings (setting, value) "
       "VALUES (:setting, :value);";
    constexpr const char* QUERY_WRITE_DISPLAY_SETTING =
-      "INSERT OR REPLACE INTO display_settings (setting, display, value) "
+      "INSERT OR REPLACE INTO display_settings (setting, displayID, value) "
       "VALUES (:setting, :display, :value);";
    constexpr const char* QUERY_READ_SYSTEM_SETTING =
       "SELECT value FROM system_settings "
@@ -45,7 +45,7 @@ namespace
       "value STRING)";
    constexpr const char* QUERY_BUILD_DISPLAY_SETTINGS_TABLE =
       "CREATE TABLE display_settings(setting STRING PRIMARY KEY, "
-      "display INT, "
+      "display STRING, "
       "value STRING)";
 }
 
@@ -124,7 +124,7 @@ void SettingsService::HandleCacheSystemSettingValue(const Setting setting, const
 }
 
 void SettingsService::HandleCacheDisplaySettingValue(const Setting setting,
-                                                     uint8_t display,
+                                                     const QString& displayID,
                                                      const QVariant val)
 {
    QSqlDatabase db = GetDb();
@@ -133,7 +133,7 @@ void SettingsService::HandleCacheDisplaySettingValue(const Setting setting,
       SqlQuery query(db);
       query.prepare(QUERY_WRITE_DISPLAY_SETTING);
       query.bindValue(":setting", ToString(setting));
-      query.bindValue(":display", display);
+      query.bindValue(":display", displayID);
       query.bindValue(":value", ToSettingString(val).c_str());
 
       if(RunQuery(query) && (query.numRowsAffected() != 1))
@@ -143,7 +143,7 @@ void SettingsService::HandleCacheDisplaySettingValue(const Setting setting,
       }
    }
 
-   emit DisplaySettingUpdated(setting, display, val);
+   emit DisplaySettingUpdated(setting, displayID, val);
 }
 
 void SettingsService::HandleRequestSystemSettingValue(const Setting setting)
@@ -166,7 +166,7 @@ void SettingsService::HandleRequestSystemSettingValue(const Setting setting)
    emit SystemSettingUpdated(setting, val);
 }
 
-void SettingsService::HandleRequestDisplaySettingValue(const Setting setting, uint8_t display)
+void SettingsService::HandleRequestDisplaySettingValue(const Setting setting, const QString& displayID)
 {
    QSqlDatabase db = GetDb();
    QVariant val;
@@ -175,7 +175,7 @@ void SettingsService::HandleRequestDisplaySettingValue(const Setting setting, ui
       SqlQuery query(db);
       query.prepare(QUERY_READ_DISPLAY_SETTING);
       query.bindValue(":setting", ToString(setting));
-      query.bindValue(":display", display);
+      query.bindValue(":display", displayID);
       query.setForwardOnly(true);
 
       if(RunQuery(query) && query.next())

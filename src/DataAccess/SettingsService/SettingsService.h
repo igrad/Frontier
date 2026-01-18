@@ -25,11 +25,11 @@ namespace Settings
       void HandleCacheSystemSettingValue(const Setting setting,
                                          const QVariant val) override;
       void HandleCacheDisplaySettingValue(const Setting setting,
-                                          uint8_t display,
+                                          const QString& displayID,
                                           const QVariant value) override;
       void HandleRequestSystemSettingValue(const Setting setting) override;
       void HandleRequestDisplaySettingValue(const Setting setting,
-                                            uint8_t display) override;
+                                            const QString& displayID) override;
 
    private:
       void SetPointerInClientClass();

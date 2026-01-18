@@ -6,7 +6,7 @@ TaskBarServiceWorker::TaskBarServiceWorker(const DisplayInfo& info,
                                            TaskBarSettingsProxy* settingsProxy,
                                            QObject* parent)
    : QObject(parent)
-   , DisplayNum(info.Number)
+   , DisplayID(info.ID)
    , Info(info)
    , SettingsProxy(settingsProxy)
 {
@@ -14,16 +14,16 @@ TaskBarServiceWorker::TaskBarServiceWorker(const DisplayInfo& info,
 }
 TaskBarServiceWorker::TaskBarServiceWorker(const TaskBarServiceWorker& other)
    : QObject(other.parent())
-   , DisplayNum(other.DisplayNum)
+   , DisplayID(other.DisplayID)
    , Info(other.Info)
    , SettingsProxy(other.SettingsProxy)
 {
 
 }
 
-uint8_t TaskBarServiceWorker::GetDisplayNum() const
+QString TaskBarServiceWorker::GetDisplayID() const
 {
-   return DisplayNum;
+   return DisplayID;
 }
 
 DisplayInfo TaskBarServiceWorker::GetDisplayInfo() const
@@ -38,7 +38,7 @@ DisplayInfo TaskBarServiceWorker::GetDisplayInfo() const
 
 // TaskBarServiceWorker& TaskBarServiceWorker::operator=(const TaskBarServiceWorker& rhs)
 // {
-//    DisplayNum = rhs.DisplayNum;
+//    DisplayID = rhs.DisplayID;
 //    Info = rhs.Info;
 
 // }
@@ -46,12 +46,23 @@ DisplayInfo TaskBarServiceWorker::GetDisplayInfo() const
 void TaskBarServiceWorker::HandleSettingsChanged()
 {
    ViewData data;
-   data.Alignment = SettingsProxy->GetAlignment(DisplayNum);
-   data.AssignedMonitor = DisplayNum;
-   data.AutoHide = SettingsProxy->GetAutoHide(DisplayNum);
-   data.AutoHideDelayMs = SettingsProxy->GetAutoHideDelayMs(DisplayNum);
-   data.Opacity = SettingsProxy->GetOpacity(DisplayNum);
-   data.Orientation = SettingsProxy->GetOrientation(DisplayNum);
+   data.Alignment = SettingsProxy->GetAlignment(DisplayID);
+   data.DisplayID = DisplayID;
+   data.AutoHide = SettingsProxy->GetAutoHide(DisplayID);
+   data.AutoHideDelayMs = SettingsProxy->GetAutoHideDelayMs(DisplayID);
+   data.Opacity = SettingsProxy->GetOpacity(DisplayID);
+   data.Orientation = SettingsProxy->GetOrientation(DisplayID);
 
-   emit TaskBarViewDataChanged(DisplayNum, data);
+   emit TaskBarViewDataChanged(DisplayID, data);
+}
+
+void TaskBarServiceWorker::HandleDisplayConfigChanged(const DisplayInfo& info)
+{
+   // TODO
+}
+
+void TaskBarServiceWorker::HandleDisplayRemoved(const DisplayInfo& info)
+{
+   // TODO
+   // Probably have to notify the view somehow?
 }

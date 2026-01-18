@@ -18,10 +18,9 @@ namespace TaskBar
       virtual void RegisterMetaTypes() const = 0;
 
    signals:
-      void ViewDataChanged(uint8_t display, const TaskBar::ViewData& data);
+      void ViewDataChanged(const DisplayID& displayID, const TaskBar::ViewData& data);
 
    public slots:
-      virtual void HandleDisplayConfigChanged(const DisplayEvent& event,
-                                              const QMap<QString, DisplayInfo>& displays) = 0;
+      virtual void HandleDisplayConfigChanged(const DisplayConfigEvent& event) = 0;
    };
 }

@@ -25,11 +25,11 @@ namespace TaskBar
    public:
       TaskBarView(XPtr<TaskBarServiceInterface> service,
                   ShellWindowInterface* window,
-                  uint8_t displayNumber);
+                  const DisplayInfo& displayInfo);
       ~TaskBarView() = default;
 
    public:
-      void HandleViewDataChanged(uint8_t display, const TaskBar::ViewData& data);
+      void HandleViewDataChanged(const DisplayID& displayID, const TaskBar::ViewData& data);
 
    private slots:
       void HandleImageReady(Assets::ImageName name, const QPixmap& image);
@@ -39,7 +39,8 @@ namespace TaskBar
       void ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service);
       void ConnectToAssetClientSignals();
 
-      uint8_t DisplayNum;
+      DisplayID Display;
+      DisplayInfo Info;
       Assets::AssetClient AssetClient;
       TaskBar::ViewData CurrentData;
       QBoxLayout* MainLayout;
