@@ -50,8 +50,8 @@ bool TaskBarSettingsProxy::GetStartButtonShown(const QString& displayID) const
    return Data[displayID].StartButtonShown;
 }
 
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAlignmentChanged(const QVariant& value,
-                                                                       const QString& displayID)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAlignmentChanged(const QString& displayID,
+                                                                       const QVariant& value)
 {
    if(value.canConvert<Alignment>())
    {
@@ -67,8 +67,8 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAlignmentChanged(const QVa
    }
 }
 
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideChanged(const QVariant& value,
-                                                                      const QString& displayID)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideChanged(const QString& displayID,
+                                                                      const QVariant& value)
 {
    if(value.canConvert<bool>())
    {
@@ -85,8 +85,8 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideChanged(const QVar
 }
 
 void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideDelayMsChanged(
-   const QVariant& value,
-   const QString& displayID)
+   const QString& displayID,
+   const QVariant& value)
 {
    if(value.canConvert<int>())
    {
@@ -102,8 +102,8 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideDelayMsChanged(
    }
 }
 
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOpacityChanged(const QVariant& value,
-                                                                     const QString& displayID)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOpacityChanged(const QString& displayID,
+                                                                     const QVariant& value)
 {
    if(value.canConvert<int>())
    {
@@ -119,8 +119,8 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOpacityChanged(const QVari
    }
 }
 
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOrientationChanged(const QVariant& value,
-                                                                         const QString& displayID)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOrientationChanged(const QString& displayID,
+                                                                         const QVariant& value)
 {
    if(value.canConvert<Orientation>())
    {
@@ -136,8 +136,8 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOrientationChanged(const Q
    }
 }
 
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarRectChanged(const QVariant& value,
-                                                                  const QString& displayID)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarRectChanged(const QString& displayID,
+                                                                  const QVariant& value)
 {
    if(value.canConvert<QRect>())
    {
@@ -157,9 +157,8 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarRectChanged(const QVariant
    }
 }
 
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarShownChanged(
-   const QVariant& value,
-   const QString& displayID)
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarShownChanged(const QString& displayID,
+                                                                   const QVariant& value)
 {
    if(value.canConvert<bool>())
    {
@@ -176,8 +175,8 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarShownChanged(
 }
 
 void TaskBarSettingsProxy::HandleDisplaySettingTaskBarStartButtonShownChanged(
-   const QVariant& value,
-   const QString& displayID)
+   const QString& displayID,
+   const QVariant& value)
 {
    if(value.canConvert<bool>())
    {

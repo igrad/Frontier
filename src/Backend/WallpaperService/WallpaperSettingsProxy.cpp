@@ -18,10 +18,11 @@ namespace
 }
 
 WallpaperSettingsProxy::WallpaperSettingsProxy(QObject* parent)
-   : QObject(parent)
-   , SettingsClient(SETTINGS_CLIENT_NAME)
+   : SettingsClient(SETTINGS_CLIENT_NAME)
    , Data()
 {
+   setParent(parent);
+
    SubscribeToDisplaySettings();
 }
 
@@ -60,8 +61,8 @@ DisplayData WallpaperSettingsProxy::GetData(const QString& displayID) const
    return Data[displayID];
 }
 
-void WallpaperSettingsProxy::HandleDisplaySettingWallpaperColorsChanged(const QVariant& value,
-                                                                        const QString& displayID)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperColorsChanged(const QString& displayID,
+                                                                        const QVariant& value)
 {
 
    Data[displayID].Colors.clear();
@@ -90,8 +91,8 @@ void WallpaperSettingsProxy::HandleDisplaySettingWallpaperColorsChanged(const QV
    emit SettingsChanged(displayID);
 }
 
-void WallpaperSettingsProxy::HandleDisplaySettingWallpaperDurationChanged(const QVariant& value,
-                                                                          const QString& displayID)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperDurationChanged(const QString& displayID,
+                                                                          const QVariant& value)
 {
    if(value.canConvert<int>())
    {
@@ -102,8 +103,8 @@ void WallpaperSettingsProxy::HandleDisplaySettingWallpaperDurationChanged(const 
    }
 }
 
-void WallpaperSettingsProxy::HandleDisplaySettingWallpaperFitsChanged(const QVariant& value,
-                                                                      const QString& displayID)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperFitsChanged(const QString& displayID,
+                                                                      const QVariant& value)
 {
    const QVariantList list = value.toList();
 
@@ -136,8 +137,8 @@ void WallpaperSettingsProxy::HandleDisplaySettingWallpaperFitsChanged(const QVar
    }
 }
 
-void WallpaperSettingsProxy::HandleDisplaySettingWallpaperImagePathsChanged(const QVariant& value,
-                                                                            const QString& displayID)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperImagePathsChanged(const QString& displayID,
+                                                                            const QVariant& value)
 {
    Data[displayID].ImagePaths.clear();
 
@@ -156,8 +157,8 @@ void WallpaperSettingsProxy::HandleDisplaySettingWallpaperImagePathsChanged(cons
    emit SettingsChanged(displayID);
 }
 
-void WallpaperSettingsProxy::HandleDisplaySettingWallpaperScheduleChanged(const QVariant& value,
-                                                                          const QString& displayID)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperScheduleChanged(const QString& displayID,
+                                                                          const QVariant& value)
 {
    const Schedule newSchedule = value.value<Schedule>();
 
@@ -171,8 +172,8 @@ void WallpaperSettingsProxy::HandleDisplaySettingWallpaperScheduleChanged(const 
 }
 
 // TODO: Future support for different image styles in the rotation
-void WallpaperSettingsProxy::HandleDisplaySettingWallpaperStyleChanged(const QVariant& value,
-                                                                       const QString& displayID)
+void WallpaperSettingsProxy::HandleDisplaySettingWallpaperStyleChanged(const QString& displayID,
+                                                                       const QVariant& value)
 {
    if(value.canConvert<Style>())
    {

@@ -162,6 +162,7 @@ void SettingsClient::HandleDisplaySettingUpdated(const Setting& setting,
       {
          QMetaObject::invokeMethod(sub,
                                    methodStr.c_str(),
+                                   displayID,
                                    value);
       }
    }
@@ -260,12 +261,12 @@ const std::string SettingsClient::GetDisplaySettingHandlerMethodStr(Setting sett
       if(allSetting)
       {
          rawStr = QString("HandleDisplaySettingChanged(const Settings::Setting, "
-                          "uint8_t, "
+                          "const QString&, "
                           "const QVariant&)");
       }
       else
       {
-         rawStr = QString("HandleDisplaySetting%1Changed(const QVariant&, uint8_t)")
+         rawStr = QString("HandleDisplaySetting%1Changed(const QString&, const QVariant&)")
                      .arg(ToString(setting));
       }
       str = QMetaObject::normalizedSignature(rawStr.toStdString().c_str()).toStdString();

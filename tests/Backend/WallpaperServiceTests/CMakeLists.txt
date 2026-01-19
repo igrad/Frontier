@@ -1,7 +1,8 @@
 target_sources(FrontierUnitTests
    PRIVATE
-   WallpaperServiceTest.cpp
-   WallpaperSettingsProxyTest.cpp
+   WallpaperServiceTests.cpp
+   WallpaperServiceWorkerTests.cpp
+   WallpaperSettingsProxyTests.cpp
 )
 
 target_include_directories(FrontierUnitTests
@@ -14,4 +15,5 @@ target_link_libraries(FrontierUnitTests
    WallpaperService
    TestSupport::DataAccessSupport
    TestSupport::TestUtilities
+   TestSupport::BackendSupport
 )

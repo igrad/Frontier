@@ -56,7 +56,7 @@ TEST_F(SettingsClientTest, SubscribeToSystemSetting3)
 
    Client.SubscribeToSystemSetting(Setting::_TestSetting, &sub);
 
-   QSignalSpy spy(&sub, &FakeSettingSubscriber::_TestSettingReceived);
+   QSignalSpy spy(&sub, &FakeSettingSubscriber::System_TestSettingReceived);
 
    const QVariant value = QString("SomeValue");
    ServiceMock.EmitSystemSettingUpdated(Setting::_TestSetting, value);
@@ -89,7 +89,7 @@ TEST_F(SettingsClientTest, SubscribeToAllSystemSettings2)
 
    Client.SubscribeToAllSystemSettings(&sub);
 
-   QSignalSpy spy(&sub, &FakeAllSettingsSubscriber::SettingChangeReceived);
+   QSignalSpy spy(&sub, &FakeAllSettingsSubscriber::SystemSettingChangeReceived);
 
    const QVariant value = QString("SomeValue");
    ServiceMock.EmitSystemSettingUpdated(Setting::_TestSetting, value);

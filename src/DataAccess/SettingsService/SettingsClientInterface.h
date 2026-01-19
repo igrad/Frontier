@@ -24,6 +24,8 @@ namespace Settings
 
    signals:
       void CacheSystemSettingValue(Setting setting, const QVariant& value);
-      void CacheDisplaySettingValue(Setting setting, const QString& displayID, const QVariant& value);
+      void CacheDisplaySettingValue(Setting setting,
+                                    const QString& displayID,
+                                    const QVariant& value);
    };
 }

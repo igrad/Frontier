@@ -67,8 +67,7 @@ void WallpaperService::HandleDisplayConfigChanged(const DisplayConfigEvent& even
    }
 }
 
-// Settings proxy now needs to send the number of the display for which the settings have changed
-// then the service will notify the appropriate worker to fetch its data.
-void WallpaperService::HandleSettingsChanged()
+void WallpaperService::HandleSettingsChanged(const QString& displayID)
 {
+   Workers[displayID]->HandleSettingsChanged();
 }

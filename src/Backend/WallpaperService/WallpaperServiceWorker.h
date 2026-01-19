@@ -8,14 +8,14 @@
 
 namespace Wallpaper
 {
-   class WallpaperSettingsProxy;
+   class WallpaperSettingsProxyInterface;
    class WallpaperServiceWorker: public QObject
    {
       Q_OBJECT
 
    public:
       WallpaperServiceWorker(const DisplayInfo& info,
-              WallpaperSettingsProxy* settingsProxy,
+              WallpaperSettingsProxyInterface* settingsProxy,
               QObject* parent = nullptr);
       WallpaperServiceWorker(const WallpaperServiceWorker& other);
       ~WallpaperServiceWorker() = default;
@@ -27,7 +27,7 @@ namespace Wallpaper
       WallpaperServiceWorker& operator=(const WallpaperServiceWorker& rhs);
 
    signals:
-      void WallpaperViewDataChanged(uint8_t display,
+      void WallpaperViewDataChanged(const DisplayID& id,
                                     const Wallpaper::ViewData& data);
 
    public slots:
@@ -45,9 +45,9 @@ namespace Wallpaper
       void ProcessColorStyle(bool triggeredByTimer);
       void ProcessImageStyle(bool triggeredByTimer);
 
-      QString DisplayID;
+      DisplayID Display;
       DisplayInfo Info;
-      WallpaperSettingsProxy* SettingsProxy;
+      WallpaperSettingsProxyInterface* SettingsProxy;
 
       ViewData Data;
       int CurrentColorsIndex;

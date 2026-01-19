@@ -22,7 +22,7 @@ namespace Wallpaper
       void HandleDisplayConfigChanged(const DisplayConfigEvent& event) override;
 
    private slots:
-      void HandleSettingsChanged();
+      void HandleSettingsChanged(const QString& displayID);
 
    private:
       WallpaperSettingsProxy SettingsProxy;

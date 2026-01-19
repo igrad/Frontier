@@ -33,8 +33,9 @@ public:
 TEST_F(WallpaperSettingsProxyTest, HandleSettingWallpaperColorsChanged1)
 {
    const QStringList colorStrings = {"white", "blue", "green"};
-   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperColors,
-                                      QVariant(colorStrings));
+   SettingsSvcMock.EmitDisplaySettingUpdated(Setting::WallpaperColors,
+                                             0,
+                                             QVariant(colorStrings));
 
    QCoreApplication::processEvents();
 
@@ -49,8 +50,9 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperDurationChanged1)
 {
    const int duration = 3;
 
-   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperDuration,
-                                      QVariant(duration));
+   SettingsSvcMock.EmitDisplaySettingUpdated(Setting::WallpaperDuration,
+                                             0,
+                                             QVariant(duration));
 
    QCoreApplication::processEvents();
    EXPECT_EQ(duration, Proxy.GetDuration(0));
@@ -63,8 +65,9 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperFitsChanged1)
    fits.push_back(Fit::Fill);
    fits.push_back(Fit::Fit);
 
-   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperFits,
-                                     QVariant::fromValue<QList<Fit>>(fits));
+   SettingsSvcMock.EmitDisplaySettingUpdated(Setting::WallpaperFits,
+                                             0,
+                                             QVariant::fromValue<QList<Fit>>(fits));
 
    QCoreApplication::processEvents();
 
@@ -75,8 +78,9 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperImagePathsChanged1)
 {
    const QStringList strings = {"1", "2", "3"};
 
-   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperImagePaths,
-                                      QVariant(strings));
+   SettingsSvcMock.EmitDisplaySettingUpdated(Setting::WallpaperImagePaths,
+                                             0,
+                                             QVariant(strings));
 
    QCoreApplication::processEvents();
 
@@ -87,8 +91,9 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperScheduleChanged1)
 {
    const Schedule sched = Schedule::Sequence;
 
-   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperSchedule,
-                                      QVariant::fromValue<Schedule>(sched));
+   SettingsSvcMock.EmitDisplaySettingUpdated(Setting::WallpaperSchedule,
+                                             0,
+                                             QVariant::fromValue<Schedule>(sched));
 
    QCoreApplication::processEvents();
 
@@ -99,8 +104,9 @@ TEST_F(WallpaperSettingsProxyTest, HandleSettingsWallpaperStyleChanged1)
 {
    const Style style = Style::DynamicColor;
 
-   SettingsSvcMock.EmitSystemSettingUpdated(Setting::WallpaperStyle,
-                                      QVariant::fromValue<Style>(style));
+   SettingsSvcMock.EmitDisplaySettingUpdated(Setting::WallpaperStyle,
+                                             0,
+                                             QVariant::fromValue<Style>(style));
 
    QCoreApplication::processEvents();
 

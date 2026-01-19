@@ -30,22 +30,22 @@ namespace TaskBar
       void SettingsChanged(QString id);
 
    public slots:
-      void HandleDisplaySettingTaskBarAlignmentChanged(const QVariant& value,
-                                                       const QString& displayID);
-      void HandleDisplaySettingTaskBarAutoHideChanged(const QVariant& value,
-                                                      const QString& displayID);
-      void HandleDisplaySettingTaskBarAutoHideDelayMsChanged(const QVariant& value,
-                                                             const QString& displayID);
-      void HandleDisplaySettingTaskBarOpacityChanged(const QVariant& value,
-                                                     const QString& displayID);
-      void HandleDisplaySettingTaskBarOrientationChanged(const QVariant& value,
-                                                         const QString& displayID);
-      void HandleDisplaySettingTaskBarRectChanged(const QVariant& value,
-                                                  const QString& displayID);
-      void HandleDisplaySettingTaskBarShownChanged(const QVariant& value,
-                                                   const QString& displayID);
-      void HandleDisplaySettingTaskBarStartButtonShownChanged(const QVariant& value,
-                                                              const QString& displayID);
+      void HandleDisplaySettingTaskBarAlignmentChanged(const QString& displayID,
+                                                       const QVariant& value);
+      void HandleDisplaySettingTaskBarAutoHideChanged(const QString& displayID,
+                                                      const QVariant& value);
+      void HandleDisplaySettingTaskBarAutoHideDelayMsChanged(const QString& displayID,
+                                                             const QVariant& value);
+      void HandleDisplaySettingTaskBarOpacityChanged(const QString& displayID,
+                                                     const QVariant& value);
+      void HandleDisplaySettingTaskBarOrientationChanged(const QString& displayID,
+                                                         const QVariant& value);
+      void HandleDisplaySettingTaskBarRectChanged(const QString& displayID,
+                                                  const QVariant& value);
+      void HandleDisplaySettingTaskBarShownChanged(const QString& displayID,
+                                                   const QVariant& value);
+      void HandleDisplaySettingTaskBarStartButtonShownChanged(const QString& displayID,
+                                                              const QVariant& value);
 
    private:
       void SubscribeToDisplaySettings();
