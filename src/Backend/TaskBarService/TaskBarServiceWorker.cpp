@@ -3,7 +3,7 @@
 using namespace TaskBar;
 
 TaskBarServiceWorker::TaskBarServiceWorker(const DisplayInfo& info,
-                                           TaskBarSettingsProxy* settingsProxy,
+                                           TaskBarSettingsProxyInterface* settingsProxy,
                                            QObject* parent)
    : QObject(parent)
    , DisplayID(info.ID)

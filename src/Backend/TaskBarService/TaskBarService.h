@@ -2,6 +2,7 @@
 
 #include "TaskBarServiceInterface.h"
 #include "TaskBarServiceWorker.h"
+#include "TaskBarSettingsProxy.h"
 
 #include <QTimer>
 
@@ -21,7 +22,7 @@ namespace TaskBar
       void HandleDisplayConfigChanged(const DisplayConfigEvent& event) override;
 
    private slots:
-      void HandleSettingsChanged(DisplayID id);
+      void HandleSettingsChanged(const DisplayID& id);
 
    private:
       TaskBarSettingsProxy SettingsProxy;

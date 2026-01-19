@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TaskBarSettingsProxy.h"
+#include "TaskBarSettingsProxyInterface.h"
 
 #include <DisplayInfo.h>
 
@@ -12,7 +12,7 @@ namespace TaskBar
 
    public:
       TaskBarServiceWorker(const DisplayInfo& info,
-                           TaskBarSettingsProxy* settingsProxy,
+                           TaskBarSettingsProxyInterface* settingsProxy,
                            QObject* parent = nullptr);
       TaskBarServiceWorker(const TaskBarServiceWorker& other);
       ~TaskBarServiceWorker() = default;
@@ -35,6 +35,6 @@ namespace TaskBar
    private:
       QString DisplayID;
       DisplayInfo Info;
-      TaskBarSettingsProxy* SettingsProxy;
+      TaskBarSettingsProxyInterface* SettingsProxy;
    };
 }

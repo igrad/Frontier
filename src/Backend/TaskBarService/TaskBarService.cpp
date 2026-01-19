@@ -25,8 +25,8 @@ void TaskBarService::HandleDisplayConfigChanged(const DisplayConfigEvent& event)
       for(const QPair<DisplayConfigEventType, DisplayInfo>& info : std::as_const(event.Displays))
       {
          Workers[info.second.ID] = new TaskBarServiceWorker(info.second,
-                                                              &SettingsProxy,
-                                                              this);
+                                                            &SettingsProxy,
+                                                            this);
       }
    }
    else
@@ -37,8 +37,8 @@ void TaskBarService::HandleDisplayConfigChanged(const DisplayConfigEvent& event)
          {
          case DisplayConfigEventType::Added:
             Workers[info.second.ID] = new TaskBarServiceWorker(info.second,
-                                                                 &SettingsProxy,
-                                                                 this);
+                                                               &SettingsProxy,
+                                                               this);
             break;
          case DisplayConfigEventType::Changed:
             Workers[info.second.ID]->HandleDisplayConfigChanged(info.second);
@@ -55,7 +55,7 @@ void TaskBarService::HandleDisplayConfigChanged(const DisplayConfigEvent& event)
    }
 }
 
-void TaskBarService::HandleSettingsChanged(DisplayID id)
+void TaskBarService::HandleSettingsChanged(const DisplayID& id)
 {
    Workers[id]->HandleSettingsChanged();
 }

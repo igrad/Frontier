@@ -24,6 +24,7 @@ namespace Wallpaper
       MOCK_METHOD(Style, GetStyle, (const QString& displayID), (const override));
       MOCK_METHOD(DisplayData, GetData, (const QString& displayID), (const override));
 
+   // slots:
       MOCK_METHOD(void,
                   HandleDisplaySettingWallpaperColorsChanged,
                   (const QString& displayID, const QVariant& value),
