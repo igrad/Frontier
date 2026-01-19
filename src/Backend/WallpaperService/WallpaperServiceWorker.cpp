@@ -105,11 +105,13 @@ void WallpaperServiceWorker::HandleSettingsChanged()
 
 void WallpaperServiceWorker::HandleDisplayConfigChanged(const DisplayInfo& info)
 {
-   // TODO
+   Display = info.ID;
+   Info = info;
 }
 
 void WallpaperServiceWorker::HandleDisplayRemoved(const DisplayInfo& info)
 {
+   Q_UNUSED(info)
    // TODO
    // Probably have to notify the view somehow?
 }
@@ -120,12 +122,6 @@ void WallpaperServiceWorker::CalculateCurrentWallpaperData(bool triggeredByRotat
    Data = data;
 
    Data.Style = SettingsProxy->GetStyle(Display);
-
-   // Temporary workaround, I don't like it for prod
-   if(Style::None == Data.Style)
-   {
-      Data.Style = Style::StaticColor;
-   }
 
    const Schedule schedule = SettingsProxy->GetSchedule(Display);
    switch(schedule)
@@ -216,9 +212,6 @@ void WallpaperServiceWorker::CalculateSequenceOrShuffleViewData(bool triggeredBy
    const Style style = SettingsProxy->GetStyle(Display);
    const int duration = SettingsProxy->GetDuration(Display);
 
-   // TODO: Multi-monitor
-   Data.AssignedMonitor = 0;
-
    RotationTimer.Start(duration);
    if((Style::DynamicColor == style) ||
        (Style::StaticColor == style))
@@ -239,8 +232,6 @@ void WallpaperServiceWorker::CalculateStaticViewData()
    const QStringList& imagePaths = SettingsProxy->GetPaths(Display);
    const QList<Fit>& fits = SettingsProxy->GetFits(Display);
 
-   // TODO: Multi-monitor
-   Data.AssignedMonitor = 0;
    if((Style::DynamicColor == style) ||
        (Style::StaticColor == style))
    {
@@ -264,10 +255,8 @@ void WallpaperServiceWorker::CalculateStaticViewData()
 void WallpaperServiceWorker::ProcessColorStyle(bool triggeredByTimer)
 {
    const Style style = SettingsProxy->GetStyle(Display);
-   // const int duration = SettingsProxy->GetDuration();
    const QList<QColor>& colors = SettingsProxy->GetColors(Display);
    const bool shuffle = (Schedule::Shuffle == SettingsProxy->GetSchedule(Display));
-   // const QList<Fit>& fits = SettingsProxy->GetFits();
 
    Data.Fit = Fit::Fill;
 
@@ -297,7 +286,6 @@ void WallpaperServiceWorker::ProcessColorStyle(bool triggeredByTimer)
 void WallpaperServiceWorker::ProcessImageStyle(bool triggeredByTimer)
 {
    const Style style = SettingsProxy->GetStyle(Display);
-   // const int duration = SettingsProxy->GetDuration();
    const QList<QColor>& colors = SettingsProxy->GetColors(Display);
    const bool shuffle = (Schedule::Shuffle == SettingsProxy->GetSchedule(Display));
    const QStringList& imagePaths = SettingsProxy->GetPaths(Display);

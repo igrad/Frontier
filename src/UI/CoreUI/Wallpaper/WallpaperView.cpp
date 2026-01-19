@@ -92,7 +92,6 @@ void WallpaperView::CreateUI()
    setGeometry({0, 0, 1920, 1080});
 
    ViewData data;
-   data.AssignedMonitor = 0;
    data.Color = Qt::blue;
    data.ImagePath = "";
    data.Style = Style::StaticColor;
