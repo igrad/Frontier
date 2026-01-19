@@ -23,6 +23,16 @@ ShellUI::ShellUI(XPtr<TaskBar::TaskBarServiceInterface> taskBarService,
    BuildUIComponents();
 }
 
+ShellUI::~ShellUI()
+{
+   if(nullptr != TheShellWindow)
+   {
+      TheShellWindow->close();
+      TheShellWindow->deleteLater();
+      TheShellWindow = nullptr;
+   }
+}
+
 DisplayID ShellUI::GetDisplayID() const
 {
    return TheDisplayInfo.ID;
@@ -33,7 +43,7 @@ DisplayInfo ShellUI::GetDisplayInfo() const
    return TheDisplayInfo;
 }
 
-void ShellUI::HandleDisplayInfoUpdated(const DisplayInfo& info)
+void ShellUI::HandleDisplayInfoChanged(const DisplayInfo& info)
 {
    if((info.Number == TheDisplayInfo.Number) &&
        (info != TheDisplayInfo))
@@ -43,6 +53,17 @@ void ShellUI::HandleDisplayInfoUpdated(const DisplayInfo& info)
 
       TheDisplayInfo = info;
       BuildUIComponents();
+   }
+}
+
+
+void ShellUI::HandleDisplayRemoved(const DisplayInfo& info)
+{
+   if(info.ID == TheDisplayInfo.ID)
+   {
+      TheShellWindow->close();
+      TheShellWindow->deleteLater();
+      TheShellWindow = nullptr;
    }
 }
 

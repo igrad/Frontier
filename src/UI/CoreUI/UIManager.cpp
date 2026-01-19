@@ -17,7 +17,6 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
    , WallpaperService(nullptr)
    , TheAssetManager(nullptr)
    , Shells()
-   , Displays()
    , DisplaysInfoRequested(false)
    , DisplaysInfoReceived(false)
 {
@@ -30,26 +29,33 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
            this, &UIManager::HandleServiceThreadStarted);
 }
 
-UIManager::~UIManager()
-{
-}
+// TheAssetLoader does not need to be deleted manually - it's parent to this and
+// will auto-delete
+// UIManager::~UIManager()
+// {
+// }
 
 void UIManager::HandleDisplayConfigChanged(const DisplayConfigEvent& event)
 {
-   LogInfo("Displays info received");
    DisplaysInfoReceived = true;
 
-   QMap<DisplayID, DisplayInfo> displays;
    for(const QPair<DisplayConfigEventType, DisplayInfo>& info : std::as_const(event.Displays))
    {
-      displays[info.second.ID] = info.second;
-   }
-
-   // Note: Maybe need to do more here?
-   if(displays != Displays)
-   {
-      Displays = displays;
-      BuildShellWindows();
+      switch(info.first)
+      {
+      case DisplayConfigEventType::Added:
+         BuildShellWindow(info.second);
+         break;
+      case DisplayConfigEventType::Removed:
+         RemoveShellWindow(info.second);
+         break;
+      case DisplayConfigEventType::Changed:
+         Shells[info.second.ID]->HandleDisplayInfoChanged(info.second);
+         break;
+      case DisplayConfigEventType::None:
+         // This display has not changed at all - do nothing
+         break;
+      }
    }
 }
 
@@ -113,53 +119,27 @@ void UIManager::Start()
    emit UIConnectedToServiceComponents();
 }
 
-void UIManager::BuildShellWindows()
+void UIManager::BuildShellWindow(const DisplayInfo& info)
 {
-   LogInfo("Building shell windows");
-
-   if(Displays.count() < Shells.count())
+   if(!Shells.contains(info.ID))
    {
-      LogInfo(QString("Monitor count has dropped from %1 to %2")
-                 .arg(Shells.count(), Displays.count()));
-
-      while(Displays.count() < Shells.count())
-      {
-         ShellUI* ui = Shells.last();
-         LogInfo(QString("Discarding existing ShellUI for monitor %1")
-          .arg(ui->GetDisplayID()));
-         ui = nullptr;
-         Shells.removeLast();
-      }
+      Shells[info.ID] = new ShellUI(TaskBarService,
+                                    WallpaperService,
+                                    info,
+                                    this);
    }
+}
 
-   for(const DisplayInfo& info : std::as_const(Displays))
+void UIManager::RemoveShellWindow(const DisplayInfo& info)
+{
+   auto iter = Shells.find(info.ID);
+
+   if(Shells.end() != iter)
    {
-      const DisplayID id = info.ID;
-
-      auto shellIter = std::find_if(Shells.begin(),
-                                    Shells.end(),
-                                    [&](const ShellUI* shell) {
-         return (id == shell->GetDisplayID());
-      });
-
-      const bool exists = (Shells.end() != shellIter);
-      if(exists &&
-          (info != (*shellIter)->GetDisplayInfo()))
-      {
-         LogInfo(QString("DisplayInfo changed for display: %1")
-                    .arg(info.Number));
-         (*shellIter)->HandleDisplayInfoUpdated(info);
-      }
-
-      if(!exists)
-      {
-         LogInfo(QString("Building ShellUI for display: %1")
-                    .arg(info.Number));
-         Shells.push_back(new ShellUI(TaskBarService,
-                                      WallpaperService,
-                                      info,
-                                      this));
-      }
+      iter.value()->HandleDisplayRemoved(info);
+      iter.value()->deleteLater();
+      Shells[info.ID] = nullptr;
+      Shells.erase(iter);
    }
 }
 

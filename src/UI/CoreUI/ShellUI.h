@@ -27,7 +27,7 @@ public:
            XPtr<Wallpaper::WallpaperServiceInterface> wallpaperService,
            const DisplayInfo& displayInfo,
            QObject* parent = nullptr);
-   ~ShellUI() = default;
+   ~ShellUI();
 
    DisplayID GetDisplayID() const;
    DisplayInfo GetDisplayInfo() const;
@@ -36,7 +36,8 @@ signals:
    void ShellWindowClosed(const DisplayID& displayID);
 
 public slots:
-   void HandleDisplayInfoUpdated(const DisplayInfo& info);
+   void HandleDisplayInfoChanged(const DisplayInfo& info);
+   void HandleDisplayRemoved(const DisplayInfo& info);
 
 private:
    void BuildUIComponents();

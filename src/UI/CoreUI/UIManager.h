@@ -26,7 +26,7 @@ class UIManager: public QObject
 public:
    UIManager(DataAccessThreadManager* dataAccess,
              BackendThreadManager* backend);
-   ~UIManager();
+   ~UIManager() = default;
 
 signals:
    void UIConnectedToServiceComponents();
@@ -44,7 +44,8 @@ private slots:
 
 private:
    void Start();
-   void BuildShellWindows();
+   void BuildShellWindow(const DisplayInfo& info);
+   void RemoveShellWindow(const DisplayInfo& info);
    void RequestDisplaysInfo();
 
    XPtr<DataAccessThreadManager> DataAccess;
@@ -56,8 +57,7 @@ private:
 
    Assets::AssetManager* TheAssetManager;
 
-   QList<ShellUI*> Shells;
-   QMap<DisplayID, DisplayInfo> Displays;
+   QMap<DisplayID, ShellUI*> Shells;
    bool DisplaysInfoRequested;
    bool DisplaysInfoReceived;
 };
