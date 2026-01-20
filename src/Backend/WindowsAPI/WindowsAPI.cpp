@@ -1,6 +1,9 @@
 #include "WindowsAPI.h"
 #include "WindowsEventMessageFilter.h"
+#include "Win32APIWrapper/Win32APIWrapperFake.h"
+#include "Win32APIWrapper/Win32APIWrapper.h"
 
+#include <ArgParser.h>
 #include <DisplayInfo.h>
 
 #include <Log.h>
@@ -9,14 +12,20 @@
 #include <windows.h>
 #include <shellscalingapi.h>
 
-// NOTE: For now, the WindowsAPI class directly interfaces with windows.h. This isn't very
-// testable, but it's fine for now. We will eventually need to make a 1:1 wrapper for the windows
-// API so that we can mock it and test this thoroughly.
-
 WindowsAPI::WindowsAPI(const WindowsEventMessageFilter& filter,
                        QObject* parent)
-   : CachedSettings()
+   : APIWrapper(nullptr)
+   , CachedSettings()
 {
+   if(ArgParser::RunningWithEnterprise() || ArgParser::RunningUnitTests())
+   {
+      APIWrapper.reset(new Win32APIWrapperFake());
+   }
+   else
+   {
+      APIWrapper.reset(new Win32APIWrapper());
+   }
+
    setParent(parent);
 
    ConnectToEventMessageFilter(filter);
@@ -84,16 +93,6 @@ void WindowsAPI::ConnectToEventMessageFilter(const WindowsEventMessageFilter& fi
            this, &WindowsAPI::HandleWindowsSettingUpdated);
 }
 
-// Notes: Change DisplayEvent to have an event type mapped for each display ID
-// That way we can quickly tell if we need to just remove a worker or add a new one, or do nothing
-// I want to find a way to make an ID for DisplayInfo objects using the hardware as an identifier.
-// This will be hard to do because the API doesn't easily offer much session-persistent info
-// about displays, so I might have to come up with a hash of my own. Monitor name x rect or
-// something like that. It will make the settings more annoying to work with in Enterprise (maybe
-// we can find a way to work around that later once we try to set up Enterprise for in-Frontier
-// use).
-// Still WIP changing from displayNums to IDs everywhere. Figure out the session-persistent ID thing
-// before wrapping that up.
 void WindowsAPI::GetAllDisplayInfo()
 {
    CachedDisplaysInfo.clear();

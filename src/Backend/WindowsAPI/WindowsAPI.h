@@ -6,6 +6,7 @@
 
 struct DisplayInfo;
 class WindowsEventMessageFilter;
+class Win32APIWrapperInterface;
 
 class WindowsAPI: public WindowsAPIInterface
 {
@@ -41,6 +42,7 @@ private:
    void GetDisplayDevicesAndMonitorNames();
    int GetDisplayNumberFromName(const QString& name);
 
+   std::unique_ptr<Win32APIWrapperInterface> APIWrapper;
    QHash<Windows::Setting, QVariant> CachedSettings;
    uint8_t NumDisplays;
    QHash<HMONITOR, DisplayInfo> CachedDisplaysInfo;
