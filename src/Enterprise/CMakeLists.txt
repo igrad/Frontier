@@ -22,6 +22,7 @@ target_include_directories(Enterprise PUBLIC
 
 target_link_libraries(Enterprise PRIVATE
    DataAccess
+   DisplaysManager
    Qt6::Core
    Qt6::Gui
    Qt6::Widgets
