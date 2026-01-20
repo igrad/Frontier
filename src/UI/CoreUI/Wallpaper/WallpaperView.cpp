@@ -7,8 +7,11 @@
 using namespace Wallpaper;
 
 WallpaperView::WallpaperView(XPtr<WallpaperServiceInterface> service,
-                             ShellWindowInterface* window)
+                             ShellWindowInterface* window,
+                             const DisplayInfo& info)
    : QWidget(window)
+   , Display(info.ID)
+   , Info(info)
    , CurrentData()
    , Layout(nullptr)
    , Widget(nullptr)
@@ -43,7 +46,7 @@ WallpaperView::~WallpaperView()
    // Layout->deleteLater();
 }
 
-void WallpaperView::HandleWallpaperDataChanged(const ViewData& data)
+void WallpaperView::HandleWallpaperDataChanged(const DisplayID& displayID, const ViewData& data)
 {
    CurrentData = data;
 
@@ -54,7 +57,6 @@ void WallpaperView::HandleWallpaperDataChanged(const ViewData& data)
       MediaPlayer->setSource(QUrl());
    }
 
-   LogInfo(QString("HandleWallpaperDataChanged. Style: %1").arg(ToString(data.Style)));
    switch(data.Style)
    {
    case Style::StaticColor:
@@ -90,12 +92,11 @@ void WallpaperView::CreateUI()
    setGeometry({0, 0, 1920, 1080});
 
    ViewData data;
-   data.AssignedMonitor = 0;
    data.Color = Qt::blue;
    data.ImagePath = "";
    data.Style = Style::StaticColor;
    data.Fit = Fit::Fill;
-   HandleWallpaperDataChanged(data);
+   HandleWallpaperDataChanged(Display, data);
    show();
 }
 

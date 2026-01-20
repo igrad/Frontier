@@ -8,8 +8,11 @@ class Timer: public QObject
 
 public:
    explicit Timer(QObject* parent = nullptr);
+   Timer(const Timer& other);
    Timer(int interval, bool singleShot = false, QObject* parent = nullptr);
    ~Timer() = default;
+
+   Timer& operator=(const Timer& rhs);
 
    static void AdvanceTime(int msec);
    static void UseQTimer();

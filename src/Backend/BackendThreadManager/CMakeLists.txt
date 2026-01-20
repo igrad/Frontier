@@ -15,5 +15,7 @@ target_link_libraries(BackendThreadManager PUBLIC
    Shared
    TaskBarService
    WallpaperService
+   WindowsAPI
    Qt6::Core
+   Qt6::Widgets
 )

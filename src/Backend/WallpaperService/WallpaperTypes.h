@@ -61,7 +61,6 @@ namespace Wallpaper
    // The necessary data to fully display any given wallpaper
    struct ViewData
    {
-      quint8 AssignedMonitor;
       Fit Fit;
       Style Style;
       QColor Color;

@@ -2,8 +2,11 @@ set(TaskBarServiceSources
    TaskBarService.cpp
    TaskBarService.h
    TaskBarServiceInterface.h
+   TaskBarServiceWorker.cpp
+   TaskBarServiceWorker.h
    TaskBarSettingsProxy.cpp
    TaskBarSettingsProxy.h
+   TaskBarSettingsProxyInterface.h
    TaskBarTypes.h
 )
 
@@ -14,10 +17,10 @@ target_include_directories(TaskBarService PUBLIC
    ${CMAKE_SOURCE_DIR}/src/DataAccess
 )
 
-target_link_libraries(TaskBarService PUBLIC
+target_link_libraries(TaskBarService PRIVATE
    DataAccess
-   Qt6::Gui
-   PRIVATE
+   DisplaysManager
    Shared
+   Qt6::Gui
    Qt6::Core
 )

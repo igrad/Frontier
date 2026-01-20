@@ -6,8 +6,11 @@
 using namespace TaskBar;
 
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
-                         ShellWindowInterface* window)
+                         ShellWindowInterface* window,
+                         const DisplayInfo& info)
    : QWidget(window)
+   , Display(info.ID)
+   , Info(info)
    , AssetClient("TaskBarView", this)
    , CurrentData()
    , MainLayout(nullptr)
@@ -20,7 +23,7 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    ConnectToServiceSignals(service);
 }
 
-void TaskBarView::HandleViewDataChanged(const TaskBar::ViewData& data)
+void TaskBarView::HandleViewDataChanged(const DisplayID& displayID, const TaskBar::ViewData& data)
 {
    if(data == CurrentData)
    {
@@ -32,7 +35,7 @@ void TaskBarView::HandleViewDataChanged(const TaskBar::ViewData& data)
 
    }
 
-   if(data.AssignedMonitor != CurrentData.AssignedMonitor)
+   if(data.DisplayID != CurrentData.DisplayID)
    {
       // TODO: Make sure we're processing the settings update for the correct monitor!
    }
@@ -94,7 +97,7 @@ void TaskBarView::CreateUI()
 
 void TaskBarView::ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service)
 {
-   if(!service.isNull())
+   if(service.isNull())
    {
       LogError("TaskBarService should have been created first!");
       return;

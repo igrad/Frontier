@@ -1,4 +1,6 @@
 set(CoreUISources
+   ShellUI.cpp
+   ShellUI.h
    ShellWindow.cpp
    ShellWindow.h
    ShellWindowInterface.h
@@ -26,10 +28,12 @@ find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
 
 target_link_libraries(CoreUI PRIVATE
    AssetManager
+   DisplaysManager
    Shared
    SharedUIComponents
    TaskBarService
    WallpaperService
+   WindowsAPI
    Qt6::Core
    Qt6::Gui
    Qt6::Multimedia

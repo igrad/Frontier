@@ -4,6 +4,9 @@ set(WallpaperServiceSources
    WallpaperServiceInterface.h
    WallpaperSettingsProxy.cpp
    WallpaperSettingsProxy.h
+   WallpaperSettingsProxyInterface.h
+   WallpaperServiceWorker.cpp
+   WallpaperServiceWorker.h
 
    StaticColorWallpaper.cpp
    StaticColorWallpaper.h
@@ -25,6 +28,7 @@ target_include_directories(WallpaperService PUBLIC
 
 target_link_libraries(WallpaperService PUBLIC
    DataAccess
+   DisplaysManager
    Qt6::Gui
    PRIVATE
    Shared

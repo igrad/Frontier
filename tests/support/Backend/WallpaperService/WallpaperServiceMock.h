@@ -15,7 +15,12 @@ namespace Wallpaper
       ~WallpaperServiceMock() = default;
 
       MOCK_METHOD(void, RegisterMetaTypes, (), (const, override));
+      MOCK_METHOD(void,
+                  HandleDisplayConfigChanged,
+                  (const DisplayConfigEvent&),
+                  (override));
 
-      void EmitWallpaperDataChanged(const Wallpaper::ViewData& data);
+      void EmitWallpaperDataChanged(const DisplayID& displayID,
+                                    const Wallpaper::ViewData& data);
    };
 }

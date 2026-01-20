@@ -2,41 +2,57 @@
 
 #include <QObject>
 
+class DataAccessThreadManager;
+class DisplaysManagerInterface;
+class QApplication;
+
 namespace TaskBar
 {
-class TaskBarServiceInterface;
+   class TaskBarServiceInterface;
 }
+
 namespace Wallpaper
 {
-class WallpaperServiceInterface;
+   class WallpaperServiceInterface;
 }
+
+class WindowsAPIInterface;
+class WindowsEventMessageFilter;
 
 class BackendThreadManager: public QObject
 {
    Q_OBJECT
 
 public:
-   BackendThreadManager();
+   BackendThreadManager(DataAccessThreadManager* dataAccess,
+                        QApplication* app);
    ~BackendThreadManager() = default;
 
    void AssignToThread(QThread* thread);
 
-   TaskBar::TaskBarServiceInterface* GetTheTaskBarService() const;
-   Wallpaper::WallpaperServiceInterface* GetTheWallpaperService() const;
-
 public slots:
-   void HandleRequestPassWallpaperService();
+   void HandleRequestPassDisplaysManager();
    void HandleRequestPassTaskBarService();
+   void HandleRequestPassWallpaperService();
+   void HandlePollDisplaysInfo();
 
 signals:
    void ServiceThreadStarted();
+   void PassDisplaysManager(DisplaysManagerInterface* service);
    void PassWallpaperService(Wallpaper::WallpaperServiceInterface* service);
    void PassTaskBarService(TaskBar::TaskBarServiceInterface* service);
 
 private slots:
-   void HandleServiceThreadStarted();
+   void HandleDataAccessThreadStarted();
 
 private:
+   void CreateDisplaysManager();
+   void CreateTaskBarService();
+   void CreateWallpaperService();
+
+   WindowsEventMessageFilter* WindowsEventFilter;
+   WindowsAPIInterface* TheWindowsAPI;
+   DisplaysManagerInterface* TheDisplaysManager;
    Wallpaper::WallpaperServiceInterface* TheWallpaperService;
    TaskBar::TaskBarServiceInterface* TheTaskBarService;
 };

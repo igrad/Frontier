@@ -1,1 +1,2 @@
+add_subdirectory(TaskBarServiceTests)
 add_subdirectory(WallpaperServiceTests)

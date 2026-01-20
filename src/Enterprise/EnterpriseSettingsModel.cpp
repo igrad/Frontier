@@ -22,7 +22,7 @@ EnterpriseSettingsModel::EnterpriseSettingsModel(QObject* parent)
 void EnterpriseSettingsModel::SetSettingsClient(Settings::SettingsClientInterface* settingsClient)
 {
    SettingsClient = settingsClient;
-   SettingsClient->SubscribeToAllSettings(this);
+   SettingsClient->SubscribeToAllSystemSettings(this);
    DatabaseStarted = true;
 }
 
@@ -127,8 +127,8 @@ bool EnterpriseSettingsModel::setData(const QModelIndex& index,
    return retVal;
 }
 
-void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
-                                                   const QVariant& value)
+void EnterpriseSettingsModel::HandleSystemSettingChanged(Setting setting,
+                                                         const QVariant& value)
 {
    auto iter = std::find_if(Data.begin(), Data.end(),
                        [&](const RowData& data){
@@ -140,7 +140,7 @@ void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
       RowData data;
       data.TheSetting = setting;
       data.SetValue(0, ToString(setting));
-      data.SetValue(1, value);
+      data.SetValue(2, value);
       Data.insert(GetIndexToInsertSetting(setting), data);
    }
    else
@@ -148,10 +148,37 @@ void EnterpriseSettingsModel::HandleSettingChanged(Setting setting,
       // TODO: In the future, make a cell change color for a bit
       // after the value changes.
       RowData& data = *iter;
-      data.SetValue(1, value);
+      data.SetValue(2, value);
    }
+}
 
-   // emit dataChanged(index(0, 0), index(rowCount(), NUM_COLS));
+void EnterpriseSettingsModel::HandleDisplaySettingChanged(Setting setting,
+                                                          uint8_t display,
+                                                          const QVariant& value)
+{
+   auto iter = std::find_if(Data.begin(), Data.end(),
+                       [&](const RowData& data){
+                          return data.TheSetting == setting;
+   });
+
+   if(Data.end() == iter)
+   {
+      RowData data;
+      data.TheSetting = setting;
+      data.Display = display;
+      data.SetValue(0, ToString(setting));
+      data.SetValue(1, display);
+      data.SetValue(2, value);
+      Data.insert(GetIndexToInsertSetting(setting), data);
+   }
+   else
+   {
+      // TODO: In the future, make a cell change color for a bit
+      // after the value changes.
+      RowData& data = *iter;
+      data.SetValue(1, display);
+      data.SetValue(2, value);
+   }
 }
 
 int EnterpriseSettingsModel::GetIndexToInsertSetting(Setting setting) const
@@ -193,7 +220,7 @@ void EnterpriseSettingsModel::PopulateSettings()
    for(int iter = 1; iter < static_cast<int>(Settings::Setting::_All); ++iter)
    {
       const Settings::Setting setting = static_cast<Settings::Setting>(iter);
-      HandleSettingChanged(setting, QVariant());
+      HandleSystemSettingChanged(setting, QVariant());
    }
 
    emit SettingsPopulated();
@@ -207,7 +234,7 @@ bool EnterpriseSettingsModel::WriteEditedSetting(Setting setting, const QVariant
    if(-1 < dataIndex)
    {
       Data[dataIndex].SetValue(1, value);
-      retVal = SettingsClient->WriteSettingValue(setting, value);
+      retVal = SettingsClient->WriteSystemSettingValue(setting, value);
    }
 
    return retVal;

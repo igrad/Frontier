@@ -2,6 +2,7 @@
 
 #include <Utilities/EnumHelpers.h>
 
+#include <QRect>
 #include <QString>
 
 namespace TaskBar
@@ -43,16 +44,19 @@ namespace TaskBar
    struct ViewData
    {
       Alignment Alignment;
-      quint8 AssignedMonitor;
+      QString DisplayID;
       bool AutoHide;
       int AutoHideDelayMs;
       Orientation Orientation;
       double Opacity;
+      QRect Rect;
+      bool Shown;
+      bool StartButtonShown;
 
       bool operator==(const ViewData& rhs) const
       {
          return Alignment == rhs.Alignment &&
-                AssignedMonitor == rhs.AssignedMonitor &&
+                DisplayID == rhs.DisplayID &&
                 AutoHide == rhs.AutoHide &&
                 AutoHideDelayMs == rhs.AutoHideDelayMs &&
                 Orientation == rhs.Orientation &&

@@ -10,7 +10,7 @@ namespace Enterprise
               Qt::ItemDataRole role = Qt::DisplayRole) const
       {
          QVariant retVal;
-         if((0 <= cell) && (2 > cell))
+         if((0 <= cell) && (3 > cell))
          {
             retVal = Data[cell].value(role);
          }
@@ -22,13 +22,14 @@ namespace Enterprise
           const QVariant& value,
           Qt::ItemDataRole role = Qt::DisplayRole)
       {
-         if((0 <= cell) && (2 > cell))
+         if((0 <= cell) && (3 > cell))
          {
             Data[cell][role] = value;
          }
       }
 
       Settings::Setting TheSetting = Settings::Setting::None;
-      QHash<Qt::ItemDataRole, QVariant> Data[2];
+      uint8_t Display = 0;
+      QHash<Qt::ItemDataRole, QVariant> Data[3];
    };
 }

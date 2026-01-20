@@ -13,12 +13,20 @@ public:
    ~FakeSettingSubscriber() = default;
 
 signals:
-   void _TestSettingReceived(const QVariant& value);
+   void System_TestSettingReceived(const QVariant& value);
+   void Display_TestSettingReceived(const QString& displayID,
+                                    const QVariant& value);
 
 public slots:
-   void HandleSetting_TestSettingChanged(const QVariant& value)
+   void HandleSystemSetting_TestSettingChanged(const QVariant& value)
    {
-      emit _TestSettingReceived(value);
+      emit System_TestSettingReceived(value);
+   }
+
+   void HandleDisplaySetting_TestSettingChanged(const QString& displayID,
+                                                const QVariant& value)
+   {
+      emit Display_TestSettingReceived(displayID, value);
    }
 };
 
@@ -31,11 +39,22 @@ public:
    ~FakeAllSettingsSubscriber() = default;
 
 signals:
-   void SettingChangeReceived(const Settings::Setting setting, const QVariant& value);
+   void SystemSettingChangeReceived(const Settings::Setting setting,
+                                    const QVariant& value);
+   void DisplaySettingChangeReceived(const Settings::Setting setting,
+                                     const QString& displayID,
+                                     const QVariant& value);
 
 public slots:
-   void HandleSettingChanged(const Settings::Setting setting, const QVariant& value)
+   void HandleSystemSettingChanged(const Settings::Setting setting, const QVariant& value)
    {
-      emit SettingChangeReceived(setting, value);
+      emit SystemSettingChangeReceived(setting, value);
+   }
+
+   void HandleDisplaySettingChanged(const Settings::Setting setting,
+                                    const QString& displayID,
+                                    const QVariant& value)
+   {
+      emit DisplaySettingChangeReceived(setting, displayID, value);
    }
 };

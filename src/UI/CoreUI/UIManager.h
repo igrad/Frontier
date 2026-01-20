@@ -3,56 +3,61 @@
 #include <BackendThreadManager/BackendThreadManager.h>
 #include <DataAccessThreadManager.h>
 
+#include <DisplaysManager/DisplayInfo.h>
+
 #include <Utilities/XPtr.h>
+
+#include <QMap>
 
 namespace Assets
 {
    class AssetLoaderInterface;
    class AssetManager;
 }
-class ShellWindow;
 
-namespace Wallpaper
-{
-   class WallpaperView;
-}
+class DisplaysManagerInterface;
+class ShellUI;
+class WindowsAPIInterface;
 
 class UIManager: public QObject
 {
    Q_OBJECT
 
 public:
-   explicit UIManager(DataAccessThreadManager* dataAccess,
-                      BackendThreadManager* backend);
-   ~UIManager();
+   UIManager(DataAccessThreadManager* dataAccess,
+             BackendThreadManager* backend);
+   ~UIManager() = default;
 
 signals:
    void UIConnectedToServiceComponents();
    void ShellWindowClosed();
+   void PollDisplaysInfo();
 
 private slots:
    void HandleDataAccessThreadStarted();
    void HandleServiceThreadStarted();
+   void HandleDisplayConfigChanged(const DisplayConfigEvent& event);
+   void HandlePassDisplaysManager(DisplaysManagerInterface* manager);
    void HandlePassAssetLoader(Assets::AssetLoaderInterface* loader);
    void HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service);
    void HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service);
 
 private:
    void Start();
-
-   void BuildUIComponents();
-   void BuildTheShellWindow();
-   void BuildTheWallpaperView();
+   void BuildShellWindow(const DisplayInfo& info);
+   void RemoveShellWindow(const DisplayInfo& info);
+   void RequestDisplaysInfo();
 
    XPtr<DataAccessThreadManager> DataAccess;
    XPtr<BackendThreadManager> Backend;
-   ShellWindow* TheShellWindow;
-
    XPtr<Assets::AssetLoaderInterface> TheAssetLoader;
+   XPtr<DisplaysManagerInterface> DisplaysManager;
+   XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
+   XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
+
    Assets::AssetManager* TheAssetManager;
 
-   XPtr<TaskBar::TaskBarServiceInterface> TaskBarService;
-
-   XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
-   Wallpaper::WallpaperView* TheWallpaperView;
+   QMap<DisplayID, ShellUI*> Shells;
+   bool DisplaysInfoRequested;
+   bool DisplaysInfoReceived;
 };

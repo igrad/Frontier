@@ -14,13 +14,16 @@ class WallpaperViewTest: public Test
 {
    WallpaperViewTest()
       : Service()
+      , Info()
       , View(XPtr<WallpaperServiceInterface>(&Service),
-             &ShellWindow)
+             &ShellWindow,
+             Info)
    {
 
    }
 
    NiceMock<ShellWindowMock> ShellWindow;
    NiceMock<WallpaperServiceMock> Service;
+   DisplayInfo Info;
    WallpaperView View;
 };

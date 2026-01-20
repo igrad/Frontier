@@ -30,16 +30,6 @@ public:
 
    }
 
-   void SetUp() override
-   {
-      Log::LogToStandardOut();
-   }
-
-   void TearDown() override
-   {
-      Log::LogToStandardOut(false);
-   }
-
    NiceMock<AssetLoaderMock> Loader;
    AssetManager Manager;
 };

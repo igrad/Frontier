@@ -25,71 +25,167 @@ const SettingsServiceInterface* SettingsClient::GetSettingsServicePtr()
    return SettingsClient::Service;
 }
 
-const std::string SettingsClient::GetSettingHandlerMethodStr(Setting setting, bool normalized) const
+bool SettingsClient::SubscribeToSystemSetting(Setting setting, QObject* subscriber)
 {
-   // This weirdness is just so that we can validate the handler function exists before we make the
-   // connection. That way we don't have to validate at the time of setting value change.
-   std::string str;
-   const bool allSetting = Setting::_All == setting;
-   if(normalized)
-   {
-      QString rawStr;
-      if(allSetting)
-      {
-         rawStr = QString("HandleSettingChanged(const Settings::Setting, const QVariant&)");
-      }
-      else
-      {
-         rawStr = QString("HandleSetting%1Changed(const QVariant&)")
-                     .arg(ToString(setting));
-      }
-      str = QMetaObject::normalizedSignature(rawStr.toStdString().c_str()).toStdString();
-   }
-   else
-   {
-      QString rawStr;
-      if(allSetting)
-      {
-         rawStr = QString("HandleSettingChanged");
-      }
-      else
-      {
-         rawStr = QString("HandleSetting%1Changed")
-                     .arg(ToString(setting));
-      }
-      str = rawStr.toStdString();
-   }
-
-   return str;
+   const std::string methodStr = GetSystemSettingHandlerMethodStr(setting, true);
+   return SubscribeToSetting(methodStr, setting, subscriber);
 }
 
-void SettingsClient::ConnectToService()
+bool SettingsClient::SubscribeToDisplaySetting(Setting setting, QObject* subscriber)
 {
-   if(nullptr != SettingsClient::Service)
-   {
-      // Prevents a clang warning about bitwise OR (|) op on these connection types
-      // NOLINTNEXTLINE
-      const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
-                                                        Qt::QueuedConnection);
-      connect(SettingsClient::Service, &SettingsServiceInterface::SettingUpdated,
-              this, &SettingsClient::HandleSettingUpdated,
-              conn);
-      connect(this, &SettingsClient::CacheSettingValue,
-              SettingsClient::Service, &SettingsServiceInterface::HandleCacheSettingValue,
-              conn);
-   }
-   else
-   {
-      LogError(QString("SettingsClient::SettingsService for client \"%1\" is null at "
-                       "time of client instantiation")
-                  .arg(Owner));
-   }
+   const std::string methodStr = GetDisplaySettingHandlerMethodStr(setting, true);
+   return SubscribeToSetting(methodStr, setting, subscriber);
 }
 
-bool SettingsClient::SubscribeToSetting(Setting setting, QObject* subscriber)
+bool SettingsClient::SubscribeToAllSystemSettings(QObject* subscriber)
 {
    bool retVal = false;
-   const std::string methodStr = GetSettingHandlerMethodStr(setting, true);
+
+   const std::string methodStr = GetSystemSettingHandlerMethodStr(Setting::_All, true);
+   if(nullptr != subscriber)
+   {
+      if(0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str()))
+      {
+         ObjectsSubscribedToAllSystemSignals.push_back(subscriber);
+         retVal = true;
+      }
+      else
+      {
+         LogError(QString("Could not find method %1 to handle all settings in object %3")
+                     .arg(methodStr.c_str(),
+                          subscriber->metaObject()->className()));
+      }
+   }
+
+   return retVal;
+}
+
+bool SettingsClient::SubscribeToAllDisplaySettings(QObject* subscriber)
+{
+   bool retVal = false;
+
+   const std::string methodStr = GetDisplaySettingHandlerMethodStr(Setting::_All, true);
+   if(nullptr != subscriber)
+   {
+      if(0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str()))
+      {
+         ObjectsSubscribedToAllDisplaySignals.push_back(subscriber);
+         retVal = true;
+      }
+      else
+      {
+         LogError(QString("Could not find method %1 to handle all settings in object %3")
+                     .arg(methodStr.c_str(),
+                          subscriber->metaObject()->className()));
+      }
+   }
+
+   return retVal;
+}
+
+bool SettingsClient::WriteSystemSettingValue(Setting setting, const QVariant& value)
+{
+   bool retVal = false;
+
+   if(Setting::None != setting)
+   {
+      emit CacheSystemSettingValue(setting, value);
+      retVal = true;
+   }
+   else
+   {
+      LogError("Cannot write to None setting. This is a code error.");
+   }
+
+   return retVal;
+}
+
+bool SettingsClient::WriteDisplaySettingValue(Setting setting,
+                                              const QString& displayID,
+                                              const QVariant& value)
+{
+   bool retVal = false;
+
+   if(Setting::None != setting)
+   {
+      emit CacheDisplaySettingValue(setting, displayID, value);
+      retVal = true;
+   }
+   else
+   {
+      LogError("Cannot write to None setting. This is a code error.");
+   }
+
+   return retVal;
+}
+
+void SettingsClient::HandleSystemSettingUpdated(const Setting& setting, const QVariant& value)
+{
+   const QList<QObject*> subscribers = Subscriptions.values(setting);
+
+   const std::string methodStr = GetSystemSettingHandlerMethodStr(setting);
+
+   for(QObject* sub : std::as_const(subscribers))
+   {
+      if(nullptr != sub)
+      {
+         QMetaObject::invokeMethod(sub,
+                                   methodStr.c_str(),
+                                   value);
+      }
+   }
+
+   constexpr const char* allSubStr = "HandleSystemSettingChanged";
+   for(QObject* sub : std::as_const(ObjectsSubscribedToAllSystemSignals))
+   {
+      if(nullptr != sub)
+      {
+         QMetaObject::invokeMethod(sub,
+                                   allSubStr,
+                                   Q_ARG(Setting, setting),
+                                   Q_ARG(QVariant, value));
+      }
+   }
+}
+
+void SettingsClient::HandleDisplaySettingUpdated(const Setting& setting,
+                                                 const QString& displayID,
+                                                 const QVariant& value)
+{
+   const QList<QObject*> subscribers = Subscriptions.values(setting);
+
+   const std::string methodStr = GetDisplaySettingHandlerMethodStr(setting);
+
+   for(QObject* sub : std::as_const(subscribers))
+   {
+      if(nullptr != sub)
+      {
+         QMetaObject::invokeMethod(sub,
+                                   methodStr.c_str(),
+                                   displayID,
+                                   value);
+      }
+   }
+
+   constexpr const char* allSubStr = "HandleDisplaySettingChanged";
+   for(QObject* sub : std::as_const(ObjectsSubscribedToAllDisplaySignals))
+   {
+      if(nullptr != sub)
+      {
+         QMetaObject::invokeMethod(sub,
+                                   allSubStr,
+                                   Q_ARG(Setting, setting),
+                                   Q_ARG(QString, displayID),
+                                   Q_ARG(QVariant, value));
+      }
+   }
+}
+
+bool SettingsClient::SubscribeToSetting(const std::string& methodStr,
+                                        Setting setting,
+                                        QObject* subscriber)
+{
+   bool retVal = false;
    if(nullptr != subscriber)
    {
       if(QObjectHasMethodDeclared(subscriber, methodStr))
@@ -113,71 +209,112 @@ bool SettingsClient::SubscribeToSetting(Setting setting, QObject* subscriber)
    return retVal;
 }
 
-bool SettingsClient::SubscribeToAllSettings(QObject* subscriber)
+const std::string SettingsClient::GetSystemSettingHandlerMethodStr(Setting setting,
+                                                                   bool normalized) const
 {
-   bool retVal = false;
-
-   const std::string methodStr = GetSettingHandlerMethodStr(Setting::_All, true);
-   if(nullptr != subscriber)
+   // This weirdness is just so that we can validate the handler function exists before we make the
+   // connection. That way we don't have to validate at the time of setting value change.
+   std::string str;
+   const bool allSetting = Setting::_All == setting;
+   if(normalized)
    {
-      if(0 <= subscriber->metaObject()->indexOfMethod(methodStr.c_str()))
+      QString rawStr;
+      if(allSetting)
       {
-         ObjectsSubscribedToAllSignals.push_back(subscriber);
-         retVal = true;
+         rawStr = QString("HandleSystemSettingChanged(const Settings::Setting, const QVariant&)");
       }
       else
       {
-         LogError(QString("Could not find method %1 to handle all settings in object %3")
-                     .arg(methodStr.c_str(),
-                          subscriber->metaObject()->className()));
+         rawStr = QString("HandleSystemSetting%1Changed(const QVariant&)")
+                     .arg(ToString(setting));
       }
-   }
-
-   return retVal;
-}
-
-bool SettingsClient::WriteSettingValue(Setting setting, const QVariant& value)
-{
-   bool retVal = false;
-
-   if(Setting::None != setting)
-   {
-      emit CacheSettingValue(setting, value);
-      retVal = true;
+      str = QMetaObject::normalizedSignature(rawStr.toStdString().c_str()).toStdString();
    }
    else
    {
-      LogError("Cannot write to None setting. This is a code error.");
+      QString rawStr;
+      if(allSetting)
+      {
+         rawStr = QString("HandleSystemSettingChanged");
+      }
+      else
+      {
+         rawStr = QString("HandleSystemSetting%1Changed")
+                     .arg(ToString(setting));
+      }
+      str = rawStr.toStdString();
    }
 
-   return retVal;
+   return str;
 }
 
-void SettingsClient::HandleSettingUpdated(const Setting& setting, const QVariant& value)
+const std::string SettingsClient::GetDisplaySettingHandlerMethodStr(Setting setting,
+                                                                    bool normalized) const
 {
-   const QList<QObject*> subscribers = Subscriptions.values(setting);
-
-   const std::string methodStr = GetSettingHandlerMethodStr(setting);
-
-   for(QObject* sub : std::as_const(subscribers))
+   // This weirdness is just so that we can validate the handler function exists before we make the
+   // connection. That way we don't have to validate at the time of setting value change.
+   std::string str;
+   const bool allSetting = Setting::_All == setting;
+   if(normalized)
    {
-      if(nullptr != sub)
+      QString rawStr;
+      if(allSetting)
       {
-         QMetaObject::invokeMethod(sub,
-                                   methodStr.c_str(),
-                                   value);
+         rawStr = QString("HandleDisplaySettingChanged(const Settings::Setting, "
+                          "const QString&, "
+                          "const QVariant&)");
       }
+      else
+      {
+         rawStr = QString("HandleDisplaySetting%1Changed(const QString&, const QVariant&)")
+                     .arg(ToString(setting));
+      }
+      str = QMetaObject::normalizedSignature(rawStr.toStdString().c_str()).toStdString();
+   }
+   else
+   {
+      QString rawStr;
+      if(allSetting)
+      {
+         rawStr = QString("HandleDisplaySettingChanged");
+      }
+      else
+      {
+         rawStr = QString("HandleDisplaySetting%1Changed")
+                     .arg(ToString(setting));
+      }
+      str = rawStr.toStdString();
    }
 
-   constexpr const char* allSubStr = "HandleSettingChanged";
-   for(QObject* sub : std::as_const(ObjectsSubscribedToAllSignals))
+   return str;
+}
+
+void SettingsClient::ConnectToService()
+{
+   if(nullptr != SettingsClient::Service)
    {
-      if(nullptr != sub)
-      {
-         QMetaObject::invokeMethod(sub,
-                                   allSubStr,
-                                   Q_ARG(Setting, setting),
-                                   Q_ARG(QVariant, value));
-      }
+      // Prevents a clang warning about bitwise OR (|) op on these connection types
+      // NOLINTNEXTLINE
+      const auto conn = static_cast<Qt::ConnectionType>(Qt::UniqueConnection |
+                                                        Qt::QueuedConnection);
+      connect(SettingsClient::Service, &SettingsServiceInterface::SystemSettingUpdated,
+              this, &SettingsClient::HandleSystemSettingUpdated,
+              conn);
+      connect(this, &SettingsClient::CacheSystemSettingValue,
+              SettingsClient::Service, &SettingsServiceInterface::HandleCacheSystemSettingValue,
+              conn);
+
+      connect(SettingsClient::Service, &SettingsServiceInterface::DisplaySettingUpdated,
+              this, &SettingsClient::HandleDisplaySettingUpdated,
+              conn);
+      connect(this, &SettingsClient::CacheDisplaySettingValue,
+              SettingsClient::Service, &SettingsServiceInterface::HandleCacheDisplaySettingValue,
+              conn);
+   }
+   else
+   {
+      LogError(QString("SettingsClient::SettingsService for client \"%1\" is null at "
+                       "time of client instantiation. This client will now be orphaned.")
+                  .arg(Owner));
    }
 }

@@ -12,7 +12,11 @@ namespace TaskBar
 
    public:
       MOCK_METHOD(void, RegisterMetaTypes, (), (const, override));
+      MOCK_METHOD(void,
+                  HandleDisplayConfigChanged,
+                  (const DisplayConfigEvent&),
+                  (override));
 
-      void EmitViewDataChanged(const ViewData& data);
+      void EmitViewDataChanged(const DisplayID& displayID, const ViewData& data);
    };
 }

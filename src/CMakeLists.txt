@@ -19,11 +19,13 @@ target_link_libraries(Frontier
    BackendThreadManager
    Enterprise
    DataAccess
+   WindowsAPI
    Qt6::Core
    Qt6::Gui
    Qt6::Multimedia
    Qt6::MultimediaWidgets
    Qt6::Widgets
+   Shcore.lib
 )
 
 if(${Qt6_VERSION} VERSION_LESS 6.1.0)

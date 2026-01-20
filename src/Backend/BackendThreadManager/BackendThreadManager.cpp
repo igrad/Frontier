@@ -1,33 +1,37 @@
 #include "BackendThreadManager.h"
 
+#include <DataAccessThreadManager.h>
+#include <DisplaysManager.h>
 #include <TaskBarService.h>
 #include <WallpaperService.h>
+#include <WindowsAPI.h>
+#include <WindowsEventMessageFilter.h>
 
+#include <QApplication>
 #include <QThread>
 
-BackendThreadManager::BackendThreadManager()
-   : TheTaskBarService(nullptr)
+BackendThreadManager::BackendThreadManager(DataAccessThreadManager* dataAccess,
+                                           QApplication* app)
+   : WindowsEventFilter(new WindowsEventMessageFilter(this))
+   , TheWindowsAPI(new WindowsAPI(*WindowsEventFilter))
+   , TheDisplaysManager()
+   , TheTaskBarService(nullptr)
    , TheWallpaperService(nullptr)
 {
+   app->installNativeEventFilter(WindowsEventFilter);
+
+   connect(dataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
+           this, &BackendThreadManager::HandleDataAccessThreadStarted);
 }
 
 void BackendThreadManager::AssignToThread(QThread* thread)
 {
    this->moveToThread(thread);
-
-   connect(thread, &QThread::started,
-           this, &BackendThreadManager::HandleServiceThreadStarted,
-           Qt::UniqueConnection);
 }
 
-TaskBar::TaskBarServiceInterface* BackendThreadManager::GetTheTaskBarService() const
+void BackendThreadManager::HandleRequestPassDisplaysManager()
 {
-   return TheTaskBarService;
-}
-
-Wallpaper::WallpaperServiceInterface* BackendThreadManager::GetTheWallpaperService() const
-{
-   return TheWallpaperService;
+   emit PassDisplaysManager(TheDisplaysManager);
 }
 
 void BackendThreadManager::HandleRequestPassTaskBarService()
@@ -40,13 +44,41 @@ void BackendThreadManager::HandleRequestPassWallpaperService()
    emit PassWallpaperService(TheWallpaperService);
 }
 
-void BackendThreadManager::HandleServiceThreadStarted()
+void BackendThreadManager::HandlePollDisplaysInfo()
+{
+   TheDisplaysManager->PollDisplaysInfo();
+}
+
+void BackendThreadManager::HandleDataAccessThreadStarted()
+{
+   LogInfo("Handling DataAccess thread started");
+
+   CreateDisplaysManager();
+   CreateWallpaperService();
+   CreateTaskBarService();
+
+   emit ServiceThreadStarted();
+}
+
+void BackendThreadManager::CreateDisplaysManager()
+{
+   TheDisplaysManager = new DisplaysManager(*TheWindowsAPI, this);
+   TheDisplaysManager->RegisterMetaTypes();
+}
+
+void BackendThreadManager::CreateTaskBarService()
+{
+   TheTaskBarService = new TaskBar::TaskBarService(this);
+   TheTaskBarService->RegisterMetaTypes();
+
+   // TODO Connect tot displays manager
+}
+
+void BackendThreadManager::CreateWallpaperService()
 {
    TheWallpaperService = new Wallpaper::WallpaperService(this);
    TheWallpaperService->RegisterMetaTypes();
 
-   TheTaskBarService = new TaskBar::TaskBarService(this);
-   TheTaskBarService->RegisterMetaTypes();
-
-   emit ServiceThreadStarted();
+   connect(TheDisplaysManager, &DisplaysManagerInterface::DisplayConfigChanged,
+           TheWallpaperService, &Wallpaper::WallpaperServiceInterface::HandleDisplayConfigChanged);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TaskBarServiceInterface.h"
+#include "TaskBarServiceWorker.h"
 #include "TaskBarSettingsProxy.h"
 
 #include <QTimer>
@@ -17,11 +18,14 @@ namespace TaskBar
 
       void RegisterMetaTypes() const override;
 
+   public slots:
+      void HandleDisplayConfigChanged(const DisplayConfigEvent& event) override;
+
    private slots:
-      void HandleSettingsChanged();
+      void HandleSettingsChanged(const DisplayID& id);
 
    private:
       TaskBarSettingsProxy SettingsProxy;
-      QTimer AutoHideTimer;
+      QMap<DisplayID, TaskBarServiceWorker*> Workers;
    };
 }

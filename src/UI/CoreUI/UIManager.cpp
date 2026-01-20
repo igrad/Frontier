@@ -1,8 +1,10 @@
-#include "ShellWindow.h"
+#include "ShellUI.h"
 #include "UIManager.h"
 
 #include <AssetManager.h>
+#include <DisplaysManagerInterface.h>
 #include <Wallpaper/WallpaperView.h>
+#include <WindowsAPI/WindowsAPI.h>
 
 #include <QMetaObject>
 
@@ -10,12 +12,13 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
                      BackendThreadManager* backend)
    : DataAccess(dataAccess)
    , Backend(backend)
-   , TheShellWindow(nullptr)
    , TheAssetLoader(nullptr)
-   , TheAssetManager(nullptr)
    , TaskBarService(nullptr)
    , WallpaperService(nullptr)
-   , TheWallpaperView(nullptr)
+   , TheAssetManager(nullptr)
+   , Shells()
+   , DisplaysInfoRequested(false)
+   , DisplaysInfoReceived(false)
 {
    connect(this, &UIManager::UIConnectedToServiceComponents,
            DataAccess.get(), &DataAccessThreadManager::HandleUIConnectedToComponents);
@@ -26,26 +29,38 @@ UIManager::UIManager(DataAccessThreadManager* dataAccess,
            this, &UIManager::HandleServiceThreadStarted);
 }
 
-UIManager::~UIManager()
+// TheAssetLoader does not need to be deleted manually - it's parent to this and
+// will auto-delete
+// UIManager::~UIManager()
+// {
+// }
+
+void UIManager::HandleDisplayConfigChanged(const DisplayConfigEvent& event)
 {
-   if(TheShellWindow)
+   DisplaysInfoReceived = true;
+
+   for(const QPair<DisplayConfigEventType, DisplayInfo>& info : std::as_const(event.Displays))
    {
-      TheShellWindow->deleteLater();
-      TheShellWindow = nullptr;
+      switch(info.first)
+      {
+      case DisplayConfigEventType::Added:
+         BuildShellWindow(info.second);
+         break;
+      case DisplayConfigEventType::Removed:
+         RemoveShellWindow(info.second);
+         break;
+      case DisplayConfigEventType::Changed:
+         Shells[info.second.ID]->HandleDisplayInfoChanged(info.second);
+         break;
+      case DisplayConfigEventType::None:
+         // This display has not changed at all - do nothing
+         break;
+      }
    }
-}
-
-void UIManager::Start()
-{
-   emit UIConnectedToServiceComponents();
-
-   TheShellWindow->show();
 }
 
 void UIManager::HandleDataAccessThreadStarted()
 {
-   LogInfo("Handling DataAccess thread started");
-
    connect(DataAccess.get(), &DataAccessThreadManager::PassAssetLoader,
            this, &UIManager::HandlePassAssetLoader);
    QMetaObject::invokeMethod(DataAccess.Object,
@@ -54,7 +69,13 @@ void UIManager::HandleDataAccessThreadStarted()
 
 void UIManager::HandleServiceThreadStarted()
 {
-   LogInfo("Handling Service thread started");
+   connect(this, &UIManager::PollDisplaysInfo,
+           Backend.get(), &BackendThreadManager::HandlePollDisplaysInfo);
+
+   connect(Backend.get(), &BackendThreadManager::PassDisplaysManager,
+           this, &UIManager::HandlePassDisplaysManager);
+   QMetaObject::invokeMethod(Backend.Object,
+                             "HandleRequestPassDisplaysManager");
 
    connect(Backend.get(), &BackendThreadManager::PassTaskBarService,
            this, &UIManager::HandlePassTaskBarService);
@@ -67,6 +88,13 @@ void UIManager::HandleServiceThreadStarted()
                              "HandleRequestPassWallpaperService");
 }
 
+void UIManager::HandlePassDisplaysManager(DisplaysManagerInterface* manager)
+{
+   DisplaysManager = XPtr(manager);
+   connect(DisplaysManager.get(), &DisplaysManagerInterface::DisplayConfigChanged,
+           this, &UIManager::HandleDisplayConfigChanged);
+}
+
 void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 {
    TheAssetLoader = XPtr(loader);
@@ -77,39 +105,55 @@ void UIManager::HandlePassAssetLoader(Assets::AssetLoaderInterface* loader)
 void UIManager::HandlePassTaskBarService(TaskBar::TaskBarServiceInterface* service)
 {
    TaskBarService = XPtr(service);
-   BuildUIComponents();
+   RequestDisplaysInfo();
 }
 
 void UIManager::HandlePassWallpaperService(Wallpaper::WallpaperServiceInterface* service)
 {
    WallpaperService = XPtr(service);
-   BuildUIComponents();
+   RequestDisplaysInfo();
 }
 
-void UIManager::BuildUIComponents()
+void UIManager::Start()
 {
-   if(!TaskBarService.isNull()&&
-       !WallpaperService.isNull())
+   emit UIConnectedToServiceComponents();
+}
+
+void UIManager::BuildShellWindow(const DisplayInfo& info)
+{
+   if(!Shells.contains(info.ID))
    {
-      BuildTheShellWindow();
-
-      // Build in z-index order
-      BuildTheWallpaperView();
-      // BuildTheTaskBarView();
-
-      Start();
+      Shells[info.ID] = new ShellUI(TaskBarService,
+                                    WallpaperService,
+                                    info,
+                                    this);
    }
 }
 
-void UIManager::BuildTheShellWindow()
+void UIManager::RemoveShellWindow(const DisplayInfo& info)
 {
-   TheShellWindow = new ShellWindow();
-   connect(TheShellWindow, &ShellWindow::Closed,
-           this, &UIManager::ShellWindowClosed);
+   auto iter = Shells.find(info.ID);
+
+   if(Shells.end() != iter)
+   {
+      iter.value()->HandleDisplayRemoved(info);
+      iter.value()->deleteLater();
+      Shells[info.ID] = nullptr;
+      Shells.erase(iter);
+   }
 }
 
-void UIManager::BuildTheWallpaperView()
+void UIManager::RequestDisplaysInfo()
 {
-   TheWallpaperView = new Wallpaper::WallpaperView(WallpaperService,
-                                                   TheShellWindow);
+   if(!DisplaysInfoReceived &&
+       !TaskBarService.isNull() &&
+       !WallpaperService.isNull() &&
+       (nullptr != TheAssetManager) &&
+       !DisplaysInfoRequested)
+   {
+      LogInfo("Requesting initial display info");
+      emit PollDisplaysInfo();
+      DisplaysInfoRequested = true;
+      // Note: Should we yield the thread right here?
+   }
 }

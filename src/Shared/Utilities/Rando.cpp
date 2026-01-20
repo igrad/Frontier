@@ -19,6 +19,24 @@ Rando::Rando(int lowerBound, int upperBound)
    assert(LowerBound <= UpperBound && "Lower bound of Rando must be <= upper bound");
 }
 
+Rando::Rando(const Rando& other)
+   : Device()
+   , Engine(Device())
+   , LowerBound(other.LowerBound)
+   , UpperBound(other.UpperBound)
+   , Dist(other.Dist)
+{
+}
+
+Rando& Rando::operator=(const Rando& rhs)
+{
+   LowerBound = rhs.LowerBound;
+   UpperBound = rhs.UpperBound;
+   Dist = rhs.Dist;
+
+   return *this;
+}
+
 int Rando::Value()
 {
    return Dist(Engine);

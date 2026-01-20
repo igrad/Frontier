@@ -26,7 +26,7 @@ public:
    SettingsClient Client;
 };
 
-TEST_F(SettingsClientTest, SubscribeToSetting1)
+TEST_F(SettingsClientTest, SubscribeToSystemSetting1)
 {
    GWT("Service and client are created",
        "Trying to subscribe to a setting without an appropriate handler slot",
@@ -34,19 +34,19 @@ TEST_F(SettingsClientTest, SubscribeToSetting1)
 
    FakeSettingSubscriber sub;
 
-   EXPECT_FALSE(Client.SubscribeToSetting(Setting::WallpaperSchedule, &sub));
+   EXPECT_FALSE(Client.SubscribeToSystemSetting(Setting::WallpaperSchedule, &sub));
 }
 
-TEST_F(SettingsClientTest, SubscribeToSetting2)
+TEST_F(SettingsClientTest, SubscribeToSystemSetting2)
 {
    GWT("Service and client are created",
        "Trying to subscribe to a nullptr",
        "Subscription fails");
 
-   EXPECT_FALSE(Client.SubscribeToSetting(Setting::_TestSetting, nullptr));
+   EXPECT_FALSE(Client.SubscribeToSystemSetting(Setting::_TestSetting, nullptr));
 }
 
-TEST_F(SettingsClientTest, SubscribeToSetting3)
+TEST_F(SettingsClientTest, SubscribeToSystemSetting3)
 {
    GWT("Service and client are created AND subscribed to setting",
        "Setting is updated by service",
@@ -54,32 +54,32 @@ TEST_F(SettingsClientTest, SubscribeToSetting3)
 
    FakeSettingSubscriber sub;
 
-   Client.SubscribeToSetting(Setting::_TestSetting, &sub);
+   Client.SubscribeToSystemSetting(Setting::_TestSetting, &sub);
 
-   QSignalSpy spy(&sub, &FakeSettingSubscriber::_TestSettingReceived);
+   QSignalSpy spy(&sub, &FakeSettingSubscriber::System_TestSettingReceived);
 
    const QVariant value = QString("SomeValue");
-   ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);
+   ServiceMock.EmitSystemSettingUpdated(Setting::_TestSetting, value);
 
-   ASSERT_TRUE(spy.wait());
+   QCoreApplication::processEvents();
 
    ASSERT_EQ(1, spy.count());
    ASSERT_EQ(1, spy.at(0).count());
    EXPECT_EQ(value, spy.at(0).at(0).value<QVariant>());
 }
 
-TEST_F(SettingsClientTest, SubscribeToAllSettings1)
+TEST_F(SettingsClientTest, SubscribeToAllSystemSettings1)
 {
    GWT("Service and client are created",
-       "Trying to subscribe to all settings without an appropriate handler slot",
+       "Trying to subscribe to all system settings without an appropriate handler slot",
        "Subscription fails");
 
    FakeSettingSubscriber sub;
 
-   EXPECT_FALSE(Client.SubscribeToAllSettings(&sub));
+   EXPECT_FALSE(Client.SubscribeToAllSystemSettings(&sub));
 }
 
-TEST_F(SettingsClientTest, SubscribeToAllSettings2)
+TEST_F(SettingsClientTest, SubscribeToAllSystemSettings2)
 {
    GWT("Service and client are created AND subscribed to all settings",
        "Several settings are updated by service",
@@ -87,12 +87,12 @@ TEST_F(SettingsClientTest, SubscribeToAllSettings2)
 
    FakeAllSettingsSubscriber sub;
 
-   Client.SubscribeToAllSettings(&sub);
+   Client.SubscribeToAllSystemSettings(&sub);
 
-   QSignalSpy spy(&sub, &FakeAllSettingsSubscriber::SettingChangeReceived);
+   QSignalSpy spy(&sub, &FakeAllSettingsSubscriber::SystemSettingChangeReceived);
 
    const QVariant value = QString("SomeValue");
-   ServiceMock.EmitSettingUpdated(Setting::_TestSetting, value);
+   ServiceMock.EmitSystemSettingUpdated(Setting::_TestSetting, value);
 
    ASSERT_TRUE(spy.wait());
 
@@ -101,7 +101,7 @@ TEST_F(SettingsClientTest, SubscribeToAllSettings2)
    EXPECT_EQ(Setting::_TestSetting, spy.at(0).at(0).value<Settings::Setting>());
    EXPECT_EQ(value, spy.at(0).at(1).value<QVariant>());
 
-   ServiceMock.EmitSettingUpdated(Setting::TaskBarAlignment, value);
+   ServiceMock.EmitSystemSettingUpdated(Setting::TaskBarAlignment, value);
 
    ASSERT_TRUE(spy.wait());
 
@@ -111,16 +111,16 @@ TEST_F(SettingsClientTest, SubscribeToAllSettings2)
    EXPECT_EQ(value, spy.at(1).at(1).value<QVariant>());
 }
 
-TEST_F(SettingsClientTest, HandleSettingUpdated1)
+TEST_F(SettingsClientTest, HandleSystemSettingUpdated1)
 {
    GWT("Service and client are created AND setting is not None",
-       "WriteSettingValue is called",
-       "Emit CacheSettingValue signal");
-   QSignalSpy spy(&Client, &SettingsClientInterface::CacheSettingValue);
+       "WriteSystemSettingValue is called",
+       "Emit CacheSystemSettingValue signal");
+   QSignalSpy spy(&Client, &SettingsClientInterface::CacheSystemSettingValue);
 
    const Setting setting = Setting::_TestSetting;
    const QVariant value = "SomeValue";
-   Client.WriteSettingValue(setting, value);
+   Client.WriteSystemSettingValue(setting, value);
 
    ASSERT_EQ(1, spy.count());
    ASSERT_EQ(2, spy.at(0).count());

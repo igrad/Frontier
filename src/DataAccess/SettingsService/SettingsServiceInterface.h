@@ -17,10 +17,19 @@ namespace Settings
       virtual void FetchAllSettings() = 0;
 
    public slots:
-      virtual void HandleCacheSettingValue(const Setting setting,
-                                           const QVariant value) = 0;
+      virtual void HandleCacheSystemSettingValue(const Setting setting,
+                                                 const QVariant value) = 0;
+      virtual void HandleCacheDisplaySettingValue(const Setting setting,
+                                                  const QString& displayID,
+                                                  const QVariant value) = 0;
+      virtual void HandleRequestSystemSettingValue(const Setting setting) = 0;
+      virtual void HandleRequestDisplaySettingValue(const Setting setting,
+                                                    const QString& displayID) = 0;
 
    signals:
-      void SettingUpdated(const Setting setting, const QVariant val);
+      void SystemSettingUpdated(const Setting setting, const QVariant val);
+      void DisplaySettingUpdated(const Setting setting,
+                                 const QString& displayID,
+                                 const QVariant val);
    };
 }

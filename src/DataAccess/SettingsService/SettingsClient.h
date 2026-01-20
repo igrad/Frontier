@@ -22,23 +22,38 @@ namespace Settings
 
       static const SettingsServiceInterface* GetSettingsServicePtr();
 
-      bool SubscribeToSetting(Setting setting, QObject* subscriber) override;
-      bool SubscribeToAllSettings(QObject* subscriber) override;
-      bool WriteSettingValue(Setting setting, const QVariant& value) override;
+      bool SubscribeToSystemSetting(Setting setting, QObject* subscriber) override;
+      bool SubscribeToDisplaySetting(Setting setting, QObject* subscriber) override;
+      bool SubscribeToAllSystemSettings(QObject* subscriber) override;
+      bool SubscribeToAllDisplaySettings(QObject* subscriber) override;
+      bool WriteSystemSettingValue(Setting setting, const QVariant& value) override;
+      bool WriteDisplaySettingValue(Setting setting,
+                                    const QString& displayID,
+                                    const QVariant& value) override;
 
    private slots:
-      void HandleSettingUpdated(const Setting& setting, const QVariant& value);
+      void HandleSystemSettingUpdated(const Setting& setting, const QVariant& value);
+      void HandleDisplaySettingUpdated(const Setting& setting,
+                                       const QString& displayID,
+                                       const QVariant& value);
 
    private:
       friend class SettingsService;
       friend class ::SettingsServicePointerHelper;
       static SettingsServiceInterface* Service;
 
-      const std::string GetSettingHandlerMethodStr(Setting setting, bool normalized = false) const;
+      bool SubscribeToSetting(const std::string& methodStr,
+                              Setting setting,
+                              QObject* subscriber);
+      const std::string GetSystemSettingHandlerMethodStr(Setting setting,
+                                                         bool normalized = false) const;
+      const std::string GetDisplaySettingHandlerMethodStr(Setting setting,
+                                                         bool normalized = false) const;
       void ConnectToService();
 
       QString Owner;
       QMultiHash<Setting, QObject*> Subscriptions;
-      QList<QObject*> ObjectsSubscribedToAllSignals;
+      QList<QObject*> ObjectsSubscribedToAllSystemSignals;
+      QList<QObject*> ObjectsSubscribedToAllDisplaySignals;
    };
 }
