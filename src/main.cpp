@@ -105,7 +105,8 @@ int main(int argc, char *argv[])
       QObject::connect(ENTERPRISE,
                        &Enterprise::EnterpriseService::DisplayInfoModified,
                        BACKEND_THREAD_MANAGER,
-                       &BackendThreadManager::ENTERPRISE_DisplayInfoModified);
+                       &BackendThreadManager::ENTERPRISE_DisplayInfoModified,
+                       Qt::QueuedConnection);
    }
 
    // Execute

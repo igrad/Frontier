@@ -30,6 +30,10 @@ EnterpriseMonitorWidget::EnterpriseMonitorWidget(QWidget* parent)
 
    LogInfo(QString("Starting EnterpriseMonitorWidget %1")
               .arg(DisplayNum));
+}
+
+void EnterpriseMonitorWidget::PublishInitialDisplayInfo()
+{
    UpdateActiveAndPrimaryData();
    CheckForDisplayInfoModified();
 }
@@ -154,6 +158,7 @@ void EnterpriseMonitorWidget::ConfigureInfo()
    info.DisplayName = QString("Display #%1").arg(DisplayNum);
    info.ID = QString("DisplayID%1").arg(DisplayNum);
    info.SessionName = QString("\\\\.\\DISPLAY%1").arg(DisplayNum);
+   info.Number = DisplayNum;
    info.IsPrimary = (DisplayNum == 1);
    info.Handle = new HMONITOR__();
    info.Rect = QRect(0, 0, 1920, 1080);

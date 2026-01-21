@@ -32,6 +32,8 @@ EnterpriseWindow::EnterpriseWindow(QWidget* parent)
    connect(StartDatabaseBtn, &QPushButton::released,
            this, &EnterpriseWindow::HandleStartDatabaseBtnReleased);
 
+   // Fetches the initial display info to prep it to send to Frontier
+   Monitor1Btn->PublishInitialDisplayInfo();
    setWindowTitle("Enterprise");
    show();
 }
@@ -175,13 +177,13 @@ void EnterpriseWindow::BuildUI()
    MonitorBtnLayout->addWidget(Monitor3Btn);
    MonitorBtnLayout->addWidget(Monitor4Btn);
    connect(Monitor1Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
-           this, &EnterpriseWindow::DisplayInfoModified);
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
    connect(Monitor2Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
-           this, &EnterpriseWindow::DisplayInfoModified);
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
    connect(Monitor3Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
-           this, &EnterpriseWindow::DisplayInfoModified);
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
    connect(Monitor4Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
-           this, &EnterpriseWindow::DisplayInfoModified);
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
    Tab2Layout->addLayout(MonitorBtnLayout);
    Tab2->setLayout(Tab2Layout);
 

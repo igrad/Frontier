@@ -24,6 +24,8 @@ BackendThreadManager::BackendThreadManager(DataAccessThreadManager* dataAccess,
            this, &BackendThreadManager::HandleDataAccessThreadStarted);
    connect(this, &BackendThreadManager::ENTERPRISE_DisplayInfoModified,
            TheWindowsAPI, &WindowsAPIInterface::ENTERPRISE_DisplayInfoModified);
+   connect(this, &BackendThreadManager::ENTERPRISE_DisplayInfoModified,
+           this, &BackendThreadManager::ENTERPRISE_DisplayInfoModifiedWowie);
 }
 
 void BackendThreadManager::AssignToThread(QThread* thread)
@@ -83,4 +85,9 @@ void BackendThreadManager::CreateWallpaperService()
 
    connect(TheDisplaysManager, &DisplaysManagerInterface::DisplayConfigChanged,
            TheWallpaperService, &Wallpaper::WallpaperServiceInterface::HandleDisplayConfigChanged);
+}
+
+void BackendThreadManager::ENTERPRISE_DisplayInfoModifiedWowie(const DisplayConfigEvent& event)
+{
+   event;
 }

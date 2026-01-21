@@ -18,8 +18,8 @@ struct DisplayInfo
    uint8_t Number = 0;			// Number currently assigned to this display
    bool IsPrimary = false;
    QRect Rect = {0, 0, 0, 0};
-   uint64_t XDPI = 1;			// 1 just to prevent divide by 0 errors
-   uint64_t YDPI = 1;
+   unsigned int XDPI = 1;			// 1 just to prevent divide by 0 errors
+   unsigned int YDPI = 1;
 
    bool operator==(const DisplayInfo& rhs) const
    {

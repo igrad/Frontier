@@ -19,6 +19,8 @@ namespace Enterprise
       explicit EnterpriseMonitorWidget(QWidget* parent = nullptr);
       ~EnterpriseMonitorWidget() = default;
 
+      void PublishInitialDisplayInfo();
+
    signals:
       void DisplayInfoModified(const DisplayConfigEvent& event);
 

@@ -122,7 +122,7 @@ void WindowsAPI::MonitorDatumReceived(HMONITOR hMonitor,
    Q_UNUSED(hdcMonitor)
    Q_UNUSED(lprcMonitor)
 
-   DisplayInfo info = GetDisplayInfo(hMonitor);
+   const DisplayInfo& info = GetDisplayInfo(hMonitor);
 
    if(DisplayInfo() != info)
    {

@@ -52,6 +52,7 @@ private:
    void CreateDisplaysManager();
    void CreateTaskBarService();
    void CreateWallpaperService();
+   void ENTERPRISE_DisplayInfoModifiedWowie(const DisplayConfigEvent& event);
 
    WindowsEventMessageFilter* WindowsEventFilter;
    WindowsAPIInterface* TheWindowsAPI;
