@@ -1,6 +1,5 @@
 #include "EnterpriseService.h"
 #include "EnterpriseWindow.h"
-#include <Win32APIController/EnterpriseWin32APIController.h>
 
 #include <DataAccessThreadManager.h>
 #include <SettingsService/SettingsClient.h>
@@ -16,7 +15,6 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
    , DataAccessThread(nullptr)
    , BackendThread(nullptr)
    , SettingsClient(nullptr)
-   , APIController(new EnterpriseWin32APIController(this))
    , Window(new EnterpriseWindow())
    , SuspendTimer()
    , Started(false)
@@ -30,8 +28,12 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
            Window, &EnterpriseWindow::HandleFrontierStarted);
    connect(Window, &EnterpriseWindow::DatabaseStarted,
            this, &EnterpriseService::HandleDatabaseStarted);
+
+   // This is a quirk to ensure we can pass the display info to Frontier before
+   // the backend thread is started and the DisplaysManager is created.
+   qRegisterMetaType<DisplayConfigEvent>("DisplayConfigEvent");
    connect(Window, &EnterpriseWindow::DisplayInfoModified,
-           APIController, &EnterpriseWin32APIController::HandleDisplayInfoModified);
+           this, &EnterpriseService::DisplayInfoModified);
 }
 
 EnterpriseService::~EnterpriseService()

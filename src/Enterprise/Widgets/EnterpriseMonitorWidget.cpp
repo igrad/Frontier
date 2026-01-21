@@ -28,6 +28,8 @@ EnterpriseMonitorWidget::EnterpriseMonitorWidget(QWidget* parent)
    ConfigureInfo();
    CreateUI();
 
+   LogInfo(QString("Starting EnterpriseMonitorWidget %1")
+              .arg(DisplayNum));
    UpdateActiveAndPrimaryData();
    CheckForDisplayInfoModified();
 }
@@ -182,21 +184,32 @@ void EnterpriseMonitorWidget::CheckForDisplayInfoModified()
    // only send the active monitors!
    // Also make sure this gets sent Frontier startup time. The service will already be made
    // and connected to this signal.
-   for(int iter = 1; iter < 5; ++iter)
+   QPair<DisplayConfigEventType, DisplayInfo> pair;
+   for(int iter = 1; iter < EnterpriseMonitorWindow::DisplaysInfo.size() + 1; ++iter)
    {
       const DisplayInfo& info = EnterpriseMonitorWindow::DisplaysInfo[iter];
       if(ActiveMonitors[iter])
       {
-         event.Displays[info.ID].first = DisplayConfigEventType::Added;
+         LogInfo(QString("Added monitor %1").arg(iter));
+         pair.first = DisplayConfigEventType::Added;
       }
       else
       {
-         event.Displays[info.ID].first = DisplayConfigEventType::Removed;
+         pair.first = DisplayConfigEventType::Removed;
       }
 
-      event.Displays[info.ID].second = info;
+      pair.second = info;
+      event.Displays[info.ID] = pair;
    }
 
-   LogInfo("Display config event publishing");
+   const int added = std::count_if(event.Displays.constBegin(),
+                                   event.Displays.constEnd(),
+                                   [&](const QPair<DisplayConfigEventType, DisplayInfo>& pair){
+                                      return pair.first == DisplayConfigEventType::Added;
+                                   });
+   LogInfo(QString("Display config event publishing with %1 displays added")
+              .arg(added));
+   LogInfo(QString("%1 displays total")
+              .arg(event.Displays.size()));
    emit DisplayInfoModified(event);
 }

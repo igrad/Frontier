@@ -15,9 +15,6 @@ set(EnterpriseSources
    Widgets/EnterpriseMonitorWindow.h
    Widgets/EnterpriseSettingsView.cpp
    Widgets/EnterpriseSettingsView.h
-
-   Win32APIController/EnterpriseWin32APIController.cpp
-   Win32APIController/EnterpriseWin32APIController.h
 )
 
 add_library(Enterprise ${EnterpriseSources})

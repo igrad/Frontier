@@ -17,7 +17,7 @@ DisplaysManager::DisplaysManager(WindowsAPIInterface& windowsAPI,
 void DisplaysManager::RegisterMetaTypes() const
 {
    qRegisterMetaType<DisplayInfo>("DisplayInfo");
-   qRegisterMetaType<DisplayConfigEvent>("DisplayEvent");
+   qRegisterMetaType<DisplayConfigEvent>("DisplayConfigEvent");
 }
 
 void DisplaysManager::PollDisplaysInfo()

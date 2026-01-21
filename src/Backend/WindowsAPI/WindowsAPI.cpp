@@ -20,6 +20,10 @@ WindowsAPI::WindowsAPI(const WindowsEventMessageFilter& filter,
    if(ArgParser::RunningWithEnterprise() || ArgParser::RunningUnitTests())
    {
       APIWrapper.reset(new Win32APIWrapperFake());
+      connect(this,
+              &WindowsAPIInterface::ENTERPRISE_DisplayInfoModified,
+              static_cast<Win32APIWrapperFake*>(APIWrapper.get()),
+              &Win32APIWrapperFake::HandleENTERPRISE_DisplayInfoModified);
    }
    else
    {
@@ -165,6 +169,7 @@ void WindowsAPI::GetDisplayDevicesAndMonitorNames()
    displayDevice.cb = sizeof(displayDevice);
    for(int iter = 0; APIWrapper->EnumDisplayDevicesA(NULL, iter, &displayDevice, 0); ++iter)
    {
+      LogInfo("Found device");
       if(!(displayDevice.StateFlags & DISPLAY_DEVICE_ACTIVE))
       {
          break;

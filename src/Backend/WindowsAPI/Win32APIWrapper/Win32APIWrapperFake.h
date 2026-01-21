@@ -2,6 +2,8 @@
 
 #include "Win32APIWrapperInterface.h"
 
+#include <DisplayInfo.h>
+
 #include <QMap>
 
 class Win32APIWrapperFake: public Win32APIWrapperInterface
@@ -27,17 +29,10 @@ public:
                                PDISPLAY_DEVICEA lpDisplayDevice,
                                DWORD dwFlags) override;
 
-   static QMap<int, int> SystemMetrics;
+public slots:
+   void HandleENTERPRISE_DisplayInfoModified(const DisplayConfigEvent& event);
 
-   struct DisplayMonitor
-   {
-      HDC hdc;
-      LPRECT lproClip;
-      HMONITOR__ hMonitor;
-   };
-   static QMap<int, DisplayMonitor> DisplayMonitors;
-   static QMap<int, MONITORINFOEX> MonitorInfos;
-
+private:
    struct DisplayDevice
    {
       LPCSTR DeviceID;
@@ -47,8 +42,17 @@ public:
    };
    static QMap<int, DisplayDevice> DisplayDevices;
 
+   struct DisplayMonitor
+   {
+      HDC hdc;
+      LPRECT lproClip;
+      HMONITOR__ hMonitor;
+   };
+   static QMap<int, DisplayMonitor> DisplayMonitors;
    static QMap<int, QPair<UINT, UINT>> DPIs;
+   static QMap<int, MONITORINFOEX> MonitorInfos;
+   static QMap<int, int> SystemMetrics;
 
-private:
+   void AddDisplay(const DisplayInfo& info);
    int GetIndexFromHandle(HMONITOR hMonitor);
 };

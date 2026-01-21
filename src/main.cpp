@@ -102,6 +102,10 @@ int main(int argc, char *argv[])
    {
       QObject::connect(UI_MANAGER, &UIManager::ShellWindowClosed,
                        ENTERPRISE, &Enterprise::EnterpriseService::HandleShellWindowClosed);
+      QObject::connect(ENTERPRISE,
+                       &Enterprise::EnterpriseService::DisplayInfoModified,
+                       BACKEND_THREAD_MANAGER,
+                       &BackendThreadManager::ENTERPRISE_DisplayInfoModified);
    }
 
    // Execute

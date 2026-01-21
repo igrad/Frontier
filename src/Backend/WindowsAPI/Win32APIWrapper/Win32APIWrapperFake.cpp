@@ -114,6 +114,74 @@ WINBOOL Win32APIWrapperFake::EnumDisplayDevicesA(LPCSTR lpDevice,
    return true;
 }
 
+void Win32APIWrapperFake::HandleENTERPRISE_DisplayInfoModified(const DisplayConfigEvent& event)
+{
+   LogInfo(QString("Fake received display config event with %1 displays")
+              .arg(event.Displays.size()));
+   DisplayMonitors.clear();
+   MonitorInfos.clear();
+   DisplayDevices.clear();
+   DPIs.clear();
+
+   for(const QPair<DisplayConfigEventType, DisplayInfo>& pair : event.Displays)
+   {
+      switch(pair.first)
+      {
+      case DisplayConfigEventType::Added:
+      case DisplayConfigEventType::Changed:
+         AddDisplay(pair.second);
+         break;
+      default:
+         // No
+         break;
+      }
+   }
+
+   SystemMetrics[SM_CMONITORS] = DisplayMonitors.size();
+}
+
+void Win32APIWrapperFake::AddDisplay(const DisplayInfo& info)
+{
+   // Convert from Enterprise using 1-index display numbers to Frontier's 0-indexing
+   // Wahoo
+   int num = info.Number - 1;
+   LogInfo(QString("Adding display %1 to fake").arg(num));
+
+   // DisplayMonitors
+   DisplayMonitor monitor;
+   monitor.hMonitor = *info.Handle;
+   LPRECT prect = new tagRECT();
+   tagRECT rect = *prect;
+   QRect qrect = info.Rect;
+   rect.bottom = qrect.bottom();
+   rect.left = qrect.left();
+   rect.top = qrect.top();
+   rect.right = qrect.right();
+   monitor.lproClip = prect;
+   DisplayMonitors[num] = monitor;
+
+   // MonitorInfos
+   MONITORINFOEX mie;
+   mie.rcMonitor = rect;
+   mie.rcWork = rect;
+   wcscpy(mie.szDevice, info.DisplayName.toStdWString().c_str());
+   if(info.IsPrimary)
+   {
+      mie.dwFlags |= MONITORINFOF_PRIMARY;
+   }
+   MonitorInfos[num] = mie;
+
+   // DisplayDevices
+   DisplayDevice dev;
+   dev.DeviceID = info.ID.toStdString().c_str();
+   dev.MonitorName = info.DisplayName.toStdString().c_str();
+   dev.DeviceName = info.DisplayName.toStdString().c_str();
+   DisplayDevices[num] = dev;
+
+   // DPIs
+   DPIs[num] = {info.XDPI, info.YDPI};
+}
+
 int Win32APIWrapperFake::GetIndexFromHandle(HMONITOR hMonitor)
 {
    const auto iter = std::find_if(DisplayMonitors.constBegin(),

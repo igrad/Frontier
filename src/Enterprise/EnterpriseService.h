@@ -4,6 +4,7 @@
 #include <QObject>
 
 class DataAccessThreadManager;
+struct DisplayConfigEvent;
 
 namespace Settings
 {
@@ -29,6 +30,7 @@ namespace Enterprise
 
    signals:
       void FrontierStarted();
+      void DisplayInfoModified(const DisplayConfigEvent& event);
 
    public slots:
       void HandleSuspend();

@@ -22,6 +22,8 @@ BackendThreadManager::BackendThreadManager(DataAccessThreadManager* dataAccess,
 
    connect(dataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
            this, &BackendThreadManager::HandleDataAccessThreadStarted);
+   connect(this, &BackendThreadManager::ENTERPRISE_DisplayInfoModified,
+           TheWindowsAPI, &WindowsAPIInterface::ENTERPRISE_DisplayInfoModified);
 }
 
 void BackendThreadManager::AssignToThread(QThread* thread)

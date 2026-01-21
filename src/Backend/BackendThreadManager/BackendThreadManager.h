@@ -1,8 +1,10 @@
 #pragma once
 
+
 #include <QObject>
 
 class DataAccessThreadManager;
+struct DisplayConfigEvent;
 class DisplaysManagerInterface;
 class QApplication;
 
@@ -41,6 +43,7 @@ signals:
    void PassDisplaysManager(DisplaysManagerInterface* service);
    void PassWallpaperService(Wallpaper::WallpaperServiceInterface* service);
    void PassTaskBarService(TaskBar::TaskBarServiceInterface* service);
+   void ENTERPRISE_DisplayInfoModified(const DisplayConfigEvent& event);
 
 private slots:
    void HandleDataAccessThreadStarted();

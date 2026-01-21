@@ -16,6 +16,7 @@ public:
 signals:
    void DisplayDetected(const DisplayInfo& info);
    void NumberOfDisplaysChanged(uint8_t numDisplays);
+   void ENTERPRISE_DisplayInfoModified(const DisplayConfigEvent& event);
 
 public slots:
    virtual void HandlePollDisplaysInfo() = 0;
