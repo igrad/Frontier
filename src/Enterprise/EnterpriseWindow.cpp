@@ -51,6 +51,8 @@ void EnterpriseWindow::HandleResumeBtnReleased()
 {
    ResumeBtn->setDisabled(true);
    SuspendBtn->setDisabled(false);
+
+   emit DisplayInfoModified(LatestDisplayConfig);
    emit Resume();
 }
 
@@ -100,6 +102,13 @@ void EnterpriseWindow::HandleStartDatabaseBtnReleased()
    emit DatabaseStarted();
 
    ResumeBtn->setDisabled(false);
+}
+
+
+void EnterpriseWindow::HandleDisplayInfoModified(const DisplayConfigEvent& event)
+{
+   LatestDisplayConfig = event;
+   emit DisplayInfoModified(event);
 }
 
 void EnterpriseWindow::BuildUI()
@@ -165,6 +174,14 @@ void EnterpriseWindow::BuildUI()
    MonitorBtnLayout->addWidget(Monitor2Btn);
    MonitorBtnLayout->addWidget(Monitor3Btn);
    MonitorBtnLayout->addWidget(Monitor4Btn);
+   connect(Monitor1Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::DisplayInfoModified);
+   connect(Monitor2Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::DisplayInfoModified);
+   connect(Monitor3Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::DisplayInfoModified);
+   connect(Monitor4Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::DisplayInfoModified);
    Tab2Layout->addLayout(MonitorBtnLayout);
    Tab2->setLayout(Tab2Layout);
 

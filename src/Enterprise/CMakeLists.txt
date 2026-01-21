@@ -15,6 +15,9 @@ set(EnterpriseSources
    Widgets/EnterpriseMonitorWindow.h
    Widgets/EnterpriseSettingsView.cpp
    Widgets/EnterpriseSettingsView.h
+
+   Win32APIController/EnterpriseWin32APIController.cpp
+   Win32APIController/EnterpriseWin32APIController.h
 )
 
 add_library(Enterprise ${EnterpriseSources})
@@ -29,8 +32,9 @@ target_include_directories(Enterprise PUBLIC
 target_link_libraries(Enterprise PRIVATE
    DataAccess
    DisplaysManager
+   Shared
+   WindowsAPI
    Qt6::Core
    Qt6::Gui
    Qt6::Widgets
-   Shared
 )

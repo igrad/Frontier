@@ -30,6 +30,7 @@ namespace Enterprise
       void RetainAndRestoreStateChanged(bool active);
       void DatabaseStarted();
       void DataAccessThreadStarted();
+      void DisplayInfoModified(const DisplayConfigEvent& event);
 
    public slots:
       void HandleFrontierStarted();
@@ -40,6 +41,7 @@ namespace Enterprise
       void HandleDatabaseSourceComboBoxSelection(const QString& str);
       void HandleRetainAndRestoreCheckBoxCheck(bool checked);
       void HandleStartDatabaseBtnReleased();
+      void HandleDisplayInfoModified(const DisplayConfigEvent& event);
 
    private:
       void BuildUI();
@@ -76,5 +78,7 @@ namespace Enterprise
 
       bool UseRAMDbs;
       bool RetainAndRestore;
+
+      DisplayConfigEvent LatestDisplayConfig;
    };
 }

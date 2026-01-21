@@ -27,7 +27,7 @@ public:
                                PDISPLAY_DEVICEA lpDisplayDevice,
                                DWORD dwFlags) override;
 
-   QMap<int, int> SystemMetrics;
+   static QMap<int, int> SystemMetrics;
 
    struct DisplayMonitor
    {
@@ -35,8 +35,8 @@ public:
       LPRECT lproClip;
       HMONITOR__ hMonitor;
    };
-   QMap<int, DisplayMonitor> DisplayMonitors;
-   QMap<int, MONITORINFOEX> MonitorInfos;
+   static QMap<int, DisplayMonitor> DisplayMonitors;
+   static QMap<int, MONITORINFOEX> MonitorInfos;
 
    struct DisplayDevice
    {
@@ -45,9 +45,9 @@ public:
       LPCSTR DeviceName;
       DISPLAY_DEVICEA lpDisplayDevice;
    };
-   QMap<int, DisplayDevice> DisplayDevices;
+   static QMap<int, DisplayDevice> DisplayDevices;
 
-   QMap<int, QPair<UINT, UINT>> DPIs;
+   static QMap<int, QPair<UINT, UINT>> DPIs;
 
 private:
    int GetIndexFromHandle(HMONITOR hMonitor);

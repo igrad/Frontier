@@ -13,6 +13,7 @@ namespace Settings
 namespace Enterprise
 {
    class EnterpriseWindow;
+   class EnterpriseWin32APIController;
 
    class EnterpriseService: public QObject
    {
@@ -42,6 +43,7 @@ namespace Enterprise
       QThread* BackendThread;
 
       Settings::SettingsClientInterface* SettingsClient;
+      EnterpriseWin32APIController* APIController;
       EnterpriseWindow* Window;
 
       QDeadlineTimer SuspendTimer;

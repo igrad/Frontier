@@ -2,6 +2,12 @@
 
 #include <Log.h>
 
+QMap<int, int> Win32APIWrapperFake::SystemMetrics;
+QMap<int, Win32APIWrapperFake::DisplayMonitor> Win32APIWrapperFake::DisplayMonitors;
+QMap<int, MONITORINFOEX> Win32APIWrapperFake::MonitorInfos;
+QMap<int, Win32APIWrapperFake::DisplayDevice> Win32APIWrapperFake::DisplayDevices;
+QMap<int, QPair<UINT, UINT>> Win32APIWrapperFake::DPIs;
+
 int Win32APIWrapperFake::GetSystemMetrics(int nIndex)
 {
    if(SystemMetrics.contains(nIndex))
@@ -24,10 +30,11 @@ WINBOOL Win32APIWrapperFake::EnumDisplayMonitors(HDC hdc,
    // You can implement these yourself if you need them
    Q_UNUSED(hdc)
    Q_UNUSED(lproClip)
-   const bool cont = lpfnEnum(&DisplayMonitors[iter].hMonitor,
-                              DisplayMonitors[iter].hdc,
-                              DisplayMonitors[iter].lproClip,
-                              dwData);
+   bool cont = (iter < DisplayMonitors.size()) &&
+               lpfnEnum(&DisplayMonitors[iter].hMonitor,
+                        DisplayMonitors[iter].hdc,
+                        DisplayMonitors[iter].lproClip,
+                        dwData);
 
    if(cont)
    {
@@ -94,12 +101,12 @@ WINBOOL Win32APIWrapperFake::EnumDisplayDevicesA(LPCSTR lpDevice,
    if(nullptr == lpDevice)
    {
       strcpy_s(dev.lpDisplayDevice.DeviceID, 128, dev.DeviceName);
-      dev.lpDisplayDevice.StateFlags &= DISPLAY_DEVICE_ACTIVE;
+      dev.lpDisplayDevice.StateFlags |= DISPLAY_DEVICE_ACTIVE;
    }
    else if(0 == iDevNum)
    {
       strcpy_s(dev.lpDisplayDevice.DeviceID, 128, dev.DeviceID);
-      dev.lpDisplayDevice.StateFlags &= DISPLAY_DEVICE_ACTIVE;
+      dev.lpDisplayDevice.StateFlags |= DISPLAY_DEVICE_ACTIVE;
       strcpy_s(dev.lpDisplayDevice.DeviceString, 128, dev.DeviceName);
    }
 

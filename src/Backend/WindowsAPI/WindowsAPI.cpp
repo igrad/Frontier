@@ -46,7 +46,7 @@ QVariant WindowsAPI::GetCurrentSettingValue(Windows::Setting setting)
       switch(setting)
       {
       case Windows::Setting::NumberOfDetectedMonitors:
-         retVal = GetSystemMetrics(SM_CMONITORS);
+         retVal = APIWrapper->GetSystemMetrics(SM_CMONITORS);
          break;
       default:
          LogWarn(QString("Unhandled setting: \"%1\"").arg(ToString(setting)));
@@ -108,7 +108,7 @@ void WindowsAPI::GetAllDisplayInfo()
       emit NumberOfDisplaysChanged(numDisplays);
    }
 
-   EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, reinterpret_cast<LPARAM>(this));
+   APIWrapper->EnumDisplayMonitors(NULL, NULL, MonitorEnumProc, reinterpret_cast<LPARAM>(this));
 }
 
 void WindowsAPI::MonitorDatumReceived(HMONITOR hMonitor,
@@ -130,9 +130,9 @@ DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
 {
    MONITORINFOEXA monitorInfo;
    monitorInfo.cbSize = sizeof(MONITORINFOEXA);
-   bool a = GetMonitorInfoA(handle, &monitorInfo);
-   if(a)
+   if(APIWrapper->GetMonitorInfoA(handle, &monitorInfo))
    {
+      LogInfo("GetMonitorInfoA returned true");
       const QString name = monitorInfo.szDevice;
       DisplayInfo& info = *(DisplayDevices.find(name.toStdString().c_str()));
 
@@ -144,10 +144,10 @@ DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
       info.IsPrimary = (monitorInfo.dwFlags & MONITORINFOF_PRIMARY);
 
       UINT dpiX, dpiY;
-      if(S_OK == GetDpiForMonitor(handle,
-                                   MDT_EFFECTIVE_DPI,
-                                   &dpiX,
-                                   &dpiY))
+      if(S_OK == APIWrapper->GetDpiForMonitor(handle,
+                                               MDT_EFFECTIVE_DPI,
+                                               &dpiX,
+                                               &dpiY))
       {
          info.XDPI = dpiX;
          info.YDPI = dpiY;
@@ -163,7 +163,7 @@ void WindowsAPI::GetDisplayDevicesAndMonitorNames()
 {
    DISPLAY_DEVICEA displayDevice;
    displayDevice.cb = sizeof(displayDevice);
-   for(int iter = 0; EnumDisplayDevicesA(NULL, iter, &displayDevice, 0); ++iter)
+   for(int iter = 0; APIWrapper->EnumDisplayDevicesA(NULL, iter, &displayDevice, 0); ++iter)
    {
       if(!(displayDevice.StateFlags & DISPLAY_DEVICE_ACTIVE))
       {
@@ -176,7 +176,7 @@ void WindowsAPI::GetDisplayDevicesAndMonitorNames()
       DISPLAY_DEVICEA displayDeviceForMonitorName;
       displayDeviceForMonitorName.cb = sizeof(displayDeviceForMonitorName);
       // The EDD_GET_DEVICE_INTERFACE_NAME flag populated the DeviceID field with the display EDID
-      if(EnumDisplayDevicesA(displayDevice.DeviceName,
+      if(APIWrapper->EnumDisplayDevicesA(displayDevice.DeviceName,
                               0,
                               &displayDeviceForMonitorName,
                               EDD_GET_DEVICE_INTERFACE_NAME))
