@@ -3,12 +3,18 @@ set(EnterpriseSources
    EnterpriseWindow.h
    EnterpriseService.cpp
    EnterpriseService.h
-   EnterpriseSettingsModel.cpp
-   EnterpriseSettingsModel.h
-   EnterpriseSettingsView.cpp
-   EnterpriseSettingsView.h
 
    RowData.h
+
+   Settings/EnterpriseSettingsModel.cpp
+   Settings/EnterpriseSettingsModel.h
+
+   Widgets/EnterpriseMonitorWidget.cpp
+   Widgets/EnterpriseMonitorWidget.h
+   Widgets/EnterpriseMonitorWindow.cpp
+   Widgets/EnterpriseMonitorWindow.h
+   Widgets/EnterpriseSettingsView.cpp
+   Widgets/EnterpriseSettingsView.h
 )
 
 add_library(Enterprise ${EnterpriseSources})

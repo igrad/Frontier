@@ -1,14 +1,19 @@
 #include "EnterpriseMonitorWindow.h"
 
+#include <QCloseEvent>
+
 using namespace Enterprise;
 
 QMap<uint8_t, DisplayInfo> EnterpriseMonitorWindow::DisplaysInfo;
+QMap<uint8_t, HMONITOR__> EnterpriseMonitorWindow::HMonitors;
 
 EnterpriseMonitorWindow::EnterpriseMonitorWindow(int displayNum, QWidget* parent)
    : QWidget(parent)
-   , ActiveDisplayNum(displayNum)
+   , DisplayNum(displayNum)
 {
    setAttribute(Qt::WA_DeleteOnClose);
+
+   setWindowTitle(QString ("Configuring Monitor %1").arg(displayNum));
 
    CreateUI();
    PopulateUI();
@@ -20,27 +25,37 @@ void EnterpriseMonitorWindow::HandleConfirmPressed()
 {
    const DisplayInfo& info = CompileDisplayInfoFromInputs();
 
-   if(DisplaysInfo[ActiveDisplayNum] != info)
+   if(DisplaysInfo[DisplayNum] != info)
    {
-      emit DisplayInfoModified(info.ID, info);
+      DisplaysInfo[DisplayNum] = info;
+      emit DisplayInfoModified();
    }
 
    close();
 }
 
+void EnterpriseMonitorWindow::closeEvent(QCloseEvent* event)
+{
+   emit Closed();
+   event->accept();
+}
 
 void EnterpriseMonitorWindow::CreateUI()
 {
    Layout = new QVBoxLayout(this);
 
-   NumberAndNameLayout = new QHBoxLayout(this);
    MonitorNumberLabel = new QLabel(this);
-   DisplayNameLineEdit = new QLineEdit(this);
-   NumberAndNameLayout->addWidget(MonitorNumberLabel);
-   NumberAndNameLayout->addWidget(DisplayNameLineEdit);
-   Layout->addLayout(NumberAndNameLayout);
+   Layout->addWidget(MonitorNumberLabel);
 
-   DisplayRectLayout = new QHBoxLayout(this);
+   NameLayout = new QHBoxLayout();
+   DisplayNameLabel = new QLabel(this);
+   DisplayNameLabel->setText("Display Name");
+   DisplayNameLineEdit = new QLineEdit(this);
+   NameLayout->addWidget(DisplayNameLabel);
+   NameLayout->addWidget(DisplayNameLineEdit);
+   Layout->addLayout(NameLayout);
+
+   DisplayRectLayout = new QHBoxLayout();
    DisplayWidthLabel = new QLabel(this);
    DisplayWidthLabel->setText("Width");
    DisplayWidthLineEdit = new QLineEdit(this);
@@ -55,7 +70,7 @@ void EnterpriseMonitorWindow::CreateUI()
    DisplayRectLayout->addWidget(DisplayHeightLineEdit);
    Layout->addLayout(DisplayRectLayout);
 
-   DisplayDPILayout = new QHBoxLayout(this);
+   DisplayDPILayout = new QHBoxLayout();
    XDPILabel = new QLabel(this);
    XDPILabel->setText("X DPI");
    XDPILineEdit = new QLineEdit(this);
@@ -70,7 +85,7 @@ void EnterpriseMonitorWindow::CreateUI()
    DisplayDPILayout->addWidget(YDPILineEdit);
    Layout->addLayout(DisplayDPILayout);
 
-   ButtonsLayout = new QHBoxLayout(this);
+   ButtonsLayout = new QHBoxLayout();
    ConfirmBtn = new QPushButton(this);
    ConfirmBtn->setText("Confirm");
    connect(ConfirmBtn, &QPushButton::clicked,
@@ -82,27 +97,25 @@ void EnterpriseMonitorWindow::CreateUI()
    ButtonsLayout->addWidget(ConfirmBtn);
    ButtonsLayout->addWidget(CancelBtn);
    Layout->addLayout(ButtonsLayout);
-
-   setLayout(Layout);
 }
 
 void EnterpriseMonitorWindow::PopulateUI()
 {
-   const DisplayInfo& info = DisplaysInfo[ActiveDisplayNum];
-   MonitorNumberLabel->setText(QString::number(info.Number));
+   const DisplayInfo& info = DisplaysInfo[DisplayNum];
+   MonitorNumberLabel->setText(QString("Monitor %1").arg(DisplayNum));
    DisplayNameLineEdit->setText(info.DisplayName);
-   DisplayWidthLabel->setText(QString::number(info.Rect.width()));
-   DisplayHeightLabel->setText(QString::number(info.Rect.height()));
+   DisplayWidthLineEdit->setText(QString::number(info.Rect.width()));
+   DisplayHeightLineEdit->setText(QString::number(info.Rect.height()));
    XDPILineEdit->setText(QString::number(info.XDPI));
    YDPILineEdit->setText(QString::number(info.YDPI));
 }
 
 DisplayInfo EnterpriseMonitorWindow::CompileDisplayInfoFromInputs()
 {
-   DisplayInfo info = DisplaysInfo[ActiveDisplayNum];
+   DisplayInfo info = DisplaysInfo[DisplayNum];
 
    info.DisplayName = DisplayNameLineEdit->text();
-   info.Number = ActiveDisplayNum;
+   info.Number = DisplayNum;
    info.Rect.setRect(
       0,
       0,
@@ -113,3 +126,4 @@ DisplayInfo EnterpriseMonitorWindow::CompileDisplayInfoFromInputs()
 
    return info;
 }
+

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EnterpriseService.h"
+#include "Widgets/EnterpriseMonitorWidget.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -65,16 +66,13 @@ namespace Enterprise
 
       QWidget* Tab2;
       QVBoxLayout* Tab2Layout;
-      // Create a new widget for the monitor buttons
-      // Button with display # text
-      // Two side-by-side checkboxes indicating monitor active and primary monitor
       // Also need to connect EnterpriseMonitorWindow::DisplayInfoModified signal to the service
       // and need to set up the Win32APIWrapperFake connection from the service, then connect the 2
       QHBoxLayout* MonitorBtnLayout;
-      QPushButton* Monitor1Btn;
-      QPushButton* Monitor2Btn;
-      QPushButton* Monitor3Btn;
-      QPushButton* Monitor4Btn;
+      EnterpriseMonitorWidget* Monitor1Btn;
+      EnterpriseMonitorWidget* Monitor2Btn;
+      EnterpriseMonitorWidget* Monitor3Btn;
+      EnterpriseMonitorWidget* Monitor4Btn;
 
       bool UseRAMDbs;
       bool RetainAndRestore;

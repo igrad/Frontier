@@ -1,7 +1,7 @@
 #include "EnterpriseWindow.h"
 
-#include "EnterpriseSettingsModel.h"
-#include "EnterpriseSettingsView.h"
+#include "Settings/EnterpriseSettingsModel.h"
+#include "Widgets/EnterpriseSettingsView.h"
 
 #include <SettingsService.h>
 
@@ -117,7 +117,7 @@ void EnterpriseWindow::BuildUI()
    SuspendBtn->setDisabled(true);
    SuspendControlsLayout->addWidget(ResumeBtn);
    SuspendControlsLayout->addWidget(SuspendBtn);
-   Layout->addLayout(SuspendControlsLayout);
+   Tab1Layout->addLayout(SuspendControlsLayout);
 
    DbControlsLayout = new QVBoxLayout(Tab1);
    DbControlsUpperLayout = new QHBoxLayout(Tab1);
@@ -140,15 +140,16 @@ void EnterpriseWindow::BuildUI()
    DbControlsLowerLayout->addWidget(DatabaseUploadTextEdit);
    DbControlsLowerLayout->addWidget(DatabaseUploadBtn);
    DbControlsLayout->addLayout(DbControlsLowerLayout);
-   Layout->addLayout(DbControlsLayout);
+   Tab1Layout->addLayout(DbControlsLayout);
 
    SettingsView = new EnterpriseSettingsView(Tab1);
-   SettingsView->setModel(SettingsModel);
-   Layout->addWidget(SettingsView);
-
    connect(SettingsModel, &EnterpriseSettingsModel::SettingsPopulated,
            SettingsView, &EnterpriseSettingsView::HandleSettingsPopulated,
            Qt::UniqueConnection);
+   SettingsView->setModel(SettingsModel);
+   Tab1Layout->addWidget(SettingsView);
+
+   Tab1->setLayout(Tab1Layout);
 
    MasterTabWidget->addTab(Tab1, "Settings");
 
@@ -156,13 +157,18 @@ void EnterpriseWindow::BuildUI()
    Tab2 = new QWidget();
    Tab2Layout = new QVBoxLayout(Tab2);
    MonitorBtnLayout = new QHBoxLayout(Tab2);
-   Monitor1Btn = new QPushButton(Tab2);
-   Monitor2Btn = new QPushButton(Tab2);
-   Monitor3Btn = new QPushButton(Tab2);
-   Monitor4Btn = new QPushButton(Tab2);
+   Monitor1Btn = new EnterpriseMonitorWidget(Tab2);
+   Monitor2Btn = new EnterpriseMonitorWidget(Tab2);
+   Monitor3Btn = new EnterpriseMonitorWidget(Tab2);
+   Monitor4Btn = new EnterpriseMonitorWidget(Tab2);
+   MonitorBtnLayout->addWidget(Monitor1Btn);
+   MonitorBtnLayout->addWidget(Monitor2Btn);
+   MonitorBtnLayout->addWidget(Monitor3Btn);
+   MonitorBtnLayout->addWidget(Monitor4Btn);
+   Tab2Layout->addLayout(MonitorBtnLayout);
+   Tab2->setLayout(Tab2Layout);
 
    MasterTabWidget->addTab(Tab2, "Hardware");
 
-
-   setLayout(Layout);
+   Layout->addWidget(MasterTabWidget);
 }

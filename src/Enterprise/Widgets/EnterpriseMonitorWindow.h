@@ -19,24 +19,28 @@ namespace Enterprise
       EnterpriseMonitorWindow(int displayNum, QWidget* parent = nullptr);
       ~EnterpriseMonitorWindow() = default;
 
+      static QMap<uint8_t, DisplayInfo> DisplaysInfo;
+      static QMap<uint8_t, HMONITOR__> HMonitors;
+
    signals:
-      void DisplayInfoModified(const DisplayID& id, const DisplayInfo& info);
+      void DisplayInfoModified();
+      void Closed();
 
    private slots:
       void HandleConfirmPressed();
-      void HandleCancelPressed();
+      void closeEvent(QCloseEvent* event) override;
 
    private:
-      static QMap<uint8_t, DisplayInfo> DisplaysInfo;
-
       void CreateUI();
       void PopulateUI();
       DisplayInfo CompileDisplayInfoFromInputs();
 
-      int ActiveDisplayNum;
+      int DisplayNum;
       QVBoxLayout* Layout;
-      QHBoxLayout* NumberAndNameLayout;
       QLabel* MonitorNumberLabel;
+
+      QHBoxLayout* NameLayout;
+      QLabel* DisplayNameLabel;
       QLineEdit* DisplayNameLineEdit;
 
       QHBoxLayout* DisplayRectLayout;
