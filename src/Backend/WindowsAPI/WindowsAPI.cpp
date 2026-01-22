@@ -122,6 +122,7 @@ void WindowsAPI::MonitorDatumReceived(HMONITOR hMonitor,
    Q_UNUSED(hdcMonitor)
    Q_UNUSED(lprcMonitor)
 
+   // Now we try to fetch info about the returned handle
    const DisplayInfo& info = GetDisplayInfo(hMonitor);
 
    if(DisplayInfo() != info)
@@ -138,26 +139,35 @@ DisplayInfo WindowsAPI::GetDisplayInfo(HMONITOR handle)
    {
       LogInfo("GetMonitorInfoA returned true");
       const QString name = monitorInfo.szDevice;
-      DisplayInfo& info = *(DisplayDevices.find(name.toStdString().c_str()));
-
-      const RECT rect = monitorInfo.rcMonitor;
-      info.Rect = {rect.left,
-                   rect.top,
-                   std::abs(rect.left - rect.right),
-                   std::abs(rect.top - rect.bottom)};
-      info.IsPrimary = (monitorInfo.dwFlags & MONITORINFOF_PRIMARY);
-
-      UINT dpiX, dpiY;
-      if(S_OK == APIWrapper->GetDpiForMonitor(handle,
-                                               MDT_EFFECTIVE_DPI,
-                                               &dpiX,
-                                               &dpiY))
+      auto iter = DisplayDevices.find(name.toStdString().c_str());
+      if(DisplayDevices.end() == iter)
       {
-         info.XDPI = dpiX;
-         info.YDPI = dpiY;
+         LogWarn(QString("Failed to find DisplayDevice for name \"%1\"")
+                    .arg(name));
       }
+      else
+      {
+         DisplayInfo& info = *(DisplayDevices.find(name.toStdString().c_str()));
 
-      return info;
+         const RECT rect = monitorInfo.rcMonitor;
+         info.Rect = {rect.left,
+                      rect.top,
+                      std::abs(rect.left - rect.right),
+                      std::abs(rect.top - rect.bottom)};
+         info.IsPrimary = (monitorInfo.dwFlags & MONITORINFOF_PRIMARY);
+
+         UINT dpiX, dpiY;
+         if(S_OK == APIWrapper->GetDpiForMonitor(handle,
+                                                  MDT_EFFECTIVE_DPI,
+                                                  &dpiX,
+                                                  &dpiY))
+         {
+            info.XDPI = dpiX;
+            info.YDPI = dpiY;
+         }
+
+         return info;
+      }
    }
 
    return DisplayInfo();
@@ -180,7 +190,7 @@ void WindowsAPI::GetDisplayDevicesAndMonitorNames()
 
       DISPLAY_DEVICEA displayDeviceForMonitorName;
       displayDeviceForMonitorName.cb = sizeof(displayDeviceForMonitorName);
-      // The EDD_GET_DEVICE_INTERFACE_NAME flag populated the DeviceID field with the display EDID
+      // The EDD_GET_DEVICE_INTERFACE_NAME flag populates the DeviceID field with the display EDID
       if(APIWrapper->EnumDisplayDevicesA(displayDevice.DeviceName,
                               0,
                               &displayDeviceForMonitorName,

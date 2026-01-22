@@ -30,6 +30,7 @@ WINBOOL Win32APIWrapperFake::EnumDisplayMonitors(HDC hdc,
    // You can implement these yourself if you need them
    Q_UNUSED(hdc)
    Q_UNUSED(lproClip)
+   LogInfo(QString("Enum display monitor for device number %1").arg(iter));
    bool cont = (iter < DisplayMonitors.size()) &&
                lpfnEnum(&DisplayMonitors[iter].hMonitor,
                         DisplayMonitors[iter].hdc,
@@ -60,7 +61,9 @@ WINBOOL Win32APIWrapperFake::GetMonitorInfoA(HMONITOR hMonitor, LPMONITORINFO lp
       return false;
    }
 
-   *lpmi = MonitorInfos[monitorIndex];
+   // Change the pointer type so that the assignment doesn't cause issues
+   LPMONITORINFOEXA exaPtr = static_cast<LPMONITORINFOEXA>(lpmi);
+   *exaPtr = MonitorInfos[monitorIndex];
    return true;
 }
 
@@ -102,10 +105,12 @@ WINBOOL Win32APIWrapperFake::EnumDisplayDevicesA(LPCSTR lpDevice,
    if(nullptr == lpDevice)
    {
       strcpy_s(lpDisplayDevice->DeviceString, 128, dev.AdapterName);
+      strcpy_s(lpDisplayDevice->DeviceName, 128, dev.AdapterName);
    }
    else if((0 == iDevNum) && (strcmp(lpDevice, dev.AdapterName) == 0))
    {
       strcpy_s(lpDisplayDevice->DeviceString, 128, dev.DeviceName);
+      strcpy_s(lpDisplayDevice->DeviceName, 128, dev.DeviceName);
    }
    else
    {
