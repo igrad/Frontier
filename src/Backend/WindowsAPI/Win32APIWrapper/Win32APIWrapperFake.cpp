@@ -4,7 +4,7 @@
 
 QMap<int, int> Win32APIWrapperFake::SystemMetrics;
 QMap<int, Win32APIWrapperFake::DisplayMonitor> Win32APIWrapperFake::DisplayMonitors;
-QMap<int, MONITORINFOEX> Win32APIWrapperFake::MonitorInfos;
+QMap<int, MONITORINFOEXA> Win32APIWrapperFake::MonitorInfos;
 QMap<int, Win32APIWrapperFake::DisplayDevice> Win32APIWrapperFake::DisplayDevices;
 QMap<int, QPair<UINT, UINT>> Win32APIWrapperFake::DPIs;
 
@@ -97,20 +97,25 @@ WINBOOL Win32APIWrapperFake::EnumDisplayDevicesA(LPCSTR lpDevice,
 
    DisplayDevice& dev = DisplayDevices[iDevNum];
 
-   // If lpDevice is null, get the whatever the device name
+   // If lpDevice is null, get the adapter name
+   // Otherwise get the device name
    if(nullptr == lpDevice)
    {
-      strcpy_s(dev.lpDisplayDevice.DeviceID, 128, dev.DeviceName);
-      dev.lpDisplayDevice.StateFlags |= DISPLAY_DEVICE_ACTIVE;
+      strcpy_s(lpDisplayDevice->DeviceString, 128, dev.AdapterName);
    }
-   else if(0 == iDevNum)
+   else if((0 == iDevNum) && (strcmp(lpDevice, dev.AdapterName) == 0))
    {
-      strcpy_s(dev.lpDisplayDevice.DeviceID, 128, dev.DeviceID);
-      dev.lpDisplayDevice.StateFlags |= DISPLAY_DEVICE_ACTIVE;
-      strcpy_s(dev.lpDisplayDevice.DeviceString, 128, dev.DeviceName);
+      strcpy_s(lpDisplayDevice->DeviceString, 128, dev.DeviceName);
+   }
+   else
+   {
+      LogError("Win32 fake failed to handle an EnumDisplayDevicesA input. Run gdb.");
+      return false;
    }
 
-   *lpDisplayDevice = dev.lpDisplayDevice;
+   strcpy_s(lpDisplayDevice->DeviceID, 128, dev.DeviceID);
+   lpDisplayDevice->StateFlags |= DISPLAY_DEVICE_ACTIVE;
+
    return true;
 }
 
@@ -151,7 +156,7 @@ void Win32APIWrapperFake::AddDisplay(const DisplayInfo& info)
    DisplayMonitor monitor;
    monitor.hMonitor = *info.Handle;
    LPRECT prect = new tagRECT();
-   tagRECT rect = *prect;
+   tagRECT& rect = *prect;
    QRect qrect = info.Rect;
    rect.bottom = qrect.bottom();
    rect.left = qrect.left();
@@ -161,10 +166,10 @@ void Win32APIWrapperFake::AddDisplay(const DisplayInfo& info)
    DisplayMonitors[num] = monitor;
 
    // MonitorInfos
-   MONITORINFOEX mie;
+   MONITORINFOEXA mie;
    mie.rcMonitor = rect;
    mie.rcWork = rect;
-   wcscpy(mie.szDevice, info.DisplayName.toStdWString().c_str());
+   strcpy_s(mie.szDevice, 32, info.DisplayName.toStdString().c_str());
    if(info.IsPrimary)
    {
       mie.dwFlags |= MONITORINFOF_PRIMARY;
@@ -173,9 +178,12 @@ void Win32APIWrapperFake::AddDisplay(const DisplayInfo& info)
 
    // DisplayDevices
    DisplayDevice dev;
-   dev.DeviceID = info.ID.toStdString().c_str();
-   dev.MonitorName = info.DisplayName.toStdString().c_str();
-   dev.DeviceName = info.DisplayName.toStdString().c_str();
+   dev.DeviceID = new char[128];
+   dev.AdapterName = new char[128];
+   dev.DeviceName = new char[128];
+   strcpy_s(dev.DeviceID, 128, info.ID.toStdString().c_str());
+   strcpy_s(dev.AdapterName, 128, info.DisplayName.toStdString().c_str());
+   strcpy_s(dev.DeviceName, 128, info.DisplayName.toStdString().c_str());
    DisplayDevices[num] = dev;
 
    // DPIs

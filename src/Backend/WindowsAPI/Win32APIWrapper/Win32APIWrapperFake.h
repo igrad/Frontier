@@ -35,10 +35,9 @@ public slots:
 private:
    struct DisplayDevice
    {
-      LPCSTR DeviceID;
-      LPCSTR MonitorName;
-      LPCSTR DeviceName;
-      DISPLAY_DEVICEA lpDisplayDevice;
+      LPSTR DeviceID;
+      LPSTR AdapterName;
+      LPSTR DeviceName;
    };
    static QMap<int, DisplayDevice> DisplayDevices;
 
@@ -50,7 +49,7 @@ private:
    };
    static QMap<int, DisplayMonitor> DisplayMonitors;
    static QMap<int, QPair<UINT, UINT>> DPIs;
-   static QMap<int, MONITORINFOEX> MonitorInfos;
+   static QMap<int, MONITORINFOEXA> MonitorInfos;
    static QMap<int, int> SystemMetrics;
 
    void AddDisplay(const DisplayInfo& info);
