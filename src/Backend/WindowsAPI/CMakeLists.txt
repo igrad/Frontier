@@ -5,6 +5,12 @@ set(WindowsAPISources
    WindowsAPISettings.h
    WindowsEventMessageFilter.cpp
    WindowsEventMessageFilter.h
+
+   Win32APIWrapper/Win32APIWrapper.cpp
+   Win32APIWrapper/Win32APIWrapper.h
+   Win32APIWrapper/Win32APIWrapperFake.cpp
+   Win32APIWrapper/Win32APIWrapperFake.h
+   Win32APIWrapper/Win32APIWrapperInterface.h
 )
 
 add_library(WindowsAPI STATIC

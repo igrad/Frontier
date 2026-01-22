@@ -1,7 +1,7 @@
 #include "EnterpriseWindow.h"
 
-#include "EnterpriseSettingsModel.h"
-#include "EnterpriseSettingsView.h"
+#include "Settings/EnterpriseSettingsModel.h"
+#include "Widgets/EnterpriseSettingsView.h"
 
 #include <SettingsService.h>
 
@@ -18,21 +18,6 @@ namespace
 EnterpriseWindow::EnterpriseWindow(QWidget* parent)
    : QWidget(parent)
    , SettingsModel(new EnterpriseSettingsModel(this))
-   , Layout(nullptr)
-   , SuspendControlsLayout(nullptr)
-   , ResumeBtn(nullptr)
-   , SuspendBtn(nullptr)
-   , DbControlsLayout(nullptr)
-   , DbControlsUpperLayout(nullptr)
-   , DatabaseSourceComboBox(nullptr)
-   , RetainAndRestoreCheckBox(nullptr)	// TODO: Unimplemented currently
-   , StartDatabaseBtn(nullptr)
-   , DbControlsLowerLayout(nullptr)
-   , DatabaseUploadTextEdit(nullptr)
-   , DatabaseUploadBtn(nullptr)
-   , SettingsView(nullptr)
-   , UseRAMDbs(true)
-   , RetainAndRestore(false)
 {
    BuildUI();
 
@@ -47,6 +32,8 @@ EnterpriseWindow::EnterpriseWindow(QWidget* parent)
    connect(StartDatabaseBtn, &QPushButton::released,
            this, &EnterpriseWindow::HandleStartDatabaseBtnReleased);
 
+   // Fetches the initial display info to prep it to send to Frontier
+   Monitor1Btn->PublishInitialDisplayInfo();
    setWindowTitle("Enterprise");
    show();
 }
@@ -66,6 +53,8 @@ void EnterpriseWindow::HandleResumeBtnReleased()
 {
    ResumeBtn->setDisabled(true);
    SuspendBtn->setDisabled(false);
+
+   emit DisplayInfoModified(LatestDisplayConfig);
    emit Resume();
 }
 
@@ -117,49 +106,88 @@ void EnterpriseWindow::HandleStartDatabaseBtnReleased()
    ResumeBtn->setDisabled(false);
 }
 
+
+void EnterpriseWindow::HandleDisplayInfoModified(const DisplayConfigEvent& event)
+{
+   LatestDisplayConfig = event;
+   emit DisplayInfoModified(event);
+}
+
 void EnterpriseWindow::BuildUI()
 {
    Layout = new QVBoxLayout(this);
+   MasterTabWidget = new QTabWidget(this);
 
-   SuspendControlsLayout = new QHBoxLayout(this);
-   ResumeBtn = new QPushButton("Resume", this);
+   // Tab 1
+   Tab1 = new QWidget(); // Qt docs say not to make the tabs parented!
+   Tab1Layout = new QVBoxLayout(Tab1);
+   SuspendControlsLayout = new QHBoxLayout(Tab1);
+   ResumeBtn = new QPushButton("Resume", Tab1);
    ResumeBtn->setDisabled(true);
-   SuspendBtn = new QPushButton("Suspend", this);
+   SuspendBtn = new QPushButton("Suspend", Tab1);
    SuspendBtn->setDisabled(true);
    SuspendControlsLayout->addWidget(ResumeBtn);
    SuspendControlsLayout->addWidget(SuspendBtn);
-   Layout->addLayout(SuspendControlsLayout);
+   Tab1Layout->addLayout(SuspendControlsLayout);
 
-   DbControlsLayout = new QVBoxLayout(this);
-   DbControlsUpperLayout = new QHBoxLayout(this);
-   DatabaseSourceComboBox = new QComboBox(this);
+   DbControlsLayout = new QVBoxLayout(Tab1);
+   DbControlsUpperLayout = new QHBoxLayout(Tab1);
+   DatabaseSourceComboBox = new QComboBox(Tab1);
    DatabaseSourceComboBox->addItem(MEMORY_STR);
    DatabaseSourceComboBox->addItem(DISK_STR);
-   RetainAndRestoreCheckBox = new QCheckBox("Retain+Restore", this);
+   RetainAndRestoreCheckBox = new QCheckBox("Retain+Restore", Tab1);
    RetainAndRestoreCheckBox->setDisabled(true);
-   StartDatabaseBtn = new QPushButton("Start database", this);
+   StartDatabaseBtn = new QPushButton("Start database", Tab1);
    DbControlsUpperLayout->addWidget(DatabaseSourceComboBox);
    DbControlsUpperLayout->addWidget(RetainAndRestoreCheckBox);
    DbControlsUpperLayout->addWidget(StartDatabaseBtn);
    DbControlsLayout->addLayout(DbControlsUpperLayout);
-   DbControlsLowerLayout = new QHBoxLayout(this);
-   DatabaseUploadTextEdit = new QLineEdit(this);
+   DbControlsLowerLayout = new QHBoxLayout(Tab1);
+   DatabaseUploadTextEdit = new QLineEdit(Tab1);
    DatabaseUploadTextEdit->setPlaceholderText("Upload Settings.db file");
    DatabaseUploadTextEdit->setDisabled(true); // Disabled
-   DatabaseUploadBtn = new QPushButton("Select", this);
+   DatabaseUploadBtn = new QPushButton("Select", Tab1);
    DatabaseUploadBtn->setDisabled(true); // Disabled
    DbControlsLowerLayout->addWidget(DatabaseUploadTextEdit);
    DbControlsLowerLayout->addWidget(DatabaseUploadBtn);
    DbControlsLayout->addLayout(DbControlsLowerLayout);
-   Layout->addLayout(DbControlsLayout);
+   Tab1Layout->addLayout(DbControlsLayout);
 
-   SettingsView = new EnterpriseSettingsView(this);
-   SettingsView->setModel(SettingsModel);
-   Layout->addWidget(SettingsView);
-
+   SettingsView = new EnterpriseSettingsView(Tab1);
    connect(SettingsModel, &EnterpriseSettingsModel::SettingsPopulated,
            SettingsView, &EnterpriseSettingsView::HandleSettingsPopulated,
            Qt::UniqueConnection);
+   SettingsView->setModel(SettingsModel);
+   Tab1Layout->addWidget(SettingsView);
 
-   setLayout(Layout);
+   Tab1->setLayout(Tab1Layout);
+
+   MasterTabWidget->addTab(Tab1, "Settings");
+
+   // Tab 2
+   Tab2 = new QWidget();
+   Tab2Layout = new QVBoxLayout(Tab2);
+   MonitorBtnLayout = new QHBoxLayout(Tab2);
+   Monitor1Btn = new EnterpriseMonitorWidget(Tab2);
+   Monitor2Btn = new EnterpriseMonitorWidget(Tab2);
+   Monitor3Btn = new EnterpriseMonitorWidget(Tab2);
+   Monitor4Btn = new EnterpriseMonitorWidget(Tab2);
+   MonitorBtnLayout->addWidget(Monitor1Btn);
+   MonitorBtnLayout->addWidget(Monitor2Btn);
+   MonitorBtnLayout->addWidget(Monitor3Btn);
+   MonitorBtnLayout->addWidget(Monitor4Btn);
+   connect(Monitor1Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
+   connect(Monitor2Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
+   connect(Monitor3Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
+   connect(Monitor4Btn, &EnterpriseMonitorWidget::DisplayInfoModified,
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
+   Tab2Layout->addLayout(MonitorBtnLayout);
+   Tab2->setLayout(Tab2Layout);
+
+   MasterTabWidget->addTab(Tab2, "Hardware");
+
+   Layout->addWidget(MasterTabWidget);
 }

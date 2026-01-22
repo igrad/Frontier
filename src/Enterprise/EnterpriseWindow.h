@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EnterpriseService.h"
+#include "Widgets/EnterpriseMonitorWidget.h"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -29,6 +30,7 @@ namespace Enterprise
       void RetainAndRestoreStateChanged(bool active);
       void DatabaseStarted();
       void DataAccessThreadStarted();
+      void DisplayInfoModified(const DisplayConfigEvent& event);
 
    public slots:
       void HandleFrontierStarted();
@@ -39,6 +41,7 @@ namespace Enterprise
       void HandleDatabaseSourceComboBoxSelection(const QString& str);
       void HandleRetainAndRestoreCheckBoxCheck(bool checked);
       void HandleStartDatabaseBtnReleased();
+      void HandleDisplayInfoModified(const DisplayConfigEvent& event);
 
    private:
       void BuildUI();
@@ -46,6 +49,10 @@ namespace Enterprise
       EnterpriseSettingsModel* SettingsModel;
 
       QVBoxLayout* Layout;
+      QTabWidget* MasterTabWidget;
+
+      QWidget* Tab1;
+      QVBoxLayout* Tab1Layout;
       QHBoxLayout* SuspendControlsLayout;
       QPushButton* ResumeBtn;
       QPushButton* SuspendBtn;
@@ -59,7 +66,19 @@ namespace Enterprise
       QPushButton* DatabaseUploadBtn;
       EnterpriseSettingsView* SettingsView;
 
+      QWidget* Tab2;
+      QVBoxLayout* Tab2Layout;
+      // Also need to connect EnterpriseMonitorWindow::DisplayInfoModified signal to the service
+      // and need to set up the Win32APIWrapperFake connection from the service, then connect the 2
+      QHBoxLayout* MonitorBtnLayout;
+      EnterpriseMonitorWidget* Monitor1Btn;
+      EnterpriseMonitorWidget* Monitor2Btn;
+      EnterpriseMonitorWidget* Monitor3Btn;
+      EnterpriseMonitorWidget* Monitor4Btn;
+
       bool UseRAMDbs;
       bool RetainAndRestore;
+
+      DisplayConfigEvent LatestDisplayConfig;
    };
 }
