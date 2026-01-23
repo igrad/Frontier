@@ -17,7 +17,7 @@ DisplaysManager::DisplaysManager(WindowsAPIInterface& windowsAPI,
 void DisplaysManager::RegisterMetaTypes() const
 {
    qRegisterMetaType<DisplayInfo>("DisplayInfo");
-   qRegisterMetaType<DisplayConfigEvent>("DisplayEvent");
+   qRegisterMetaType<DisplayConfigEvent>("DisplayConfigEvent");
 }
 
 void DisplaysManager::PollDisplaysInfo()
@@ -49,7 +49,7 @@ void DisplaysManager::HandleDisplayDetected(const DisplayInfo& info)
 
 // This will be called before the individual DisplayInfo objects are passed in from
 // the WindowsAPI.
-void DisplaysManager::HandleNumberOfDisplaysChanged(uint8_t numDisplays)
+void DisplaysManager::HandleNumberOfDisplaysChanged(unsigned int numDisplays)
 {
    NumDisplays = numDisplays;
    CurrentEvent = DisplayConfigEvent();

@@ -2,16 +2,17 @@
 
 #include "EnterpriseService.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QPushButton>
+#include <DisplayInfo.h>
+
 #include <QVBoxLayout>
-#include <QWidget>
+#include <QTabWidget>
 
 namespace Enterprise
 {
-   class EnterpriseSettingsView;
+   class EnterpriseHardwareTab;
    class EnterpriseSettingsModel;
+   class EnterpriseSettingsTab;
+   class EnterpriseSettingsView;
 
    class EnterpriseWindow: public QWidget
    {
@@ -28,17 +29,14 @@ namespace Enterprise
       void Suspend();
       void RetainAndRestoreStateChanged(bool active);
       void DatabaseStarted();
-      void DataAccessThreadStarted();
+      void DisplayInfoModified(const DisplayConfigEvent& event);
 
    public slots:
       void HandleFrontierStarted();
 
    private slots:
-      void HandleResumeBtnReleased();
-      void HandleSuspendBtnReleased();
-      void HandleDatabaseSourceComboBoxSelection(const QString& str);
-      void HandleRetainAndRestoreCheckBoxCheck(bool checked);
-      void HandleStartDatabaseBtnReleased();
+      void HandleResume();
+      void HandleDisplayInfoModified(const DisplayConfigEvent& event);
 
    private:
       void BuildUI();
@@ -46,20 +44,15 @@ namespace Enterprise
       EnterpriseSettingsModel* SettingsModel;
 
       QVBoxLayout* Layout;
-      QHBoxLayout* SuspendControlsLayout;
-      QPushButton* ResumeBtn;
-      QPushButton* SuspendBtn;
-      QVBoxLayout* DbControlsLayout;
-      QHBoxLayout* DbControlsUpperLayout;
-      QComboBox* DatabaseSourceComboBox;
-      QCheckBox* RetainAndRestoreCheckBox;
-      QPushButton* StartDatabaseBtn;
-      QHBoxLayout* DbControlsLowerLayout;
-      QLineEdit* DatabaseUploadTextEdit;
-      QPushButton* DatabaseUploadBtn;
-      EnterpriseSettingsView* SettingsView;
+      QTabWidget* MasterTabWidget;
+
+      EnterpriseSettingsTab* SettingsTab;
+
+      EnterpriseHardwareTab* HardwareTab;
 
       bool UseRAMDbs;
       bool RetainAndRestore;
+
+      DisplayConfigEvent LatestDisplayConfig;
    };
 }

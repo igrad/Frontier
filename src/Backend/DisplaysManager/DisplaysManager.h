@@ -21,14 +21,14 @@ public:
 
 private slots:
    void HandleDisplayDetected(const DisplayInfo& info);
-   void HandleNumberOfDisplaysChanged(uint8_t numDisplays);
+   void HandleNumberOfDisplaysChanged(unsigned int numDisplays);
 
 private:
    void ConnectToWindowsAPI();
    void FinalizeCurrentEvent();
 
    WindowsAPIInterface& WindowsAPI;
-   uint8_t NumDisplays;
+   unsigned int NumDisplays;
    QMap<QString, DisplayInfo> Displays;
 
    DisplayConfigEvent CurrentEvent;

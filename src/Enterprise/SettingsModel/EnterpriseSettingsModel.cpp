@@ -153,7 +153,7 @@ void EnterpriseSettingsModel::HandleSystemSettingChanged(Setting setting,
 }
 
 void EnterpriseSettingsModel::HandleDisplaySettingChanged(Setting setting,
-                                                          uint8_t display,
+                                                          unsigned int display,
                                                           const QVariant& value)
 {
    auto iter = std::find_if(Data.begin(), Data.end(),

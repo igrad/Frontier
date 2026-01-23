@@ -84,7 +84,7 @@ void ShellUI::BuildTheShellWindow()
       TheShellWindow = nullptr;
    }
 
-   TheShellWindow = new ShellWindow();
+   TheShellWindow = new ShellWindow(TheDisplayInfo);
    connect(TheShellWindow, &ShellWindow::Closed,
            this, [&](){
       emit ShellWindowClosed(GetDisplayID());

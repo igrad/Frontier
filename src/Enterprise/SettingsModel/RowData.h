@@ -29,7 +29,7 @@ namespace Enterprise
       }
 
       Settings::Setting TheSetting = Settings::Setting::None;
-      uint8_t Display = 0;
+      unsigned int Display = 0;
       QHash<Qt::ItemDataRole, QVariant> Data[3];
    };
 }

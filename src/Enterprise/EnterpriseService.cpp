@@ -28,6 +28,12 @@ EnterpriseService::EnterpriseService(DataAccessThreadManager* dataAccess,
            Window, &EnterpriseWindow::HandleFrontierStarted);
    connect(Window, &EnterpriseWindow::DatabaseStarted,
            this, &EnterpriseService::HandleDatabaseStarted);
+
+   // This is a quirk to ensure we can pass the display info to Frontier before
+   // the backend thread is started and the DisplaysManager is created.
+   qRegisterMetaType<DisplayConfigEvent>("DisplayConfigEvent");
+   connect(Window, &EnterpriseWindow::DisplayInfoModified,
+           this, &EnterpriseService::DisplayInfoModified);
 }
 
 EnterpriseService::~EnterpriseService()
@@ -41,8 +47,6 @@ void EnterpriseService::SetDataAccessThread(QThread* dataAccessThread)
    DataAccessThread = dataAccessThread;
    connect(DataAccessThread, &QThread::started,
            this, &EnterpriseService::HandleDataAccessThreadStarted);
-   connect(DataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
-           Window, &EnterpriseWindow::DataAccessThreadStarted);
 }
 
 void EnterpriseService::SetBackendThread(QThread* backendThread)

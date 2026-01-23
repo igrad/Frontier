@@ -4,6 +4,7 @@
 #include <QObject>
 
 class DataAccessThreadManager;
+struct DisplayConfigEvent;
 
 namespace Settings
 {
@@ -13,17 +14,7 @@ namespace Settings
 namespace Enterprise
 {
    class EnterpriseWindow;
-
-   // Build DataAccessThreadManager
-   // Build DA thread
-   // Move DATM to DA thread
-   // Wait for Enterprise to start
-   // Enterprise must select RAM or disk memory
-   // Enterprise passes DB location selection to DATM
-   // DATM caches the bool
-   // Enterprise starts the DA thread
-   // DATM sets the bool passed down to SettingsService as it's created
-   // Enterprise waits for resume press before starting Backend thread
+   class EnterpriseWin32APIController;
 
    class EnterpriseService: public QObject
    {
@@ -39,6 +30,7 @@ namespace Enterprise
 
    signals:
       void FrontierStarted();
+      void DisplayInfoModified(const DisplayConfigEvent& event);
 
    public slots:
       void HandleSuspend();
@@ -53,6 +45,7 @@ namespace Enterprise
       QThread* BackendThread;
 
       Settings::SettingsClientInterface* SettingsClient;
+      EnterpriseWin32APIController* APIController;
       EnterpriseWindow* Window;
 
       QDeadlineTimer SuspendTimer;

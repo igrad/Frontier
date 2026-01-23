@@ -1,11 +1,10 @@
 #include "EnterpriseWindow.h"
 
-#include "EnterpriseSettingsModel.h"
-#include "EnterpriseSettingsView.h"
+#include <EnterpriseHardwareTab.h>
+#include <EnterpriseSettingsTab.h>
+#include <SettingsModel/EnterpriseSettingsModel.h>
 
 #include <SettingsService.h>
-
-#include <QLineEdit>
 
 using namespace Enterprise;
 
@@ -18,34 +17,11 @@ namespace
 EnterpriseWindow::EnterpriseWindow(QWidget* parent)
    : QWidget(parent)
    , SettingsModel(new EnterpriseSettingsModel(this))
-   , Layout(nullptr)
-   , SuspendControlsLayout(nullptr)
-   , ResumeBtn(nullptr)
-   , SuspendBtn(nullptr)
-   , DbControlsLayout(nullptr)
-   , DbControlsUpperLayout(nullptr)
-   , DatabaseSourceComboBox(nullptr)
-   , RetainAndRestoreCheckBox(nullptr)	// TODO: Unimplemented currently
-   , StartDatabaseBtn(nullptr)
-   , DbControlsLowerLayout(nullptr)
-   , DatabaseUploadTextEdit(nullptr)
-   , DatabaseUploadBtn(nullptr)
-   , SettingsView(nullptr)
-   , UseRAMDbs(true)
-   , RetainAndRestore(false)
 {
    BuildUI();
 
-   connect(ResumeBtn, &QPushButton::released,
-           this, &EnterpriseWindow::HandleResumeBtnReleased);
-   connect(SuspendBtn, &QPushButton::released,
-           this, &EnterpriseWindow::HandleSuspendBtnReleased);
-   connect(DatabaseSourceComboBox, &QComboBox::currentTextChanged,
-           this, &EnterpriseWindow::HandleDatabaseSourceComboBoxSelection);
-   connect(RetainAndRestoreCheckBox, &QCheckBox::checkStateChanged,
-           this, &EnterpriseWindow::HandleRetainAndRestoreCheckBoxCheck);
-   connect(StartDatabaseBtn, &QPushButton::released,
-           this, &EnterpriseWindow::HandleStartDatabaseBtnReleased);
+   // Fetches the initial display info to prep it to send to Frontier
+   HardwareTab->PublishInitialDisplayInfo();
 
    setWindowTitle("Enterprise");
    show();
@@ -58,108 +34,42 @@ void EnterpriseWindow::SetSettingsClient(Settings::SettingsClientInterface* sett
 
 void EnterpriseWindow::HandleFrontierStarted()
 {
-   RetainAndRestoreCheckBox->setDisabled(true);
-   DatabaseSourceComboBox->setDisabled(true);
+   SettingsTab->HandleFrontierStarted();
 }
 
-void EnterpriseWindow::HandleResumeBtnReleased()
+void EnterpriseWindow::HandleResume()
 {
-   ResumeBtn->setDisabled(true);
-   SuspendBtn->setDisabled(false);
+   emit DisplayInfoModified(LatestDisplayConfig);
    emit Resume();
 }
 
-void EnterpriseWindow::HandleSuspendBtnReleased()
+void EnterpriseWindow::HandleDisplayInfoModified(const DisplayConfigEvent& event)
 {
-   ResumeBtn->setDisabled(false);
-   SuspendBtn->setDisabled(true);
-   emit Suspend();
-}
-
-void EnterpriseWindow::HandleDatabaseSourceComboBoxSelection(const QString& str)
-{
-   if(MEMORY_STR == str)
-   {
-      UseRAMDbs = true;
-      if(RetainAndRestore)
-      {
-         RetainAndRestoreCheckBox->setCheckState(Qt::CheckState::Unchecked);
-         HandleRetainAndRestoreCheckBoxCheck(false);
-         RetainAndRestoreCheckBox->setDisabled(true);
-      }
-   }
-   else if(DISK_STR == str)
-   {
-      UseRAMDbs = false;
-      RetainAndRestoreCheckBox->setDisabled(false);
-   }
-}
-
-void EnterpriseWindow::HandleRetainAndRestoreCheckBoxCheck(bool checked)
-{
-   if(checked != RetainAndRestore)
-   {
-      RetainAndRestore = checked;
-   }
-}
-
-void EnterpriseWindow::HandleStartDatabaseBtnReleased()
-{
-   RetainAndRestoreCheckBox->setDisabled(true);
-   DatabaseSourceComboBox->setDisabled(true);
-   StartDatabaseBtn->setDisabled(true);
-
-   // I know it's hacky, but it's only for a debug tool so I don't care.
-   Settings::SettingsService::UseRAMDatabases = UseRAMDbs;
-   emit RetainAndRestoreStateChanged(RetainAndRestore);
-   emit DatabaseStarted();
-
-   ResumeBtn->setDisabled(false);
+   LatestDisplayConfig = event;
+   emit DisplayInfoModified(event);
 }
 
 void EnterpriseWindow::BuildUI()
 {
    Layout = new QVBoxLayout(this);
+   MasterTabWidget = new QTabWidget(this);
 
-   SuspendControlsLayout = new QHBoxLayout(this);
-   ResumeBtn = new QPushButton("Resume", this);
-   ResumeBtn->setDisabled(true);
-   SuspendBtn = new QPushButton("Suspend", this);
-   SuspendBtn->setDisabled(true);
-   SuspendControlsLayout->addWidget(ResumeBtn);
-   SuspendControlsLayout->addWidget(SuspendBtn);
-   Layout->addLayout(SuspendControlsLayout);
+   // Tab 1
+   SettingsTab = new EnterpriseSettingsTab(SettingsModel); // Qt docs say not to make the tabs parented!
+   connect(SettingsTab, &EnterpriseSettingsTab::Resume,
+           this, &EnterpriseWindow::HandleResume);
+   connect(SettingsTab, &EnterpriseSettingsTab::Suspend,
+           this, &EnterpriseWindow::Suspend);
+   connect(SettingsTab, &EnterpriseSettingsTab::DatabaseStarted,
+           this, &EnterpriseWindow::DatabaseStarted);
 
-   DbControlsLayout = new QVBoxLayout(this);
-   DbControlsUpperLayout = new QHBoxLayout(this);
-   DatabaseSourceComboBox = new QComboBox(this);
-   DatabaseSourceComboBox->addItem(MEMORY_STR);
-   DatabaseSourceComboBox->addItem(DISK_STR);
-   RetainAndRestoreCheckBox = new QCheckBox("Retain+Restore", this);
-   RetainAndRestoreCheckBox->setDisabled(true);
-   StartDatabaseBtn = new QPushButton("Start database", this);
-   DbControlsUpperLayout->addWidget(DatabaseSourceComboBox);
-   DbControlsUpperLayout->addWidget(RetainAndRestoreCheckBox);
-   DbControlsUpperLayout->addWidget(StartDatabaseBtn);
-   DbControlsLayout->addLayout(DbControlsUpperLayout);
-   DbControlsLowerLayout = new QHBoxLayout(this);
-   DatabaseUploadTextEdit = new QLineEdit(this);
-   DatabaseUploadTextEdit->setPlaceholderText("Upload Settings.db file");
-   DatabaseUploadTextEdit->setDisabled(true); // Disabled
-   DatabaseUploadBtn = new QPushButton("Select", this);
-   DatabaseUploadBtn->setDisabled(true); // Disabled
-   DbControlsLowerLayout->addWidget(DatabaseUploadTextEdit);
-   DbControlsLowerLayout->addWidget(DatabaseUploadBtn);
-   DbControlsLayout->addLayout(DbControlsLowerLayout);
-   Layout->addLayout(DbControlsLayout);
+   MasterTabWidget->addTab(SettingsTab, "Settings");
 
-   SettingsView = new EnterpriseSettingsView(this);
-   SettingsView->setModel(SettingsModel);
-   Layout->addWidget(SettingsView);
+   // Tab 2
+   HardwareTab = new EnterpriseHardwareTab();
+   connect(HardwareTab, &EnterpriseHardwareTab::DisplayInfoModified,
+           this, &EnterpriseWindow::HandleDisplayInfoModified);
+   MasterTabWidget->addTab(HardwareTab, "Hardware");
 
-   connect(SettingsModel, &EnterpriseSettingsModel::SettingsPopulated,
-           SettingsView, &EnterpriseSettingsView::HandleSettingsPopulated,
-           Qt::UniqueConnection);
-
-   setLayout(Layout);
+   Layout->addWidget(MasterTabWidget);
 }
