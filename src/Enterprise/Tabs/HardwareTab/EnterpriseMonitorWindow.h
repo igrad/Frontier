@@ -19,8 +19,8 @@ namespace Enterprise
       EnterpriseMonitorWindow(int displayNum, QWidget* parent = nullptr);
       ~EnterpriseMonitorWindow() = default;
 
-      static QMap<uint8_t, DisplayInfo> DisplaysInfo;
-      static QMap<uint8_t, HMONITOR__> HMonitors;
+      static QMap<unsigned int, DisplayInfo> DisplaysInfo;
+      static QMap<unsigned int, HMONITOR__> HMonitors;
 
    signals:
       void DisplayInfoModified();

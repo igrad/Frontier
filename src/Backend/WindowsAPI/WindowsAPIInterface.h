@@ -15,7 +15,7 @@ public:
 
 signals:
    void DisplayDetected(const DisplayInfo& info);
-   void NumberOfDisplaysChanged(uint8_t numDisplays);
+   void NumberOfDisplaysChanged(unsigned int numDisplays);
    void ENTERPRISE_DisplayInfoModified(const DisplayConfigEvent& event);
 
 public slots:

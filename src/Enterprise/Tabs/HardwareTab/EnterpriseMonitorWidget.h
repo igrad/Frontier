@@ -32,8 +32,8 @@ namespace Enterprise
       void HandleDisplayInfoModified();
 
    private:
-      static QMap<uint8_t, EnterpriseMonitorWidget*> MonitorWidgets;
-      static QMap<uint8_t, bool> ActiveMonitors;
+      static QMap<unsigned int, EnterpriseMonitorWidget*> MonitorWidgets;
+      static QMap<unsigned int, bool> ActiveMonitors;
       static std::unique_ptr<EnterpriseMonitorWindow> Window;
 
       void CreateUI();

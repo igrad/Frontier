@@ -45,7 +45,7 @@ private:
    std::unique_ptr<Win32APIWrapperInterface> APIWrapper;
    bool UsingFakeAPI;
    QHash<Windows::Setting, QVariant> CachedSettings;
-   uint8_t NumDisplays;
+   unsigned int NumDisplays;
    QHash<HMONITOR, DisplayInfo> CachedDisplaysInfo;
    QMap<QString, DisplayInfo> DisplayDevices;
 };

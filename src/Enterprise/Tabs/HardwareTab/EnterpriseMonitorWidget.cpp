@@ -7,8 +7,8 @@ using namespace Enterprise;
 // IMPORTANT NOTE: DisplayNum and MonitorWidgets are both 1-indexed in this class and
 // in EnterpriseMonitorWindow because Microsoft decided to make monitors 1-indexed.
 
-QMap<uint8_t, EnterpriseMonitorWidget*> EnterpriseMonitorWidget::MonitorWidgets;
-QMap<uint8_t, bool> EnterpriseMonitorWidget::ActiveMonitors;
+QMap<unsigned int, EnterpriseMonitorWidget*> EnterpriseMonitorWidget::MonitorWidgets;
+QMap<unsigned int, bool> EnterpriseMonitorWidget::ActiveMonitors;
 std::unique_ptr<EnterpriseMonitorWindow> EnterpriseMonitorWidget::Window(nullptr);
 
 EnterpriseMonitorWidget::EnterpriseMonitorWidget(QWidget* parent)
@@ -170,7 +170,7 @@ void EnterpriseMonitorWidget::ConfigureInfo()
 
 void EnterpriseMonitorWidget::UpdateActiveAndPrimaryData()
 {
-   QMap<uint8_t, DisplayInfo> displays = EnterpriseMonitorWindow::DisplaysInfo;
+   QMap<unsigned int, DisplayInfo> displays = EnterpriseMonitorWindow::DisplaysInfo;
 
    for(int iter = 1; iter < 5; ++iter)
    {

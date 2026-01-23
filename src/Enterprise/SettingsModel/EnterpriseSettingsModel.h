@@ -34,7 +34,7 @@ namespace Enterprise
       void HandleSystemSettingChanged(Settings::Setting setting,
                                       const QVariant& value);
       void HandleDisplaySettingChanged(Settings::Setting setting,
-                                       uint8_t display,
+                                       unsigned int display,
                                        const QVariant& value);
 
    private:

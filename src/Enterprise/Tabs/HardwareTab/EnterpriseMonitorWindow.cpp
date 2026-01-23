@@ -4,8 +4,8 @@
 
 using namespace Enterprise;
 
-QMap<uint8_t, DisplayInfo> EnterpriseMonitorWindow::DisplaysInfo;
-QMap<uint8_t, HMONITOR__> EnterpriseMonitorWindow::HMonitors;
+QMap<unsigned int, DisplayInfo> EnterpriseMonitorWindow::DisplaysInfo;
+QMap<unsigned int, HMONITOR__> EnterpriseMonitorWindow::HMonitors;
 
 EnterpriseMonitorWindow::EnterpriseMonitorWindow(int displayNum, QWidget* parent)
    : QWidget(parent)

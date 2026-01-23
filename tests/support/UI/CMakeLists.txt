@@ -18,6 +18,7 @@ target_include_directories(UISupport
 target_link_libraries(UISupport
    PUBLIC
    AssetManager
+   DisplaysManager
    CoreUI
    Qt6::Core
    Qt6::Widgets

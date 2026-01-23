@@ -1,5 +1,7 @@
 #pragma once
 
+#include <DisplayInfo.h>
+
 #include <QWidget>
 
 class ShellWindowInterface: public QWidget
@@ -11,4 +13,7 @@ public:
 
 signals:
    void Closed();
+
+public slots:
+   virtual void HandleDisplayConfigChanged(const DisplayInfo& event) = 0;
 };
