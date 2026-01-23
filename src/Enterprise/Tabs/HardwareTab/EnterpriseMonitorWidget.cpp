@@ -186,9 +186,6 @@ void EnterpriseMonitorWidget::CheckForDisplayInfoModified()
 {
    DisplayConfigEvent event;
 
-   // only send the active monitors!
-   // Also make sure this gets sent Frontier startup time. The service will already be made
-   // and connected to this signal.
    QPair<DisplayConfigEventType, DisplayInfo> pair;
    for(int iter = 1; iter < EnterpriseMonitorWindow::DisplaysInfo.size() + 1; ++iter)
    {

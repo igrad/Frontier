@@ -91,13 +91,17 @@ WINBOOL Win32APIWrapperFake::EnumDisplayDevicesA(LPCSTR lpDevice,
                             PDISPLAY_DEVICEA lpDisplayDevice,
                             DWORD dwFlags)
 {
-   if(!DisplayDevices.contains(iDevNum))
+   if((iDevNum < DisplayDevices.size()) && !DisplayDevices.contains(iDevNum))
    {
       LogError(QString("Could not find DisplayDevice for iDevNum %1")
                   .arg(iDevNum));
       return false;
    }
 
+   if(DisplayDevices.size() <= iDevNum)
+   {
+      return false;
+   }
    DisplayDevice& dev = DisplayDevices[iDevNum];
 
    // If lpDevice is null, get the adapter name
@@ -107,10 +111,27 @@ WINBOOL Win32APIWrapperFake::EnumDisplayDevicesA(LPCSTR lpDevice,
       strcpy_s(lpDisplayDevice->DeviceString, 128, dev.AdapterName);
       strcpy_s(lpDisplayDevice->DeviceName, 128, dev.AdapterName);
    }
-   else if((0 == iDevNum) && (strcmp(lpDevice, dev.AdapterName) == 0))
+   else if(0 == iDevNum)
    {
-      strcpy_s(lpDisplayDevice->DeviceString, 128, dev.DeviceName);
-      strcpy_s(lpDisplayDevice->DeviceName, 128, dev.DeviceName);
+      const auto& iter = std::find_if(DisplayDevices.constBegin(),
+                                     DisplayDevices.constEnd(),
+                                     [&](const DisplayDevice& device) {
+                                         return (strcmp(device.AdapterName, lpDevice) == 0);
+                                     });
+      if(DisplayDevices.constEnd() != iter)
+      {
+         dev = *iter;
+         strcpy_s(lpDisplayDevice->DeviceString, 128, dev.DeviceName);
+         strcpy_s(lpDisplayDevice->DeviceName, 128, dev.DeviceName);
+      }
+      else
+      {
+         LogInfo(QString("Failed to find DisplayDevice in EnumDisplayDevicesA for:\n"
+                         "lpDevice: %1\n"
+                         "iDevNum: %2")
+                    .arg(lpDevice, QString::number(iDevNum)));
+         return false;
+      }
    }
    else
    {
