@@ -13,11 +13,6 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    , Info(info)
    , AssetClient("TaskBarView", this)
    , CurrentData()
-   , MainLayout(nullptr)
-   , StartButton(nullptr)
-   , AppIconsLayout(nullptr)
-   , MiscIconsLayout(nullptr)
-   , DateTimeLayout(nullptr)
 {
    CreateUI();
    ConnectToServiceSignals(service);
@@ -74,24 +69,26 @@ void TaskBarView::HandleImageReady(Assets::ImageName name, const QPixmap& image)
 
 void TaskBarView::CreateUI()
 {
-   MainLayout = new QBoxLayout(QBoxLayout::Direction::LeftToRight, this);
+   MainLayout = new QBoxLayout(QBoxLayout::Direction::LeftToRight);
 
    StartButton = new QPushButton(this);
    // const QIcon defaultIcon();
    // StartButton->setIcon()
 
-   setLayout(MainLayout);
+   // NOTE: Just for dev to get something on screen. Should be handled initially by DisplayInfo
+   // and then updated by settings
    setGeometry({0, 100, 1920, 100});
 
-   AppIconsLayout = new QGridLayout(this);
+   AppIconsLayout = new QGridLayout();
    MainLayout->addLayout(AppIconsLayout);
 
-   MiscIconsLayout = new QGridLayout(this);
+   MiscIconsLayout = new QGridLayout();
    MainLayout->addLayout(MiscIconsLayout);
 
-   DateTimeLayout = new QVBoxLayout(this);
+   DateTimeLayout = new QVBoxLayout();
    MainLayout->addLayout(DateTimeLayout);
 
+   setLayout(MainLayout);
    show();
 }
 
