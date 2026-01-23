@@ -47,8 +47,6 @@ void EnterpriseService::SetDataAccessThread(QThread* dataAccessThread)
    DataAccessThread = dataAccessThread;
    connect(DataAccessThread, &QThread::started,
            this, &EnterpriseService::HandleDataAccessThreadStarted);
-   connect(DataAccess, &DataAccessThreadManager::DataAccessThreadStarted,
-           Window, &EnterpriseWindow::DataAccessThreadStarted);
 }
 
 void EnterpriseService::SetBackendThread(QThread* backendThread)

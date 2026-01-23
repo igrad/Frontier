@@ -1,18 +1,18 @@
 #pragma once
 
 #include "EnterpriseService.h"
-#include "Widgets/EnterpriseMonitorWidget.h"
 
-#include <QCheckBox>
-#include <QComboBox>
-#include <QPushButton>
+#include <DisplayInfo.h>
+
 #include <QVBoxLayout>
-#include <QWidget>
+#include <QTabWidget>
 
 namespace Enterprise
 {
-   class EnterpriseSettingsView;
+   class EnterpriseHardwareTab;
    class EnterpriseSettingsModel;
+   class EnterpriseSettingsTab;
+   class EnterpriseSettingsView;
 
    class EnterpriseWindow: public QWidget
    {
@@ -29,18 +29,13 @@ namespace Enterprise
       void Suspend();
       void RetainAndRestoreStateChanged(bool active);
       void DatabaseStarted();
-      void DataAccessThreadStarted();
       void DisplayInfoModified(const DisplayConfigEvent& event);
 
    public slots:
       void HandleFrontierStarted();
 
    private slots:
-      void HandleResumeBtnReleased();
-      void HandleSuspendBtnReleased();
-      void HandleDatabaseSourceComboBoxSelection(const QString& str);
-      void HandleRetainAndRestoreCheckBoxCheck(bool checked);
-      void HandleStartDatabaseBtnReleased();
+      void HandleResume();
       void HandleDisplayInfoModified(const DisplayConfigEvent& event);
 
    private:
@@ -51,30 +46,9 @@ namespace Enterprise
       QVBoxLayout* Layout;
       QTabWidget* MasterTabWidget;
 
-      QWidget* Tab1;
-      QVBoxLayout* Tab1Layout;
-      QHBoxLayout* SuspendControlsLayout;
-      QPushButton* ResumeBtn;
-      QPushButton* SuspendBtn;
-      QVBoxLayout* DbControlsLayout;
-      QHBoxLayout* DbControlsUpperLayout;
-      QComboBox* DatabaseSourceComboBox;
-      QCheckBox* RetainAndRestoreCheckBox;
-      QPushButton* StartDatabaseBtn;
-      QHBoxLayout* DbControlsLowerLayout;
-      QLineEdit* DatabaseUploadTextEdit;
-      QPushButton* DatabaseUploadBtn;
-      EnterpriseSettingsView* SettingsView;
+      EnterpriseSettingsTab* SettingsTab;
 
-      QWidget* Tab2;
-      QVBoxLayout* Tab2Layout;
-      // Also need to connect EnterpriseMonitorWindow::DisplayInfoModified signal to the service
-      // and need to set up the Win32APIWrapperFake connection from the service, then connect the 2
-      QHBoxLayout* MonitorBtnLayout;
-      EnterpriseMonitorWidget* Monitor1Btn;
-      EnterpriseMonitorWidget* Monitor2Btn;
-      EnterpriseMonitorWidget* Monitor3Btn;
-      EnterpriseMonitorWidget* Monitor4Btn;
+      EnterpriseHardwareTab* HardwareTab;
 
       bool UseRAMDbs;
       bool RetainAndRestore;
