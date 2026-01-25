@@ -13,6 +13,7 @@ namespace Assets
    enum class ImageName: int
    {
       None = 0,
+      StartMenuImage,
       _TestName = INT_MAX
    };
    Q_ENUM_NS(ImageName)

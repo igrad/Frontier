@@ -38,6 +38,10 @@ namespace TaskBar
                                                           const QVariant& value) = 0;
       virtual void HandleDisplaySettingTaskBarShownChanged(const QString& displayID,
                                                            const QVariant& value) = 0;
+      virtual void HandleDisplaySettingsTaskBarStartButtonImageChanged(const QString& displayID,
+                                                                       const QVariant& value) = 0;
+      virtual void HandleDisplaySettingTaskBarStartButtonRectChanged(const QString& displayID,
+                                                                     const QVariant& value) = 0;
       virtual void HandleDisplaySettingTaskBarStartButtonShownChanged(const QString& displayID,
                                                                       const QVariant& value) = 0;
    };

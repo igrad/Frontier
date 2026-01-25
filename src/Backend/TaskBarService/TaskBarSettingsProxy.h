@@ -14,7 +14,7 @@ namespace TaskBar
       Q_OBJECT
 
    public:
-      TaskBarSettingsProxy(QObject* parent = nullptr);
+      explicit TaskBarSettingsProxy(QObject* parent = nullptr);
       ~TaskBarSettingsProxy() = default;
 
       Alignment GetAlignment(const QString& displayID) const override;
@@ -41,6 +41,10 @@ namespace TaskBar
                                                   const QVariant& value) override;
       void HandleDisplaySettingTaskBarShownChanged(const QString& displayID,
                                                    const QVariant& value) override;
+      void HandleDisplaySettingsTaskBarStartButtonImageChanged(const QString& displayID,
+                                                               const QVariant& value) override;
+      void HandleDisplaySettingTaskBarStartButtonRectChanged(const QString& displayID,
+                                                             const QVariant& value) override;
       void HandleDisplaySettingTaskBarStartButtonShownChanged(const QString& displayID,
                                                               const QVariant& value) override;
 

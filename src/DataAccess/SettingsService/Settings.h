@@ -18,6 +18,8 @@ namespace Settings
       TaskBarOrientation,
       TaskBarRect,
       TaskBarShown,
+      TaskBarStartButtonImage,
+      TaskBarStartButtonRect,
       TaskBarStartButtonShown,
       WallpaperColors,
       WallpaperDuration,

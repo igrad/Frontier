@@ -1,10 +1,8 @@
 #pragma once
 
-#include <TaskBarService/TaskBarTypes.h>
+#include "TaskBarAssetProxy.h"
 #include <TaskBarServiceInterface.h>
 
-#include <AssetClient.h>
-#include <SettingsClient.h>
 #include <Utilities/XPtr.h>
 
 #include <QGridLayout>
@@ -32,17 +30,22 @@ namespace TaskBar
       void HandleViewDataChanged(const DisplayID& displayID, const TaskBar::ViewData& data);
 
    private slots:
-      void HandleImageReady(Assets::ImageName name, const QPixmap& image);
+      void HandleInitialViewData(const DisplayID& displayID, const TaskBar::ViewData& data);
+      void HandleStartButtonImageReady(const QPixmap& pix);
 
    private:
       void CreateUI();
       void ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service);
-      void ConnectToAssetClientSignals();
+      void ConnectToAssetProxy();
+      void SetOrientation(Orientation orientation);
+      void SetStartButtonImagePath(const QString& path);
 
       DisplayID Display;
       DisplayInfo Info;
-      Assets::AssetClient AssetClient;
+      bool InitialDisplaySettingsReceived;
+      TaskBarAssetProxy AssetProxy;
       TaskBar::ViewData CurrentData;
+
       QBoxLayout* MainLayout;
       QPushButton* StartButton;
       QGridLayout* AppIconsLayout;

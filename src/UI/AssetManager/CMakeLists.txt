@@ -1,6 +1,7 @@
 set(AssetManagerSources
    AssetClient.cpp
    AssetClient.h
+   AssetClientInterface.h
    AssetManager.cpp
    AssetManager.h
    Assets.cpp

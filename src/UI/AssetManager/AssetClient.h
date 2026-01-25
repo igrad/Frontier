@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Assets.h"
+#include "AssetClientInterface.h"
 #include <AssetId.h>
 
 #include <QPixmap>
@@ -10,7 +10,7 @@ namespace Assets
 {
    class AssetManager;
 
-   class AssetClient: public QObject
+   class AssetClient: public AssetClientInterface
    {
       Q_OBJECT
 
@@ -18,34 +18,30 @@ namespace Assets
       AssetClient(const QString& owner, QObject* parent = nullptr);
       ~AssetClient() = default;
 
-      void BatchLoadImages(const QList<Assets::ImageName>& names);
-      void LoadFont(Assets::FontName name);
-      void LoadImage(Assets::ImageName name);
+      void LoadFont(Assets::FontName name) override;
+      void LoadFont(const QString& path) override;
+      void LoadImage(Assets::ImageName name) override;
+      void LoadImage(const QString& path) override;
 
-      bool IsAssetAvailable(Assets::FontName name) const;
-      bool IsAssetAvailable(Assets::ImageName name) const;
-      QFont GetFont(Assets::FontName name) const;
-      QPixmap GetImage(Assets::ImageName name) const;
-
-   signals:
-      void BatchLoadImagesReady(const QHash<Assets::ImageName, QPixmap>& assets);
-      void ImageReady(const Assets::ImageName name, const QPixmap& pixmap);
-      void FontReady(const Assets::FontName name, const QFont& font);
+      bool IsAssetAvailable(Assets::FontName name) const override;
+      bool IsAssetAvailable(Assets::ImageName name) const override;
+      bool IsAssetAvailable(const QString& path) const override;
+      QFont GetFont(Assets::FontName name) const override;
+      QFont GetFont(const QString& path) const override;
+      QPixmap GetImage(Assets::ImageName name) const override;
+      QPixmap GetImage(const QString& path) const override;
 
    private slots:
       void HandleFontLoaded(const QString& path, const QFont& font);
       void HandleImageLoaded(const QString& path, const QPixmap& pixmap);
 
    private:
-      void PrivateLoadImage(Assets::ImageName name, bool batch);
-      void CheckBatchReady();
       void ConnectToAssetManager();
 
       AssetManager* Manager;
       QString Owner;
-      QSet<Assets::ImageName> BatchLoadNames;
-      QHash<QString, Assets::ImageName> LoadingImages;
-      QHash<Assets::ImageName, QPixmap> BatchLoadInProgress;
-      QHash<QString, Assets::FontName> LoadingFonts;
+      QSet<QString> LoadingImages;
+      QHash<QString, QPixmap> BatchLoadInProgress;
+      QSet<QString> LoadingFonts;
    };
 }

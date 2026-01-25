@@ -7,6 +7,8 @@ set(CoreUISources
    UIManager.cpp
    UIManager.h
 
+   TaskBar/TaskBarAssetProxy.cpp
+   TaskBar/TaskBarAssetProxy.h
    TaskBar/TaskBarView.cpp
    TaskBar/TaskBarView.h
 

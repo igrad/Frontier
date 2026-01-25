@@ -3,6 +3,8 @@
 #include <TaskBarServiceInterface.h>
 #include <ShellWindowInterface.h>
 
+#include <QGraphicsOpacityEffect>
+
 using namespace TaskBar;
 
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
@@ -11,15 +13,25 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    : QWidget(window)
    , Display(info.ID)
    , Info(info)
-   , AssetClient("TaskBarView", this)
    , CurrentData()
+   , InitialDisplaySettingsReceived(false)
 {
    CreateUI();
    ConnectToServiceSignals(service);
+   ConnectToAssetProxy();
 }
 
 void TaskBarView::HandleViewDataChanged(const DisplayID& displayID, const TaskBar::ViewData& data)
 {
+   if(!InitialDisplaySettingsReceived)
+   {
+      InitialDisplaySettingsReceived = true;
+      HandleInitialViewData(displayID, data);
+
+      CurrentData = data;
+      return;
+   }
+
    if(data == CurrentData)
    {
       return;
@@ -47,33 +59,57 @@ void TaskBarView::HandleViewDataChanged(const DisplayID& displayID, const TaskBa
 
    if(data.Orientation != CurrentData.Orientation)
    {
-
+      SetOrientation(data.Orientation);
    }
 
    if(data.Opacity != CurrentData.Opacity)
    {
+      QGraphicsOpacityEffect* effect = nullptr;
+      if(data.Opacity != 100)
+      {
+         effect = new QGraphicsOpacityEffect(this);
+         effect->setOpacity(data.Opacity / 100);
+      }
 
+      setGraphicsEffect(effect);
+   }
+
+   if(data.StartButtonShown != CurrentData.StartButtonShown)
+   {
+      StartButton->show();
+   }
+
+   if(data.StartButtonImagePath != CurrentData.StartButtonImagePath)
+   {
+      SetStartButtonImagePath(data.StartButtonImagePath);
    }
 
    CurrentData = data;
 }
 
-void TaskBarView::HandleImageReady(Assets::ImageName name, const QPixmap& image)
+void TaskBarView::HandleInitialViewData(const DisplayID& displayID, const TaskBar::ViewData& data)
 {
-   switch(name)
-   {
-   default:
-      break;
-   }
+   // Just set each member with no regard to differences. This ensures that if the field is
+   // blank, then we initialize with default settings and assets.
+   SetStartButtonImagePath(data.StartButtonImagePath);
+}
+
+void TaskBarView::HandleStartButtonImageReady(const QPixmap& pix)
+{
+   const QIcon icon(pix);
+   StartButton->setIcon(icon);
+   const QList<QSize> sizes = icon.availableSizes();
+   StartButton->setIconSize(sizes[0]); // WIP
 }
 
 void TaskBarView::CreateUI()
 {
    MainLayout = new QBoxLayout(QBoxLayout::Direction::LeftToRight);
 
-   StartButton = new QPushButton(this);
+   StartButton = new QPushButton();
    // const QIcon defaultIcon();
    // StartButton->setIcon()
+   MainLayout->addWidget(StartButton);
 
    // NOTE: Just for dev to get something on screen. Should be handled initially by DisplayInfo
    // and then updated by settings
@@ -104,8 +140,29 @@ void TaskBarView::ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service)
            this, &TaskBarView::HandleViewDataChanged);
 }
 
-void TaskBarView::ConnectToAssetClientSignals()
+void TaskBarView::ConnectToAssetProxy()
 {
-   connect(&AssetClient, &Assets::AssetClient::ImageReady,
-           this, &TaskBarView::HandleImageReady);
+   connect(&AssetProxy, &TaskBarAssetProxy::StartButtonImageReady,
+           this, &TaskBarView::HandleStartButtonImageReady);
+}
+
+void TaskBarView::SetOrientation(Orientation orientation)
+{
+   switch(orientation)
+   {
+   case Orientation::LeftToRight:
+      MainLayout->setDirection(QBoxLayout::LeftToRight);
+      break;
+   case Orientation::RightToLeft:
+      MainLayout->setDirection(QVBoxLayout::RightToLeft);
+      break;
+   }
+}
+
+void TaskBarView::SetStartButtonImagePath(const QString& path)
+{
+   if(path.isEmpty())
+   {
+      AssetProxy.LoadStartButtonImage(path);
+   }
 }

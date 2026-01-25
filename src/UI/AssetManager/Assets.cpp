@@ -8,6 +8,7 @@ QString Assets::ToAssetPath(ImageName name)
 {
    static const QMap<ImageName, QString> map =
    {
+      { ImageName::StartMenuImage, "://images/icons/StartMenuImage.png" },
       { ImageName::_TestName, "_TestName" },
    };
 
@@ -16,8 +17,8 @@ QString Assets::ToAssetPath(ImageName name)
       return map.value(name);
    }
 
-   LogWarn(QString("No asset path defined for asset named \"%1\"")
-              .arg(ToString(name)));
+   LogError(QString("No asset path defined for asset named \"%1\". Define in Assets.cpp")
+               .arg(ToString(name)));
    return QString();
 }
 
@@ -33,7 +34,7 @@ QString Assets::ToAssetPath(FontName name)
       return map.value(name);
    }
 
-   LogWarn(QString("No asset path defined for asset named \"%1\"")
+   LogWarn(QString("No asset path defined for asset named \"%1\". Define in Assets.cpp")
               .arg(ToString(name)));
    return QString();
 }

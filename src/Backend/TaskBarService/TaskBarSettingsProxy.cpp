@@ -174,6 +174,46 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarShownChanged(const QString
    }
 }
 
+void TaskBarSettingsProxy::HandleDisplaySettingsTaskBarStartButtonImageChanged(
+   const QString& displayID,
+   const QVariant& value)
+{
+   if(value.canConvert<QString>())
+   {
+      const QString val = value.toString();
+      if(val != Data[displayID].StartButtonImagePath)
+      {
+         Data[displayID].StartButtonImagePath = val;
+         LogInfo(QString("TaskBar start button image path for display %1 changed to %2")
+                    .arg(displayID, val));
+
+         emit SettingsChanged(displayID);
+      }
+   }
+}
+
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarStartButtonRectChanged(
+   const QString& displayID,
+   const QVariant& value)
+{
+   if(value.canConvert<QRect>())
+   {
+      const QRect val = value.toRect();
+      if(val != Data[displayID].StartButtonRect)
+      {
+         Data[displayID].StartButtonRect = val;
+         LogInfo(QString("TaskBar start button rect for display %1 changed to {%2, %3, %4, %5}")
+                    .arg(displayID,
+                         QString::number(val.x()),
+                         QString::number(val.y()),
+                         QString::number(val.width()),
+                         QString::number(val.height())));
+
+         emit SettingsChanged(displayID);
+      }
+   }
+}
+
 void TaskBarSettingsProxy::HandleDisplaySettingTaskBarStartButtonShownChanged(
    const QString& displayID,
    const QVariant& value)
@@ -196,8 +236,11 @@ void TaskBarSettingsProxy::SubscribeToDisplaySettings()
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAlignment, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAutoHide, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAutoHideDelayMs, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarOpacity, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarOrientation, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarRect, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarShown, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarStartButtonImage, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarStartButtonRect, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarStartButtonShown, this);
 }

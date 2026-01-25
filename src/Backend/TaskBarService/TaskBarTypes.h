@@ -29,8 +29,8 @@ namespace TaskBar
    enum class Orientation: int
    {
       None = 0,
-      LeftToRight,
       Centered,
+      LeftToRight,
       RightToLeft
    };
    Q_ENUM_NS(Orientation);
@@ -51,6 +51,8 @@ namespace TaskBar
       double Opacity;
       QRect Rect;
       bool Shown;
+      QString StartButtonImagePath;
+      QRect StartButtonRect;
       bool StartButtonShown;
 
       bool operator==(const ViewData& rhs) const
@@ -60,7 +62,11 @@ namespace TaskBar
                 AutoHide == rhs.AutoHide &&
                 AutoHideDelayMs == rhs.AutoHideDelayMs &&
                 Orientation == rhs.Orientation &&
-                Opacity == rhs.Opacity;
+                Opacity == rhs.Opacity &&
+                Shown == rhs.Shown &&
+                StartButtonImagePath == rhs.StartButtonImagePath &&
+                StartButtonRect == rhs.StartButtonRect &&
+                StartButtonShown == rhs.StartButtonShown;
       }
    };
 
