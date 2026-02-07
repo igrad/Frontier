@@ -51,7 +51,7 @@ void TaskBarServiceWorker::HandleSettingsChanged()
    data.AutoHide = SettingsProxy->GetAutoHide(DisplayID);
    data.AutoHideDelayMs = SettingsProxy->GetAutoHideDelayMs(DisplayID);
    data.Opacity = SettingsProxy->GetOpacity(DisplayID);
-   data.Orientation = SettingsProxy->GetOrientation(DisplayID);
+   data.Direction = SettingsProxy->GetDirection(DisplayID);
 
    emit TaskBarViewDataChanged(DisplayID, data);
 }

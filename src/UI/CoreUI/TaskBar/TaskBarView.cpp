@@ -7,6 +7,20 @@
 
 using namespace TaskBar;
 
+namespace
+{
+   constexpr QBoxLayout::Direction ToQtDirection(TaskBar::Direction dir)
+   {
+      switch(dir)
+      {
+      case Direction::RightToLeft:
+         return QBoxLayout::Direction::RightToLeft;
+      default:
+         return QBoxLayout::Direction::LeftToRight;
+      }
+   }
+}
+
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
                          ShellWindowInterface* window,
                          const DisplayInfo& info)
@@ -15,6 +29,8 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    , Info(info)
    , CurrentData()
    , InitialDisplaySettingsReceived(false)
+   , IsCenteredLayout(false)
+   , IsCenteredIconLayout(false)
 {
    CreateUI();
    ConnectToServiceSignals(service);
@@ -57,9 +73,10 @@ void TaskBarView::HandleViewDataChanged(const DisplayID& displayID, const TaskBa
 
    }
 
-   if(data.Orientation != CurrentData.Orientation)
+   if(data.Direction != CurrentData.Direction ||
+       data.Alignment != CurrentData.Alignment)
    {
-      SetOrientation(data.Orientation);
+      SetLayout(data);
    }
 
    if(data.Opacity != CurrentData.Opacity)
@@ -104,27 +121,56 @@ void TaskBarView::HandleStartButtonImageReady(const QPixmap& pix)
 
 void TaskBarView::CreateUI()
 {
-   MainLayout = new QBoxLayout(QBoxLayout::Direction::LeftToRight);
+   MainLayout = new QStackedLayout();
+   MainLayout->setStackingMode(QStackedLayout::StackingMode::StackAll);
 
+   // Icon tray (system and app icons, but not misc icons in the info widget)
+   IconTrayWidget = new QWidget();
+   IconTrayLayout = new QHBoxLayout();
+
+   // System icons
+   SystemIconsLayout = new QHBoxLayout();
+   IconTrayWidget->setLayout(SystemIconsLayout);
    StartButton = new QPushButton();
    // const QIcon defaultIcon();
    // StartButton->setIcon()
-   MainLayout->addWidget(StartButton);
+   SystemIconsLayout->addWidget(StartButton);
+   IconTrayLayout->addLayout(SystemIconsLayout);
+
+   // App icons
+   AppIconsLayout = new QGridLayout();
+   IconTrayLayout->addLayout(AppIconsLayout);
+   IconTrayWidget->setLayout(IconTrayLayout);
+
+   // Info widget
+   InfoWidget = new QWidget();
+   MiscIconsWrapperLayout = new QHBoxLayout();
+   // This spacer moves the misc icons all the way to the right/bottom. Might change this one day.
+   MiscIconsWrapperLayout->insertSpacerItem(0, new QSpacerItem(0, 0, QSizePolicy::Expanding));
+
+   // Misc icons
+   MiscIconsLayout = new QGridLayout();
+   // Add misc icons. Network, sound, system update, expand button, etc.
+   MiscIconsWrapperLayout->addLayout(MiscIconsLayout);
+
+   // Date/time
+   DateTimeLayout = new QVBoxLayout();
+   TimeLabel = new QLabel("23:59");
+   DateLabel = new QLabel("12/31/2026");
+   DateTimeLayout->addWidget(TimeLabel);
+   DateTimeLayout->addWidget(DateLabel);
+   MiscIconsWrapperLayout->addLayout(DateTimeLayout);
+   InfoWidget->setLayout(MiscIconsWrapperLayout);
+
+   // Add widgets in z-index order from back to front
+   MainLayout->addWidget(InfoWidget);
+   MainLayout->addWidget(IconTrayWidget);
+
+   setLayout(MainLayout);
 
    // NOTE: Just for dev to get something on screen. Should be handled initially by DisplayInfo
    // and then updated by settings
    setGeometry({0, 100, 1920, 100});
-
-   AppIconsLayout = new QGridLayout();
-   MainLayout->addLayout(AppIconsLayout);
-
-   MiscIconsLayout = new QGridLayout();
-   MainLayout->addLayout(MiscIconsLayout);
-
-   DateTimeLayout = new QVBoxLayout();
-   MainLayout->addLayout(DateTimeLayout);
-
-   setLayout(MainLayout);
    show();
 }
 
@@ -146,23 +192,94 @@ void TaskBarView::ConnectToAssetProxy()
            this, &TaskBarView::HandleStartButtonImageReady);
 }
 
-void TaskBarView::SetOrientation(Orientation orientation)
+void TaskBarView::SetLayout(const TaskBar::ViewData& data)
 {
-   switch(orientation)
+   const Direction newDir = (Direction::None != data.Direction) ?
+                               data.Direction :
+                               Direction::LeftToRight;
+   if(Direction::Centered == newDir)
    {
-   case Orientation::LeftToRight:
-      MainLayout->setDirection(QBoxLayout::LeftToRight);
+      // Changing to a centered layout
+      SetCenteredLayout();
+   }
+   else
+   {
+      // Changing to a directional layout
+      SetDirectionalLayout(newDir);
+   }
+}
+
+void TaskBarView::SetDirection(Direction direction)
+{
+   switch(direction)
+   {
+   case Direction::LeftToRight:
+   case Direction::RightToLeft:
+      // MainLayout->setDirection(QVBoxLayout::RightToLeft);
+      SetDirectionalLayout(direction);
       break;
-   case Orientation::RightToLeft:
-      MainLayout->setDirection(QVBoxLayout::RightToLeft);
+   case Direction::Centered:
+      SetCenteredLayout();
+      break;
+   default:
       break;
    }
 }
 
+// Add SetDirection for icon direction, too
+
 void TaskBarView::SetStartButtonImagePath(const QString& path)
 {
-   if(path.isEmpty())
+   AssetProxy.LoadStartButtonImage(path.isEmpty() ?
+                                      ToAssetPath(Assets::ImageName::StartMenuImage) :
+                                      path);
+}
+
+void TaskBarView::SetCenteredLayout()
+{
+   if(!IsCenteredLayout)
    {
-      AssetProxy.LoadStartButtonImage(path);
+      IconTrayLayout->setAlignment(Qt::AlignCenter);
    }
+
+   IsCenteredLayout = true;
+}
+
+void TaskBarView::SetDirectionalLayout(Direction direction)
+{
+   if(IsCenteredLayout)
+   {
+      IconTrayLayout->setAlignment(Qt::AlignLeft);
+   }
+
+   IsCenteredLayout = false;
+}
+
+void TaskBarView::SetCenteredIconTrayLayout()
+{
+   if(!IsCenteredIconTrayLayout)
+   {
+      IconTrayLayout->addLayout(AppIconsSecondaryLayout);
+   }
+
+   IsCenteredIconTrayLayout = true;
+}
+
+void TaskBarView::SetDirectionalIconTrayLayout(Direction direction)
+{
+   if(IsCenteredIconTrayLayout)
+   {
+      // Centered Direction for the icon tray layout uses two layouts, so now we have to merge
+      // the two layouts back down to 1 for directional display.
+      QList<QWidget*> children = AppIconsSecondaryLayout->findChildren<QWidget*>();
+      for(QWidget* child : std::as_const(children))
+      {
+         AppIconsLayout->addWidget(child);
+      }
+
+      IconTrayLayout->removeItem(AppIconsSecondaryLayout);
+   }
+
+   IconTrayLayout->setDirection(ToQtDirection(direction));
+   IsCenteredIconTrayLayout = false;
 }

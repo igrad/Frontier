@@ -26,16 +26,16 @@ namespace TaskBar
    }
 
    // The directional flow of elements of the task bar
-   enum class Orientation: int
+   enum class Direction: int
    {
       None = 0,
       Centered,
       LeftToRight,
       RightToLeft
    };
-   Q_ENUM_NS(Orientation);
+   Q_ENUM_NS(Direction);
 
-   inline QString ToString(Orientation value)
+   inline QString ToString(Direction value)
    {
       return EnumToString(value);
    }
@@ -43,33 +43,36 @@ namespace TaskBar
    // Necessary data to display a task bar on-screen
    struct ViewData
    {
-      Alignment Alignment;
       QString DisplayID;
+      Alignment Alignment;
       bool AutoHide;
       int AutoHideDelayMs;
-      Orientation Orientation;
+      Direction IconDirection;
       double Opacity;
       QRect Rect;
       bool Shown;
       QString StartButtonImagePath;
       QRect StartButtonRect;
       bool StartButtonShown;
+      Direction Direction;
+      // auto-hide misc icons bool
+      // app icon docks grid dimensions
 
       bool operator==(const ViewData& rhs) const
       {
-         return Alignment == rhs.Alignment &&
-                DisplayID == rhs.DisplayID &&
+         return DisplayID == rhs.DisplayID &&
+                Alignment == rhs.Alignment &&
                 AutoHide == rhs.AutoHide &&
                 AutoHideDelayMs == rhs.AutoHideDelayMs &&
-                Orientation == rhs.Orientation &&
+                Direction == rhs.Direction &&
                 Opacity == rhs.Opacity &&
                 Shown == rhs.Shown &&
+                IconDirection == rhs.IconDirection &&
                 StartButtonImagePath == rhs.StartButtonImagePath &&
                 StartButtonRect == rhs.StartButtonRect &&
                 StartButtonShown == rhs.StartButtonShown;
       }
    };
-
 }
 
 Q_DECLARE_METATYPE(TaskBar::ViewData);

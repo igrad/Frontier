@@ -7,7 +7,9 @@
 
 #include <QGridLayout>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QPushButton>
+#include <QStackedLayout>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -37,8 +39,13 @@ namespace TaskBar
       void CreateUI();
       void ConnectToServiceSignals(XPtr<TaskBarServiceInterface> service);
       void ConnectToAssetProxy();
-      void SetOrientation(Orientation orientation);
+      void SetLayout(const TaskBar::ViewData& data);
+      void SetDirection(Direction direction);
       void SetStartButtonImagePath(const QString& path);
+      void SetCenteredLayout();
+      void SetDirectionalLayout(Direction direction);
+      void SetCenteredIconTrayLayout();
+      void SetDirectionalIconTrayLayout(Direction direction);
 
       DisplayID Display;
       DisplayInfo Info;
@@ -46,12 +53,25 @@ namespace TaskBar
       TaskBarAssetProxy AssetProxy;
       TaskBar::ViewData CurrentData;
 
-      QBoxLayout* MainLayout;
+      QStackedLayout* MainLayout;
+
+      QWidget* IconTrayWidget;
+      QBoxLayout* IconTrayLayout;
+      QBoxLayout* SystemIconsLayout;
       QPushButton* StartButton;
+      // Buttons for desktop view, search, etc. Add to SystemIconsLayout
       QGridLayout* AppIconsLayout;
+      QGridLayout* AppIconsSecondaryLayout;
+
+      QWidget* InfoWidget;
+      QBoxLayout* MiscIconsWrapperLayout;
       QGridLayout* MiscIconsLayout;
       QVBoxLayout* DateTimeLayout;
+      QLabel* TimeLabel;
+      QLabel* DateLabel;
 
       QTimer AutoHideTimer;
+      bool IsCenteredLayout;
+      bool IsCenteredIconTrayLayout;
    };
 }

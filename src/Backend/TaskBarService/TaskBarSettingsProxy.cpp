@@ -25,14 +25,19 @@ int TaskBarSettingsProxy::GetAutoHideDelayMs(const QString& displayID) const
    return Data[displayID].AutoHideDelayMs;
 }
 
+Direction TaskBarSettingsProxy::GetDirection(const QString& displayID) const
+{
+   return Data[displayID].Direction;
+}
+
+Direction TaskBarSettingsProxy::GetIconDirection(const QString& displayID) const
+{
+   return Data[displayID].IconDirection;
+}
+
 int TaskBarSettingsProxy::GetOpacity(const QString& displayID) const
 {
    return Data[displayID].Opacity;
-}
-
-Orientation TaskBarSettingsProxy::GetOrientation(const QString& displayID) const
-{
-   return Data[displayID].Orientation;
 }
 
 QRect TaskBarSettingsProxy::GetRect(const QString& displayID) const
@@ -43,6 +48,16 @@ QRect TaskBarSettingsProxy::GetRect(const QString& displayID) const
 bool TaskBarSettingsProxy::GetShown(const QString& displayID) const
 {
    return Data[displayID].Shown;
+}
+
+QString TaskBarSettingsProxy::GetStartButtonImagePath(const QString& displayID) const
+{
+   return Data[displayID].StartButtonImagePath;
+}
+
+QRect TaskBarSettingsProxy::GetStartButtonRect(const QString& displayID) const
+{
+   return Data[displayID].Rect;
 }
 
 bool TaskBarSettingsProxy::GetStartButtonShown(const QString& displayID) const
@@ -102,6 +117,40 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarAutoHideDelayMsChanged(
    }
 }
 
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarDirectionChanged(const QString& displayID,
+                                                                         const QVariant& value)
+{
+   if(value.canConvert<Direction>())
+   {
+      const Direction val = value.value<Direction>();
+      if(val != Data[displayID].Direction)
+      {
+         Data[displayID].Direction = val;
+         LogInfo(QString("TaskBar direction for display %1 changed to %2")
+                    .arg(displayID, ToString(val)));
+
+         emit SettingsChanged(displayID);
+      }
+   }
+}
+
+void TaskBarSettingsProxy::HandleDisplaySettingTaskBarIconDirectionChanged(const QString& displayID,
+                                                                           const QVariant& value)
+{
+   if(value.canConvert<Direction>())
+   {
+      const Direction val = value.value<Direction>();
+      if(val != Data[displayID].IconDirection)
+      {
+         Data[displayID].IconDirection = val;
+         LogInfo(QString("TaskBar direction for display %1 changed to %2")
+                    .arg(displayID, ToString(val)));
+
+         emit SettingsChanged(displayID);
+      }
+   }
+}
+
 void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOpacityChanged(const QString& displayID,
                                                                      const QVariant& value)
 {
@@ -113,23 +162,6 @@ void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOpacityChanged(const QStri
          Data[displayID].Opacity = val;
          LogInfo(QString("TaskBar opacity for display %1 changed to %2per cent")
                     .arg(displayID, val));
-
-         emit SettingsChanged(displayID);
-      }
-   }
-}
-
-void TaskBarSettingsProxy::HandleDisplaySettingTaskBarOrientationChanged(const QString& displayID,
-                                                                         const QVariant& value)
-{
-   if(value.canConvert<Orientation>())
-   {
-      const Orientation val = value.value<Orientation>();
-      if(val != Data[displayID].Orientation)
-      {
-         Data[displayID].Orientation = val;
-         LogInfo(QString("TaskBar orientation for display %1 changed to %2")
-                    .arg(displayID, ToString(val)));
 
          emit SettingsChanged(displayID);
       }
@@ -236,8 +268,9 @@ void TaskBarSettingsProxy::SubscribeToDisplaySettings()
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAlignment, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAutoHide, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarAutoHideDelayMs, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarDirection, this);
+   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarIconDirection, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarOpacity, this);
-   SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarOrientation, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarRect, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarShown, this);
    SettingsClient.SubscribeToDisplaySetting(Setting::TaskBarStartButtonImage, this);

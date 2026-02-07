@@ -14,10 +14,13 @@ namespace TaskBar
       virtual Alignment GetAlignment(const QString& displayID) const = 0;
       virtual bool GetAutoHide(const QString& displayID) const = 0;
       virtual int GetAutoHideDelayMs(const QString& displayID) const = 0;
+      virtual Direction GetDirection(const QString& displayID) const = 0;
+      virtual Direction GetIconDirection(const QString& displayID) const = 0;
       virtual int GetOpacity(const QString& displayID) const = 0;
-      virtual Orientation GetOrientation(const QString& displayID) const = 0;
       virtual QRect GetRect(const QString& displayID) const = 0;
       virtual bool GetShown(const QString& displayID) const = 0;
+      virtual QString GetStartButtonImagePath(const QString& displayID) const = 0;
+      virtual QRect GetStartButtonRect(const QString& displayID) const = 0;
       virtual bool GetStartButtonShown(const QString& displayID) const = 0;
 
    signals:
@@ -30,10 +33,12 @@ namespace TaskBar
                                                               const QVariant& value) = 0;
       virtual void HandleDisplaySettingTaskBarAutoHideDelayMsChanged(const QString& displayID,
                                                                      const QVariant& value) = 0;
+      virtual void HandleDisplaySettingTaskBarDirectionChanged(const QString& displayID,
+                                                               const QVariant& value) = 0;
+      virtual void HandleDisplaySettingTaskBarIconDirectionChanged(const QString& displayID,
+                                                                   const QVariant& value) = 0;
       virtual void HandleDisplaySettingTaskBarOpacityChanged(const QString& displayID,
                                                              const QVariant& value) = 0;
-      virtual void HandleDisplaySettingTaskBarOrientationChanged(const QString& displayID,
-                                                                 const QVariant& value) = 0;
       virtual void HandleDisplaySettingTaskBarRectChanged(const QString& displayID,
                                                           const QVariant& value) = 0;
       virtual void HandleDisplaySettingTaskBarShownChanged(const QString& displayID,

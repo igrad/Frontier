@@ -60,12 +60,12 @@ QVariant EnterpriseSettingsModel::data(const QModelIndex& index, int role) const
 
 
 QVariant EnterpriseSettingsModel::headerData(int section,
-                                             Qt::Orientation orientation,
+                                             Qt::Direction direction,
                                              int role) const
 {
    QVariant retVal;
 
-   if(Qt::Horizontal == orientation)
+   if(Qt::Horizontal == direction)
    {
       if(Qt::FontRole == role)
       {

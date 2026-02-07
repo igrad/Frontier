@@ -20,10 +20,13 @@ namespace TaskBar
       Alignment GetAlignment(const QString& displayID) const override;
       bool GetAutoHide(const QString& displayID) const override;
       int GetAutoHideDelayMs(const QString& displayID) const override;
+      Direction GetDirection(const QString& displayID) const override;
+      Direction GetIconDirection(const QString& displayID) const override;
       int GetOpacity(const QString& displayID) const override;
-      Orientation GetOrientation(const QString& displayID) const override;
       QRect GetRect(const QString& displayID) const override;
       bool GetShown(const QString& displayID) const override;
+      QString GetStartButtonImagePath(const QString& displayID) const override;
+      QRect GetStartButtonRect(const QString& displayID) const override;
       bool GetStartButtonShown(const QString& displayID) const override;
 
    public slots:
@@ -33,10 +36,12 @@ namespace TaskBar
                                                       const QVariant& value) override;
       void HandleDisplaySettingTaskBarAutoHideDelayMsChanged(const QString& displayID,
                                                              const QVariant& value) override;
+      void HandleDisplaySettingTaskBarDirectionChanged(const QString& displayID,
+                                                       const QVariant& value) override;
+      void HandleDisplaySettingTaskBarIconDirectionChanged(const QString& displayID,
+                                                           const QVariant& value) override;
       void HandleDisplaySettingTaskBarOpacityChanged(const QString& displayID,
                                                      const QVariant& value) override;
-      void HandleDisplaySettingTaskBarOrientationChanged(const QString& displayID,
-                                                         const QVariant& value) override;
       void HandleDisplaySettingTaskBarRectChanged(const QString& displayID,
                                                   const QVariant& value) override;
       void HandleDisplaySettingTaskBarShownChanged(const QString& displayID,
