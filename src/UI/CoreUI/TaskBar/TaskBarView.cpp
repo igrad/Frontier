@@ -30,7 +30,7 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    , CurrentData()
    , InitialDisplaySettingsReceived(false)
    , IsCenteredLayout(false)
-   , IsCenteredIconLayout(false)
+   , IsCenteredIconTrayLayout(false)
 {
    CreateUI();
    ConnectToServiceSignals(service);

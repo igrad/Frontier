@@ -55,22 +55,37 @@ void AssetClient::LoadImage(const QString& path)
 
 bool AssetClient::IsAssetAvailable(FontName name) const
 {
-   return Manager->IsAssetAvailable(ToAssetPath(name));
+   return IsAssetAvailable(ToAssetPath(name));
 }
 
 bool AssetClient::IsAssetAvailable(ImageName name) const
 {
-   return Manager->IsAssetAvailable(ToAssetPath(name));
+   return IsAssetAvailable(ToAssetPath(name));
+}
+
+bool AssetClient::IsAssetAvailable(const QString& path) const
+{
+   return Manager-IsAssetAvailable(path);
 }
 
 QFont AssetClient::GetFont(FontName name) const
 {
-   return Manager->GetFont(ToAssetPath(name));
+   return GetFont(ToAssetPath(name));
+}
+
+QFont AssetClient::GetFont(const QString& path) const
+{
+   return Manager->GetFont(path);
 }
 
 QPixmap AssetClient::GetImage(ImageName name) const
 {
-   return Manager->GetImage(ToAssetPath(name));
+   return GetImage(ToAssetPath(name));
+}
+
+QPixmap AssetClient::GetImage(const QString& path) const
+{
+   return Manager->GetImage(path);
 }
 
 void AssetClient::HandleFontLoaded(const QString& path, const QFont& font)

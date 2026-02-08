@@ -28,12 +28,16 @@ namespace TaskBar
                   GetAutoHideDelayMs,
                   (const QString& displayID),
                   (const override));
-      MOCK_METHOD(int,
-                  GetOpacity,
+      MOCK_METHOD(Direction,
+                  GetDirection,
                   (const QString& displayID),
                   (const override));
-      MOCK_METHOD(Orientation,
-                  GetOrientation,
+      MOCK_METHOD(Direction,
+                  GetIconDirection,
+                  (const QString& displayID),
+                  (const override));
+      MOCK_METHOD(int,
+                  GetOpacity,
                   (const QString& displayID),
                   (const override));
       MOCK_METHOD(QRect,
@@ -42,6 +46,14 @@ namespace TaskBar
                   (const override));
       MOCK_METHOD(bool,
                   GetShown,
+                  (const QString& displayID),
+                  (const override));
+      MOCK_METHOD(QString,
+                  GetStartButtonImagePath,
+                  (const QString& displayID),
+                  (const override));
+      MOCK_METHOD(QRect,
+                  GetStartButtonRect,
                   (const QString& displayID),
                   (const override));
       MOCK_METHOD(bool,
@@ -63,11 +75,15 @@ namespace TaskBar
                   (const QString& displayID, const QVariant& value),
                   (override));
       MOCK_METHOD(void,
-                  HandleDisplaySettingTaskBarOpacityChanged,
+                  HandleDisplaySettingTaskBarDirectionChanged,
                   (const QString& displayID, const QVariant& value),
                   (override));
       MOCK_METHOD(void,
-                  HandleDisplaySettingTaskBarOrientationChanged,
+                  HandleDisplaySettingTaskBarIconDirectionChanged,
+                  (const QString& displayID, const QVariant& value),
+                  (override));
+      MOCK_METHOD(void,
+                  HandleDisplaySettingTaskBarOpacityChanged,
                   (const QString& displayID, const QVariant& value),
                   (override));
       MOCK_METHOD(void,
@@ -76,6 +92,14 @@ namespace TaskBar
                   (override));
       MOCK_METHOD(void,
                   HandleDisplaySettingTaskBarShownChanged,
+                  (const QString& displayID, const QVariant& value),
+                  (override));
+      MOCK_METHOD(void,
+                  HandleDisplaySettingsTaskBarStartButtonImageChanged,
+                  (const QString& displayID, const QVariant& value),
+                  (override));
+      MOCK_METHOD(void,
+                  HandleDisplaySettingTaskBarStartButtonRectChanged,
                   (const QString& displayID, const QVariant& value),
                   (override));
       MOCK_METHOD(void,

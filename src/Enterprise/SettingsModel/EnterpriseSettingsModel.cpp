@@ -60,7 +60,7 @@ QVariant EnterpriseSettingsModel::data(const QModelIndex& index, int role) const
 
 
 QVariant EnterpriseSettingsModel::headerData(int section,
-                                             Qt::Direction direction,
+                                             Qt::Orientation direction,
                                              int role) const
 {
    QVariant retVal;
