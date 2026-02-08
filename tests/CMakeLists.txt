@@ -20,6 +20,7 @@ qt_add_executable(FrontierUnitTests
 
 target_link_libraries(FrontierUnitTests
    PRIVATE
+   WindowsAPI
    Qt6::Core
    Qt6::Test
    Qt6::Widgets

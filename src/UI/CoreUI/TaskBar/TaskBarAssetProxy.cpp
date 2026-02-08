@@ -10,26 +10,37 @@ using namespace TaskBar;
 
 TaskBarAssetProxy::TaskBarAssetProxy(QObject* parent)
    : QObject(parent)
-   , Client("TaskBarAssetProxy", this)
+   , Client(nullptr)
 {
-   connect(&Client, &AssetClientInterface::ImageReady,
+}
+
+void TaskBarAssetProxy::SetAssetClient(AssetClientInterface* assetClient)
+{
+   Client = assetClient;
+   connect(Client, &AssetClientInterface::ImageReady,
            this, &TaskBarAssetProxy::HandleImageReady);
 }
 
 void TaskBarAssetProxy::LoadStartButtonImage(const QString& path)
 {
+   if(nullptr == Client)
+   {
+      LogError("AssetClientInterface was not set!");
+      return;
+   }
+
    const QString imgPath = (path.isEmpty()) ?
                               ToAssetPath(Assets::ImageName::StartMenuImage) :
                               path;
    StartButtonPath = imgPath;
 
-   if(Client.IsAssetAvailable(imgPath))
+   if(Client->IsAssetAvailable(imgPath))
    {
-      emit StartButtonImageReady(Client.GetImage(imgPath));
+      emit StartButtonImageReady(Client->GetImage(imgPath));
       return;
    }
 
-   Client.LoadImage(imgPath);
+   Client->LoadImage(imgPath);
 }
 
 void TaskBarAssetProxy::HandleImageReady(const QString& name, const QPixmap& pixmap)

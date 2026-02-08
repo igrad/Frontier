@@ -1,5 +1,7 @@
 #include "Win32APIWrapper.h"
 
+#include <shellscalingapi.h>
+
 int Win32APIWrapper::GetSystemMetrics(int nIndex)
 {
    return ::GetSystemMetrics(nIndex);
@@ -23,7 +25,8 @@ HRESULT Win32APIWrapper::GetDpiForMonitor(HMONITOR hMonitor,
                                           UINT* dpiX,
                                           UINT* dpiY)
 {
-   return ::GetDpiForMonitor(hMonitor, dpiType, dpiX, dpiY);
+   return false;
+   // return ::GetDpiForMonitor(hMonitor, dpiType, dpiX, dpiY);
 }
 
 WINBOOL Win32APIWrapper::EnumDisplayDevicesA(LPCSTR lpDevice,

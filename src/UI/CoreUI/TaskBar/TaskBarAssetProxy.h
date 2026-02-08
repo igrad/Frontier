@@ -1,8 +1,10 @@
 #pragma once
 
-#include <AssetClient.h>
-
 #include <QObject>
+
+namespace Assets{
+   class AssetClientInterface;
+}
 
 namespace TaskBar
 {
@@ -14,6 +16,8 @@ namespace TaskBar
       explicit TaskBarAssetProxy(QObject* parent = nullptr);
       ~TaskBarAssetProxy() = default;
 
+      void SetAssetClient(Assets::AssetClientInterface* assetClient);
+
       void LoadStartButtonImage(const QString& path);
 
    signals:
@@ -23,7 +27,7 @@ namespace TaskBar
       void HandleImageReady(const QString& name, const QPixmap& pixmap);
 
    private:
-      Assets::AssetClient Client;
+      Assets::AssetClientInterface* Client;
       QString StartButtonPath;
    };
 }

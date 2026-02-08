@@ -5,6 +5,8 @@ target_sources(FrontierUnitTests
    UIManagerTests.cpp
 
    TaskBarTests/TaskBarViewTests.cpp
+   TaskBarTests/TaskBarAssetProxyTests.cpp
+
    WallpaperTests/WallpaperViewTests.cpp
 )
 
@@ -18,6 +20,7 @@ target_link_libraries(FrontierUnitTests
    CoreUI
    TaskBarService
    WallpaperService
+   WindowsAPI
    TestSupport::BackendSupport
    TestSupport::DataAccessSupport
    TestSupport::TestUtilities

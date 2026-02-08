@@ -29,9 +29,13 @@ TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
    , Info(info)
    , CurrentData()
    , InitialDisplaySettingsReceived(false)
+   , AssetProxy(this)
+   , AssetClient("TaskBarAssetProxy", &AssetProxy)
    , IsCenteredLayout(false)
    , IsCenteredIconTrayLayout(false)
 {
+   AssetProxy.SetAssetClient(&AssetClient);
+
    CreateUI();
    ConnectToServiceSignals(service);
    ConnectToAssetProxy();
@@ -45,6 +49,7 @@ void TaskBarView::HandleViewDataChanged(const DisplayID& displayID, const TaskBa
       HandleInitialViewData(displayID, data);
 
       CurrentData = data;
+      SetDimensions();
       return;
    }
 
@@ -102,6 +107,8 @@ void TaskBarView::HandleViewDataChanged(const DisplayID& displayID, const TaskBa
    }
 
    CurrentData = data;
+
+   SetDimensions();
 }
 
 void TaskBarView::HandleInitialViewData(const DisplayID& displayID, const TaskBar::ViewData& data)
@@ -170,7 +177,7 @@ void TaskBarView::CreateUI()
 
    // NOTE: Just for dev to get something on screen. Should be handled initially by DisplayInfo
    // and then updated by settings
-   setGeometry({0, 100, 1920, 100});
+   SetDimensions();
    show();
 }
 
@@ -282,4 +289,10 @@ void TaskBarView::SetDirectionalIconTrayLayout(Direction direction)
 
    IconTrayLayout->setDirection(ToQtDirection(direction));
    IsCenteredIconTrayLayout = false;
+}
+
+void TaskBarView::SetDimensions()
+{
+   setGeometry(CurrentData.Rect);
+   update();
 }

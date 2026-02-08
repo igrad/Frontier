@@ -30,6 +30,7 @@ find_package(Qt6 REQUIRED COMPONENTS Multimedia MultimediaWidgets)
 
 target_link_libraries(CoreUI PRIVATE
    AssetManager
+   BackendThreadManager
    DisplaysManager
    Shared
    SharedUIComponents

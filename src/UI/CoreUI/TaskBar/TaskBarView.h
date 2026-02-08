@@ -3,6 +3,7 @@
 #include "TaskBarAssetProxy.h"
 #include <TaskBarServiceInterface.h>
 
+#include <AssetClient.h>
 #include <Utilities/XPtr.h>
 
 #include <QGridLayout>
@@ -46,10 +47,12 @@ namespace TaskBar
       void SetDirectionalLayout(Direction direction);
       void SetCenteredIconTrayLayout();
       void SetDirectionalIconTrayLayout(Direction direction);
+      void SetDimensions();
 
       DisplayID Display;
       DisplayInfo Info;
       bool InitialDisplaySettingsReceived;
+      Assets::AssetClient AssetClient;
       TaskBarAssetProxy AssetProxy;
       TaskBar::ViewData CurrentData;
 

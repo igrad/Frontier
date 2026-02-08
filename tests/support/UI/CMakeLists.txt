@@ -1,4 +1,7 @@
 set(UISupportSources
+   AssetManager/AssetClientMock.cpp
+   AssetManager/AssetClientMock.h
+
    CoreUI/ShellWindowMock.cpp
    CoreUI/ShellWindowMock.h
 )
@@ -11,6 +14,7 @@ add_library(TestSupport::UISupport ALIAS UISupport)
 target_include_directories(UISupport
    PUBLIC
    ${CMAKE_CURRENT_SOURCE_DIR}
+   ${CMAKE_CURRENT_SOURCE_DIR}/AssetManager
    ${CMAKE_CURRENT_SOURCE_DIR}/CoreUI
    ${CMAKE_SOURCE_DIR}/UI
 )
