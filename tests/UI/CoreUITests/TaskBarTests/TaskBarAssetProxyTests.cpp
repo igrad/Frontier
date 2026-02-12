@@ -12,9 +12,8 @@ class TaskBarAssetProxyTests: public Test
 public:
    TaskBarAssetProxyTests()
       : AssetClient()
-      , Proxy()
+      , Proxy(AssetClient)
    {
-      Proxy.SetAssetClient(&AssetClient);
    }
 
    NiceMock<AssetClientMock> AssetClient;

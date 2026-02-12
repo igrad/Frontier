@@ -6,6 +6,11 @@
 
 class ShellWindow;
 
+namespace Assets
+{
+   class AssetClient;
+}
+
 namespace TaskBar
 {
    class TaskBarServiceInterface;
@@ -50,6 +55,8 @@ private:
    XPtr<Wallpaper::WallpaperServiceInterface> WallpaperService;
    ShellWindow* TheShellWindow;
    Wallpaper::WallpaperView* TheWallpaperView;
+
+   Assets::AssetClient* TaskBarAssetClient;
    TaskBar::TaskBarView* TheTaskBarView;
    DisplayInfo TheDisplayInfo;
 };

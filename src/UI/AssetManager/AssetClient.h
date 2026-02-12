@@ -15,7 +15,7 @@ namespace Assets
       Q_OBJECT
 
    public:
-      AssetClient(const QString& owner, QObject* parent = nullptr);
+      explicit AssetClient(QObject* parent = nullptr);
       ~AssetClient() = default;
 
       void LoadFont(Assets::FontName name) override;
@@ -39,7 +39,6 @@ namespace Assets
       void ConnectToAssetManager();
 
       AssetManager* Manager;
-      QString Owner;
       QSet<QString> LoadingImages;
       QHash<QString, QPixmap> BatchLoadInProgress;
       QSet<QString> LoadingFonts;

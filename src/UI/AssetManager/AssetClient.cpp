@@ -7,9 +7,8 @@
 
 using namespace Assets;
 
-AssetClient::AssetClient(const QString& owner, QObject* parent)
+AssetClient::AssetClient(QObject* parent)
    : Manager(AssetManager::GetInstance())
-   , Owner(owner)
    , LoadingImages()
    , LoadingFonts()
 {
