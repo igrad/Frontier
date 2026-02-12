@@ -3,10 +3,13 @@
 #include <TaskBarService/TaskBarServiceMock.h>
 #include <ShellWindowMock.h>
 
+#include <AssetClientMock.h>
+
 #include <TestMacros.h>
 
 #include <gtest/gtest.h>
 
+using namespace Assets;
 using namespace TaskBar;
 using namespace testing;
 
@@ -26,11 +29,13 @@ public:
    {
       View.reset(new TaskBarView(XPtr<TaskBarServiceInterface>(&Service),
                                  &ShellWindow,
+                                 AssetClient,
                                  Info));
    }
 
    NiceMock<ShellWindowMock> ShellWindow;
    NiceMock<TaskBarServiceMock> Service;
+   NiceMock<AssetClientMock> AssetClient;
    DisplayInfo Info;
    std::unique_ptr<TaskBarView> View;
 };

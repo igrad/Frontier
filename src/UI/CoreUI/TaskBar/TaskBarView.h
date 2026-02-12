@@ -26,6 +26,7 @@ namespace TaskBar
    public:
       TaskBarView(XPtr<TaskBarServiceInterface> service,
                   ShellWindowInterface* window,
+                  Assets::AssetClientInterface& assetClient,
                   const DisplayInfo& displayInfo);
       ~TaskBarView() = default;
 
@@ -52,10 +53,11 @@ namespace TaskBar
       DisplayID Display;
       DisplayInfo Info;
       bool InitialDisplaySettingsReceived;
-      Assets::AssetClient AssetClient;
+      Assets::AssetClientInterface& AssetClient;
       TaskBarAssetProxy AssetProxy;
       TaskBar::ViewData CurrentData;
 
+      // UI Elements
       QStackedLayout* MainLayout;
 
       QWidget* IconTrayWidget;

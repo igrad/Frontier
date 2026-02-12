@@ -17,6 +17,7 @@ ShellUI::ShellUI(XPtr<TaskBar::TaskBarServiceInterface> taskBarService,
    , WallpaperService(wallpaperService)
    , TheShellWindow(nullptr)
    , TheWallpaperView(nullptr)
+   , TaskBarAssetClient(nullptr)
    , TheTaskBarView(nullptr)
    , TheDisplayInfo(displayInfo)
 {
@@ -106,6 +107,11 @@ void ShellUI::BuildTheWallpaperView()
 
 void ShellUI::BuildTheTaskBarView()
 {
+   if(nullptr == TaskBarAssetClient)
+   {
+      TaskBarAssetClient = new Assets::AssetClient(this);
+   }
+
    if(nullptr != TheTaskBarView)
    {
       TheTaskBarView->deleteLater();
@@ -114,5 +120,6 @@ void ShellUI::BuildTheTaskBarView()
 
    TheTaskBarView = new TaskBar::TaskBarView(TaskBarService,
                                              TheShellWindow,
+                                             *TaskBarAssetClient,
                                              GetDisplayInfo());
 }

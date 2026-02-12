@@ -23,19 +23,18 @@ namespace
 
 TaskBarView::TaskBarView(XPtr<TaskBarServiceInterface> service,
                          ShellWindowInterface* window,
+                         Assets::AssetClientInterface& assetClient,
                          const DisplayInfo& info)
    : QWidget(window)
    , Display(info.ID)
    , Info(info)
    , CurrentData()
    , InitialDisplaySettingsReceived(false)
-   , AssetProxy(this)
-   , AssetClient("TaskBarAssetProxy", &AssetProxy)
+   , AssetClient(assetClient)
+   , AssetProxy(assetClient, this)
    , IsCenteredLayout(false)
    , IsCenteredIconTrayLayout(false)
 {
-   AssetProxy.SetAssetClient(&AssetClient);
-
    CreateUI();
    ConnectToServiceSignals(service);
    ConnectToAssetProxy();

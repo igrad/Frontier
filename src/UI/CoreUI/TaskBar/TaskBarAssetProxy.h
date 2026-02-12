@@ -13,10 +13,9 @@ namespace TaskBar
       Q_OBJECT
 
    public:
-      explicit TaskBarAssetProxy(QObject* parent = nullptr);
+      TaskBarAssetProxy(Assets::AssetClientInterface& assetClient,
+                        QObject* parent = nullptr);
       ~TaskBarAssetProxy() = default;
-
-      void SetAssetClient(Assets::AssetClientInterface* assetClient);
 
       void LoadStartButtonImage(const QString& path);
 
@@ -27,7 +26,7 @@ namespace TaskBar
       void HandleImageReady(const QString& name, const QPixmap& pixmap);
 
    private:
-      Assets::AssetClientInterface* Client;
+      Assets::AssetClientInterface& Client;
       QString StartButtonPath;
    };
 }
