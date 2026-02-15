@@ -2,7 +2,8 @@
 
 #include <QObject>
 
-namespace Assets{
+namespace Assets
+{
    class AssetClientInterface;
 }
 

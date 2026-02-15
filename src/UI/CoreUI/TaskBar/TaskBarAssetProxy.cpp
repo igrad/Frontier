@@ -13,6 +13,8 @@ TaskBarAssetProxy::TaskBarAssetProxy(AssetClientInterface& assetClient,
    : QObject(parent)
    , Client(assetClient)
 {
+   connect(&Client, &AssetClientInterface::ImageReady,
+           this, &TaskBarAssetProxy::HandleImageReady);
 }
 
 void TaskBarAssetProxy::LoadStartButtonImage(const QString& path)
